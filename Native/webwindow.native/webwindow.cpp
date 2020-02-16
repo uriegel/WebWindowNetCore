@@ -59,14 +59,19 @@
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
 #endif
 
-extern "C" DLL_PUBLIC void run_web_window(const char* url)
+extern "C" DLL_PUBLIC void run_web_window(const char* url, bool debug_mode)
 {
     QCoreApplication::setOrganizationName("QtExamples");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebEngine::initialize();
-    int c = 0;
-    QGuiApplication app(c, nullptr);
+    int c = debug_mode ? 1 : 0;
+    char* remote_debugging[1];
+    remote_debugging[0] = (char*)"--remote-debugging-port=8888";
+    char **argv = debug_mode ? remote_debugging : nullptr;
+
+    //QGuiApplication app(c, argv);
+    QGuiApplication app(c, remote_debugging);
 
     QQmlApplicationEngine engine;
 
@@ -84,6 +89,6 @@ extern "C" DLL_PUBLIC void run_web_window(const char* url)
 
 int main(int argc, char *argv[])
 {
-    run_web_window("https://caesar2go.caseris.de");
+    run_web_window("https://google.de", true);
     return 0;
 }
