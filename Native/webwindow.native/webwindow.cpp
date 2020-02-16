@@ -53,9 +53,13 @@
 #include <qtwebengineglobal.h>
 #include <QtQml/QQmlContext>
 
+#ifdef Q_OS_WIN
+#define DLL_PUBLIC __declspec(dllexport)
+#else
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
+#endif
 
-extern "C" DLL_PUBLIC void run_web_window(char* url)
+extern "C" DLL_PUBLIC void run_web_window(const char* url)
 {
     QCoreApplication::setOrganizationName("QtExamples");
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
