@@ -19,7 +19,9 @@ module WebWindow =
     let Run url = 
 
         let t = Thread (fun () -> runWebWindow url)
+#if Windows
         t.SetApartmentState(ApartmentState.STA)
+#endif        
         t.Start()
         t.Join()
         
