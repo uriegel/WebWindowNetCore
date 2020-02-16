@@ -73,7 +73,7 @@ extern "C" DLL_PUBLIC void run_web_window(char* url)
 
 
 
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/webwindow.qml")));
 
     app.exec();
 }

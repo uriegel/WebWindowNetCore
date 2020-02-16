@@ -3,3 +3,4 @@ TestApp/bin
 TestApp/obj
 WebWindowNetCore/bin
 WebWindowNetCore/obj
+Native/build*
