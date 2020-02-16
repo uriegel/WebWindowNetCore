@@ -19,13 +19,13 @@ module WebWindow =
     let private debug_mode = false
 #endif
 
+    // TODO: To debug: Chrome: localhost:8888
+
     [<DllImport(DllName, EntryPoint = "run_web_window", CallingConvention = CallingConvention.Cdecl)>] 
+   
     extern void runWebWindow (string url, [<MarshalAs(UnmanagedType.I1)>] bool debugMode)
     
     let Run url = 
-
-        // TODO: sudo ./minibrowser --remote-debugging-port=8888
-
         let t = Thread (fun () -> runWebWindow url)
 #if Windows
         t.SetApartmentState(ApartmentState.STA)

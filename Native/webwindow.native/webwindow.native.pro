@@ -1,4 +1,4 @@
-TEMPLATE = app
+TEMPLATE = lib
 
 QT += webengine
 

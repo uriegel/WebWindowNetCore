@@ -65,25 +65,21 @@ extern "C" DLL_PUBLIC void run_web_window(const char* url, bool debug_mode)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebEngine::initialize();
-    int c = debug_mode ? 1 : 0;
-    char* remote_debugging[1];
-    remote_debugging[0] = (char*)"--remote-debugging-port=8888";
-    char **argv = debug_mode ? remote_debugging : nullptr;
 
-    //QGuiApplication app(c, argv);
-    QGuiApplication app(c, remote_debugging);
+    int c = debug_mode ? 2 : 0;
+    char* args[2];
+    args[0] = (char*)"WebWindow";
+    args[1] = (char*)"--remote-debugging-port=8888";
+    char **argv = debug_mode ? args : nullptr;
+    QGuiApplication app(c, argv);
 
     QQmlApplicationEngine engine;
-
 
     const QString initialUrl = QString(url);
     QQmlContext *context = engine.rootContext();
     context->setContextProperty(QStringLiteral("initialUrl"), initialUrl);
 
-
-
     engine.load(QUrl(QStringLiteral("qrc:/webwindow.qml")));
-
     app.exec();
 }
 
