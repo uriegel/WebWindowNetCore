@@ -59,6 +59,24 @@
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
 #endif
 
+using namespace std;
+
+using callback_ptr = add_pointer<void(const char* text)>::type;
+
+callback_ptr callback{nullptr};
+
+extern "C" DLL_PUBLIC void init_callback(callback_ptr callback_param) {
+    callback = callback_param;
+}
+
+extern "C" DLL_PUBLIC void test_callback() {
+    callback("Das wäre aber schön");
+}
+
+extern "C" DLL_PUBLIC void get_string(char* buffer) {
+    strcpy(buffer, "Das wäre aber schön");
+}
+
 extern "C" DLL_PUBLIC void run_web_window(const char* url, bool debug_mode)
 {
     QCoreApplication::setOrganizationName("QtExamples");
