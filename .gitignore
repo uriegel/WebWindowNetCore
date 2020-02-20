@@ -7,3 +7,6 @@ Native/build*
 Native/webwindow.native/webwindow.native.user
 Native/webwindow.native/webwindow.native.pro.user
 Native/webwindow.win.native/.vs
+Native/webwindow.win.native/NativeWinWebView/x64
+Native/webwindow.win.native/packages
+Native/webwindow.win.native/x64
