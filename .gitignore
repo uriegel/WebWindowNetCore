@@ -11,3 +11,8 @@ Native/webwindow.win.native/NativeWinWebView/x64
 Native/webwindow.win.native/packages
 Native/webwindow.win.native/x64
 Native/webwindow.native/webwindow.native.pro.user.0bdac8e
+.vs
+Native/webwindow.win.native/Debug
+Native/webwindow.win.native/NativeWinWebView/Debug
+Native/webwindow.win.native/Tester/bin
+Native/webwindow.win.native/Tester/obj
