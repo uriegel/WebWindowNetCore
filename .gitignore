@@ -6,3 +6,4 @@ WebWindowNetCore/obj
 Native/build*
 Native/webwindow.native/webwindow.native.user
 Native/webwindow.native/webwindow.native.pro.user
+Native/webwindow.win.native/.vs
