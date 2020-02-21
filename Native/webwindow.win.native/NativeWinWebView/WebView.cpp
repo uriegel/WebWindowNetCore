@@ -1,9 +1,11 @@
+#include <string>
 #include <windows.h>
 #include <wrl.h>
 #include <wil/com.h>
 #include <WebView2.h>
 #include "WebView.h"
 using namespace Microsoft::WRL;
+using namespace std;
 
 static wil::com_ptr<IWebView2WebView> webviewWindow;
 
@@ -51,15 +53,16 @@ void create_window(Configuration configuration) {
 
     ShowWindow(hWnd, SW_SHOWDEFAULT);
     UpdateWindow(hWnd);
+    auto url = wstring(configuration.url);
 
     // Step 3 - Create a single WebView within the parent window
     // Locate the browser and set up the environment for WebView
     CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr,
-        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([hWnd](HRESULT result, IWebView2Environment* env) -> HRESULT {
+        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([hWnd, url](HRESULT result, IWebView2Environment* env) -> HRESULT {
 
         // Create a WebView, whose parent is the main window hWnd
         env->CreateWebView(hWnd, Callback<IWebView2CreateWebViewCompletedHandler>(
-            [hWnd](HRESULT result, IWebView2WebView* webview) -> HRESULT {
+            [hWnd, url](HRESULT result, IWebView2WebView* webview) -> HRESULT {
                 if (webview != nullptr) {
                     webviewWindow = webview;
                 }
@@ -78,13 +81,7 @@ void create_window(Configuration configuration) {
                 webviewWindow->put_Bounds(bounds);
 
                 // Schedule an async task to navigate to Bing
-                webviewWindow->Navigate(L"https://google.de");
-
-                // Step 4 - Navigation events
-
-
-                // Step 5 - Scripting
-
+                webviewWindow->Navigate(url.c_str());
 
                 // Step 6 - Communication between host and web content
                  // Set an event handler for the host to return received message back to the web content

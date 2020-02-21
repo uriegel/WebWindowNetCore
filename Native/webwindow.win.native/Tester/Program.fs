@@ -11,14 +11,8 @@ type Configuration =
     struct 
         [<MarshalAs(UnmanagedType.LPWStr)>]
         val mutable title: string
-        //year:uint16
-        //month:uint16
-        //weekday:uint16
-        //day:uint16
-        //hour:uint16
-        //minute:uint16
-        val mutable second:uint16
-        //millisecond:uint16
+        [<MarshalAs(UnmanagedType.LPWStr)>]
+        val mutable url: string
     end
 
 
@@ -31,5 +25,5 @@ extern int execute ()
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from F#!"
-    initialize (new Configuration(title = "Webbrauser😎😎👌", second = 34us))
+    initialize (new Configuration(title = "Webbrauser😎😎👌", url = "https://www.caseris.de"))
     execute ()
