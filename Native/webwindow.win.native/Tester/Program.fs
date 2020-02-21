@@ -24,6 +24,6 @@ extern int execute ()
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
-    initialize (new Configuration(title = "Webbrauser😎😎👌", url = "https://www.caseris.de"))
+    printfn "Hello World from new F#!"
+    initialize (Configuration(title = "Webbrauser😎😎👌", url = "https://www.caseris.de"))
     execute ()

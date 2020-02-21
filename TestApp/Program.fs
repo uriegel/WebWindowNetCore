@@ -5,7 +5,7 @@ open WebWindowNetCore
 let main argv =
     let (configuration: WebWindow.Configuration) = {
         title = "Web brauser😎😎👌"
-        url = "www.google.de" 
+        url = "https://www.google.de" 
     }
     
     WebWindow.initialize configuration

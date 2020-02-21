@@ -10,7 +10,7 @@ open System.Text
 let private DllName = "libwebwindowlinuxnative.so.1.0.0"
 #else
 [<Literal>]
-let private DllName = "webwindow.dll"
+let private DllName = "NativeWinWebView.dll"
 #endif            
 
 // #if DEBUG 
@@ -24,13 +24,20 @@ type Configuration = {
     url: string
 }
 
-#if Linux 
 [<StructLayout(LayoutKind.Sequential)>]
 type private NativeConfiguration = 
     struct 
+#if Linux 
         [<MarshalAs(UnmanagedType.LPUTF8Str)>]
+#else   
+        [<MarshalAs(UnmanagedType.LPWStr)>]     
+#endif
         val mutable title: string
+#if Linux 
         [<MarshalAs(UnmanagedType.LPUTF8Str)>]
+#else   
+        [<MarshalAs(UnmanagedType.LPWStr)>]     
+#endif
         val mutable url: string
     end
 
@@ -44,7 +51,6 @@ type private NativeMethods() =
 
     static member Initialize = nativeInitialize
     static member Execute = nativeExecute
-#endif            
 
 
 let initialize (configuration: Configuration) =
