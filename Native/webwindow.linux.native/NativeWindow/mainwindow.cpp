@@ -11,7 +11,7 @@ MainWindow::MainWindow(const QString& title, const QString& urlstring, QWidget *
     setCentralWidget(webView);
 
     QUrl url = QUrl(urlstring);
-    url.setScheme("http");
+    //url.setScheme("http");
     webView->page()->load(url);
 }
 

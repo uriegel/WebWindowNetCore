@@ -16,7 +16,7 @@ MainWindow *window{nullptr};
 
 void create_window(Configuration configuration) {
     window = new MainWindow(configuration.title, configuration.url);
-    window->resize(800, 600);
+    window->resize(1000, 600);
     window->show();
 }
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 {
     int c{0};
     app = new QApplication(c, nullptr);
-    MainWindow w(" Der Brauser>", "www.google.de");
+    MainWindow w(" Der Brauser>", "https://www.google.de");
     w.resize(800, 600);
     w.show();
     auto ret = app->exec();
