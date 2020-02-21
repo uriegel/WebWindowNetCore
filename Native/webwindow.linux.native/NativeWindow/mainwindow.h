@@ -9,7 +9,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const QString& title, const QString& url, QWidget *parent = nullptr);
     ~MainWindow();
 private:
     QWebEngineView* webView;

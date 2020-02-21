@@ -1,16 +1,16 @@
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(const QString& title, const QString& urlstring, QWidget *parent)
     : QMainWindow(parent)
 {
-    setWindowTitle("Der Webbrauser");
+    setWindowTitle(title);
     webView = new QWebEngineView;
 
     setAttribute( Qt::WA_NativeWindow, true );
 
     setCentralWidget(webView);
 
-    QUrl url = QUrl("caesar2go.caseris.de");
+    QUrl url = QUrl(urlstring);
     url.setScheme("http");
     webView->page()->load(url);
 }

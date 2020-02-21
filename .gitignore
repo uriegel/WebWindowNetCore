@@ -17,4 +17,8 @@ Native/webwindow.win.native/NativeWinWebView/Debug
 Native/webwindow.win.native/Tester/bin
 Native/webwindow.win.native/Tester/obj
 Native/webwindow.linux.native/webwindowlinuxnative.pro.user
+Native/webwindow.linux.native/NativeWindow/webwindowlinuxnative.pro.user
+Native/webwindow.linux.native/NativeWindow/build-webwindowlinuxnative-Desktop_Qt_5_14_1_GCC_64bit-Debug
+Native/webwindow.linux.native/Tester/bin
+Native/webwindow.linux.native/Tester/obj
 Native/webwindow.linux.native/build-webwindowlinuxnative-Desktop_Qt_5_14_1_GCC_64bit-Debug
