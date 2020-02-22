@@ -4,14 +4,12 @@ open System
 open System.Runtime.InteropServices
 
 [<Literal>]
-let private DllName = "NativeWinWebView.dll"
+let private DllName = "NativeWinWebView"
 
-[<StructLayout(LayoutKind.Sequential)>]
+[<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type Configuration = 
     struct 
-        [<MarshalAs(UnmanagedType.LPWStr)>]
         val mutable title: string
-        [<MarshalAs(UnmanagedType.LPWStr)>]
         val mutable url: string
     end
 

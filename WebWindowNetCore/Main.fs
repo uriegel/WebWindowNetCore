@@ -5,19 +5,8 @@ open System.Threading
 open System
 open System.Text
 
-#if Linux 
 [<Literal>]
-let private DllName = "runtimes/linux-x64/native/libwebwindowlinuxnative.so.1.0.0"
-#else
-[<Literal>]
-let private DllName = "NativeWinWebView.dll"
-#endif            
-
-// #if DEBUG 
-// let private debug_mode = true
-// #else
-// let private debug_mode = false
-// #endif
+let private DllName = "NativeWinWebView"
 
 type Configuration = {
     title: string
@@ -27,17 +16,7 @@ type Configuration = {
 [<StructLayout(LayoutKind.Sequential)>]
 type private NativeConfiguration = 
     struct 
-#if Linux 
-        [<MarshalAs(UnmanagedType.LPUTF8Str)>]
-#else   
-        [<MarshalAs(UnmanagedType.LPWStr)>]     
-#endif
         val mutable title: string
-#if Linux 
-        [<MarshalAs(UnmanagedType.LPUTF8Str)>]
-#else   
-        [<MarshalAs(UnmanagedType.LPWStr)>]     
-#endif
         val mutable url: string
     end
 

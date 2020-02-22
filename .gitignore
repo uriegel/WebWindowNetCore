@@ -22,3 +22,7 @@ Native/webwindow.linux.native/NativeWindow/build-webwindowlinuxnative-Desktop_Qt
 Native/webwindow.linux.native/Tester/bin
 Native/webwindow.linux.native/Tester/obj
 Native/webwindow.linux.native/build-webwindowlinuxnative-Desktop_Qt_5_14_1_GCC_64bit-Debug
+NativeDependencies/libwebwindowlinuxnative.so.1.0.0
+NativeDependencies/NativeWinWebView.dll
+NativeDependencies/NativeWinWebView.so.1.0.0
+NativeDependencies/WebView2Loader.dll

@@ -6,13 +6,9 @@
 		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>     
 
-		<NativeAssetRuntimeIdentifier Condition="'$(OS)' == 'Windows_NT'" >win-x64</NativeAssetRuntimeIdentifier>
-    	<NativeAssetRuntimeIdentifier Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'" >linux-x64</NativeAssetRuntimeIdentifier>
-    	<NativeAssetRuntimeIdentifier Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' == 'true'" >osx-x64</NativeAssetRuntimeIdentifier>
-
-		<Version>0.0.5</Version>
-		<FileVersion>0.0.5.0</FileVersion>
-		<AssemblyVersion>0.0.5.0</AssemblyVersion>
+		<Version>0.0.6</Version>
+		<FileVersion>0.0.6.0</FileVersion>
+		<AssemblyVersion>0.0.6.0</AssemblyVersion>
 		<Authors>Uwe Riegel</Authors>
     	<Company>Uwe Riegel</Company>		
 		<Description>Web View in an native window based on chromium (Windows, Linux) written for .Net Core</Description>
@@ -50,11 +46,23 @@
   	</ItemGroup>	
 
 	<ItemGroup>
-	  	<Content Include="../libwebwindowlinuxnative.so.1.0.0" >
+	 	<WinLibraries Include="../NativeDependencies/NativeWinWebView.dll" />
+		<WinLibraries Include="../NativeDependencies/WebView2Loader.dll" />
+	  	<Content Include="@(WinLibraries)" >
 	    	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Link>%(Filename)%(Extension)</Link>
 			<Pack>true</Pack>
-			<PackagePath>runtimes/$(NativeAssetRuntimeIdentifier)/native/%(Filename)%(Extension)</PackagePath>
+			<PackagePath>runtimes/win-x64/native/%(Filename)%(Extension)</PackagePath>
+	  	</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<LinuxLibraries Include="../NativeDependencies/NativeWinWebView.so.1.0.0" />
+	  	<Content Include="@(LinuxLibraries)" >
+	    	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>%(Filename)%(Extension)</Link>
+			<Pack>true</Pack>
+			<PackagePath>runtimes/linux-x64/native/%(Filename)%(Extension)</PackagePath>
 	  	</Content>
 	</ItemGroup>
 </Project>
