@@ -11,6 +11,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(const QString& title, const QString& url, QWidget *parent = nullptr);
     ~MainWindow();
+
+    void acceptFullScreen(QWebEngineFullScreenRequest request);
 private:
     QWebEngineView* webView;
 };

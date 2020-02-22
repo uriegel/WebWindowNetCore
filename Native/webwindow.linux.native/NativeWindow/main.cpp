@@ -33,12 +33,16 @@ int execute() {
     return ret;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-    int c{0};
-    app = new QApplication(c, nullptr);
+    bool debug_mode = true;
+    int c = debug_mode ? 2 : 0;
+    char* args[2];
+    args[0] = (char*)"WebWindow";
+    args[1] = (char*)"--remote-debugging-port=8888";
+    char **argv = debug_mode ? args : nullptr;
+    app = new QApplication(c, argv);
     MainWindow w(" Der Brauser>", "https://www.google.de");
-    w.resize(800, 600);
     w.show();
     auto ret = app->exec();
     delete app;
