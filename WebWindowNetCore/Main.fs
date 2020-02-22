@@ -13,7 +13,7 @@ type Configuration = {
     url: string
 }
 
-[<StructLayout(LayoutKind.Sequential)>]
+[<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type private NativeConfiguration = 
     struct 
         val mutable title: string
