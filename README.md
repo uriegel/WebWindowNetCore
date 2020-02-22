@@ -7,3 +7,6 @@ In test project, run
 
 ## Clean nuget cache
 ```dotnet nuget locals all --clear```
+
+## Debug Windows Version
+Do  N O T  us ```dotnet``` as Debugger (Ionide), use F5 and debug .exe!
