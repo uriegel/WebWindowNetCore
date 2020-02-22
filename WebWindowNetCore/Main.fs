@@ -37,6 +37,5 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // TODO: To debug: Chrome: localhost:8888
-    // TODO: Rename ...so.0.0.1 to ...so
 
 let execute = NativeMethods.Execute 

@@ -57,7 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<LinuxLibraries Include="../NativeDependencies/NativeWinWebView.so.1.0.0" />
+		<LinuxLibraries Include="../NativeDependencies/NativeWinWebView.so" />
 	  	<Content Include="@(LinuxLibraries)" >
 	    	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Link>%(Filename)%(Extension)</Link>
