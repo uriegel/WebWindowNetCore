@@ -7,7 +7,7 @@ open System.Text
 
 #if Linux 
 [<Literal>]
-let private DllName = "libwebwindowlinuxnative.so.1.0.0"
+let private DllName = "runtimes/linux-x64/native/libwebwindowlinuxnative.so.1.0.0"
 #else
 [<Literal>]
 let private DllName = "NativeWinWebView.dll"

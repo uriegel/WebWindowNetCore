@@ -5,6 +5,23 @@
 		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
 		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>     
+
+		<NativeAssetRuntimeIdentifier Condition="'$(OS)' == 'Windows_NT'" >win-x64</NativeAssetRuntimeIdentifier>
+    	<NativeAssetRuntimeIdentifier Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' != 'true'" >linux-x64</NativeAssetRuntimeIdentifier>
+    	<NativeAssetRuntimeIdentifier Condition="'$(OS)' != 'Windows_NT' AND '$(IsMacOS)' == 'true'" >osx-x64</NativeAssetRuntimeIdentifier>
+
+		<Version>0.0.5</Version>
+		<FileVersion>0.0.5.0</FileVersion>
+		<AssemblyVersion>0.0.5.0</AssemblyVersion>
+		<Authors>Uwe Riegel</Authors>
+    	<Company>Uwe Riegel</Company>		
+		<Description>Web View in an native window based on chromium (Windows, Linux) written for .Net Core</Description>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageTags>FSharp</PackageTags>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(IsWindows)'=='true'">
@@ -16,9 +33,28 @@
 		<PropertyGroup Condition="'$(IsLinux)'=='true'">
 		<DefineConstants>Linux</DefineConstants>
 	</PropertyGroup>	
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    	<DocumentationFile>UwebServer.XML</DocumentationFile>
+  	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Include="Main.fs" />
 	</ItemGroup>
 
+	<ItemGroup>
+    	<None Include="..\LICENSE">
+      		<Pack>True</Pack>
+      	<PackagePath></PackagePath>
+    	</None>
+  	</ItemGroup>	
+
+	<ItemGroup>
+	  	<Content Include="../libwebwindowlinuxnative.so.1.0.0" >
+	    	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>%(Filename)%(Extension)</Link>
+			<Pack>true</Pack>
+			<PackagePath>runtimes/$(NativeAssetRuntimeIdentifier)/native/%(Filename)%(Extension)</PackagePath>
+	  	</Content>
+	</ItemGroup>
 </Project>
