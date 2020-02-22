@@ -6,9 +6,9 @@
 		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>     
 
-		<Version>0.0.7</Version>
-		<FileVersion>0.0.7.0</FileVersion>
-		<AssemblyVersion>0.0.7.0</AssemblyVersion>
+		<Version>0.0.8</Version>
+		<FileVersion>0.0.8.0</FileVersion>
+		<AssemblyVersion>0.0.8.0</AssemblyVersion>
 		<Authors>Uwe Riegel</Authors>
     	<Company>Uwe Riegel</Company>		
 		<Description>Web View in an native window based on chromium (Windows, Linux) written for .Net Core</Description>
