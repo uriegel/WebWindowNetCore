@@ -14,6 +14,8 @@ wstring application;
 wstring reg_key;
 const wchar_t* X = L"x";
 const wchar_t* Y = L"y";
+const wchar_t* IS_MAXIMIZED = L"IsMaximized";
+const wchar_t* IS_MINIMIZED = L"isMinimized";
 const wchar_t* WIDTH = L"width";
 const wchar_t* HEIGHT = L"height";
 
@@ -22,21 +24,41 @@ struct Window_settings {
     int y{ CW_USEDEFAULT };
     int width{ CW_USEDEFAULT };
     int height{ CW_USEDEFAULT };
+    bool is_maximized{ false };
+    bool isMinimized{ false };
 };
 
 void save_window_settings(HWND hWnd) {
     if (window_settings_enabled) {
-        RECT rect{ 0 };
-        GetWindowRect(hWnd, &rect);
         HKEY key;
         DWORD disposition{ 0 };
         RegCreateKeyEx(HKEY_CURRENT_USER, reg_key.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &key, &disposition);
-        RegSetValueEx(key, X, 0, REG_DWORD, (BYTE*)&rect.left, 4);
-        RegSetValueEx(key, Y, 0, REG_DWORD, (BYTE*)&rect.top, 4);
-        int width = rect.right - rect.left;
-        int height = rect.bottom - rect.top;
-        RegSetValueEx(key, WIDTH, 0, REG_DWORD, (BYTE*)&width, 4);
-        RegSetValueEx(key, HEIGHT, 0, REG_DWORD, (BYTE*)&height, 4);
+        if (!IsZoomed(hWnd) && !IsIconic(hWnd)) {
+            RECT rect{ 0 };
+            GetWindowRect(hWnd, &rect);
+            RegSetValueEx(key, X, 0, REG_DWORD, (BYTE*)&rect.left, 4);
+            RegSetValueEx(key, Y, 0, REG_DWORD, (BYTE*)&rect.top, 4);
+            int width = rect.right - rect.left;
+            int height = rect.bottom - rect.top;
+            RegSetValueEx(key, WIDTH, 0, REG_DWORD, (BYTE*)&width, 4);
+            RegSetValueEx(key, HEIGHT, 0, REG_DWORD, (BYTE*)&height, 4);
+            DWORD v{ 0 };
+            RegSetValueEx(key, IS_MAXIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+            RegSetValueEx(key, IS_MINIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+        }
+        if (IsZoomed(hWnd)) {
+            DWORD v{ 1 };
+            RegSetValueEx(key, IS_MAXIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+            v = 0;
+            RegSetValueEx(key, IS_MINIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+        }
+        if (IsIconic(hWnd)) {
+            DWORD v{ 1 };
+            RegSetValueEx(key, IS_MINIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+            v = 0;
+            RegSetValueEx(key, IS_MAXIMIZED, 0, REG_DWORD, (BYTE*)&v, 4);
+        }
+
         RegCloseKey(key);
     }
 }
@@ -50,10 +72,15 @@ Window_settings get_window_settings() {
         DWORD s{ 4 };
         DWORD t{ REG_DWORD };
         auto ret = RegQueryValueEx(key, X, 0, &t, (BYTE*)&ws.x, &s);
-        if (ret == 0 || ret == 234) {
+        if (ret == 0) {
             RegQueryValueEx(key, Y, 0, &t, (BYTE*)&ws.y, &s);
             RegQueryValueEx(key, WIDTH, 0, &t,(BYTE*)&ws.width, &s);
             RegQueryValueEx(key, HEIGHT, 0, &t, (BYTE*)&ws.height, &s);
+            DWORD v;
+            RegQueryValueEx(key, IS_MAXIMIZED, 0, &t, (BYTE*)&v, &s);
+            ws.is_maximized = v == 1;
+            RegQueryValueEx(key, IS_MINIMIZED, 0, &t, (BYTE*)&v, &s);
+            ws.isMinimized = v == 1;
         }
         RegCloseKey(key);
     }
@@ -69,6 +96,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
             webviewWindow->put_Bounds(bounds);
         };
         break;
+    case WM_SYSCOMMAND:
+        switch (wParam)
+        {
+        case SC_MINIMIZE:
+            save_window_settings(hWnd);
+            break;
+        case SC_MAXIMIZE:
+            save_window_settings(hWnd);
+            break;
+        }        
+        return DefWindowProc(hWnd, message, wParam, lParam);
     case WM_DESTROY:
         save_window_settings(hWnd);
         PostQuitMessage(0);
@@ -121,7 +159,12 @@ void create_window(Configuration configuration) {
     if (!hWnd)
         return;
 
-    ShowWindow(hWnd, SW_SHOWDEFAULT);
+    ShowWindow(hWnd, 
+        settings.is_maximized 
+        ? SW_SHOWMAXIMIZED 
+        : settings.isMinimized
+            ? SW_SHOWMINIMIZED
+            : SW_SHOWDEFAULT);
     UpdateWindow(hWnd);
     auto url = wstring(configuration.url);
     bool dev_tools_enabled = configuration.debuggingEnabled;
