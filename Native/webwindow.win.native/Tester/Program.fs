@@ -33,6 +33,6 @@ extern int execute ()
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from new F#!"
-    initialize (Configuration(title = "Web Brauser😎😎👌", url = "https://www.caseris.de", iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
-                                debuggingEnabled = true, debuggingPort = 0, organization = "URiegel", application = "TestBrauser", saveWindowSettings = true, fullScreenEnabled = false))
+    initialize (Configuration(title = "Web Brauser😎😎👌", url = "https://google.de", iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
+                                debuggingEnabled = true, debuggingPort = 0, organization = "URiegel", application = "TestBrauser", saveWindowSettings = true, fullScreenEnabled = true))
     execute ()

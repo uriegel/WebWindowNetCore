@@ -7,8 +7,9 @@
 using namespace Microsoft::WRL;
 using namespace std;
 
-static wil::com_ptr<IWebView2WebView> webviewWindow;
+static wil::com_ptr<IWebView2WebView5> webviewWindow;
 bool window_settings_enabled{ false };
+bool is_fullscreen{ false };
 wstring organization;
 wstring application;
 wstring reg_key;
@@ -29,7 +30,7 @@ struct Window_settings {
 };
 
 void save_window_settings(HWND hWnd) {
-    if (window_settings_enabled) {
+    if (window_settings_enabled && !is_fullscreen) {
         HKEY key;
         DWORD disposition{ 0 };
         RegCreateKeyEx(HKEY_CURRENT_USER, reg_key.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &key, &disposition);
@@ -130,6 +131,36 @@ auto load_icon(const wchar_t* icon_path) {
     );
 }
 
+HMENU menu{ nullptr };
+WINDOWPLACEMENT previous_placement{ 0 };
+
+void enter_fullscreen(HWND hWnd) {
+    is_fullscreen = true;
+    DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+    MONITORINFO monitor_info = { sizeof(monitor_info) };
+    menu = GetMenu(hWnd);
+    SetMenu(hWnd, nullptr);
+    if (GetWindowPlacement(hWnd, &previous_placement) &&
+        GetMonitorInfo(MonitorFromWindow(hWnd, MONITOR_DEFAULTTOPRIMARY), &monitor_info))
+    {
+        SetWindowLong(hWnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW);
+        SetWindowPos(hWnd, HWND_TOP, monitor_info.rcMonitor.left, monitor_info.rcMonitor.top,
+            monitor_info.rcMonitor.right - monitor_info.rcMonitor.left,
+            monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top,
+            SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+    }
+}
+
+void exit_fullscreen(HWND hWnd) {
+    is_fullscreen = false;
+    DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+    SetMenu(hWnd, menu);
+    SetWindowLong(hWnd, GWL_STYLE, style | WS_OVERLAPPEDWINDOW);
+    SetWindowPlacement(hWnd, &previous_placement);
+    SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+}
+
 void create_window(Configuration configuration) {
     window_settings_enabled = configuration.save_window_settings;
     organization = window_settings_enabled ? configuration.organization : L""s; 
@@ -167,28 +198,21 @@ void create_window(Configuration configuration) {
             : SW_SHOWDEFAULT);
     UpdateWindow(hWnd);
     auto url = wstring(configuration.url);
-    bool dev_tools_enabled = configuration.debuggingEnabled;
+    auto dev_tools_enabled = configuration.debugging_enabled;
+    auto fullscreen_enabled = configuration.full_screen_enabled;
 
-    // Step 3 - Create a single WebView within the parent window
-    // Locate the browser and set up the environment for WebView
-    CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr,
-        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([hWnd, url, dev_tools_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
+    CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
+        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([hWnd, url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
+            env->CreateWebView(hWnd, Callback<IWebView2CreateWebViewCompletedHandler>(
+                    [hWnd, url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
+                if (webview != nullptr)
+                    webview->QueryInterface(IID_PPV_ARGS(&webviewWindow));
 
-        // Create a WebView, whose parent is the main window hWnd
-        env->CreateWebView(hWnd, Callback<IWebView2CreateWebViewCompletedHandler>(
-            [hWnd, url, dev_tools_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
-                if (webview != nullptr) {
-                    webviewWindow = webview;
-                }
-
-                // Add a few settings for the webview
-                // this is a redundant demo step as they are the default settings values
                 IWebView2Settings* Settings;
                 webviewWindow->get_Settings(&Settings);
                 Settings->put_IsScriptEnabled(TRUE);
                 Settings->put_AreDefaultScriptDialogsEnabled(TRUE);
                 Settings->put_IsWebMessageEnabled(TRUE);
-
                 Settings->put_AreDevToolsEnabled(dev_tools_enabled);
                 // Resize WebView to fit the bounds of the parent window
                 RECT bounds;
@@ -198,8 +222,23 @@ void create_window(Configuration configuration) {
                 // Schedule an async task to navigate to Bing
                 webviewWindow->Navigate(url.c_str());
 
+                if (fullscreen_enabled) {
+                    (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
+                        [hWnd](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
+                            BOOL contains_fullscreen{ FALSE };
+                            sender->get_ContainsFullScreenElement(&contains_fullscreen);
+                            if (contains_fullscreen)
+                                enter_fullscreen(hWnd);
+                            else
+                                exit_fullscreen(hWnd);
+                            return S_OK;
+                        })
+                    .Get(),
+                    nullptr));
+                }
+
                 // Step 6 - Communication between host and web content
-                 // Set an event handler for the host to return received message back to the web content
+                // Set an event handler for the host to return received message back to the web content
                 EventRegistrationToken token;
                 webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
                     [](IWebView2WebView* webview, IWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
@@ -230,8 +269,8 @@ void create_window(Configuration configuration) {
 //								return S_OK;
 //							}).Get(), &token);
 
-                return S_OK;
-            }).Get());
-        return S_OK;
+                    return S_OK;
+                }).Get());
+            return S_OK;
         }).Get());
 }
