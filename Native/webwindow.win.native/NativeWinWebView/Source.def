@@ -2,3 +2,4 @@ LIBRARY
 EXPORTS
 	initialize_window
 	execute
+	send_to_browser

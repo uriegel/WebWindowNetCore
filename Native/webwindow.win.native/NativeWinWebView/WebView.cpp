@@ -19,6 +19,7 @@ const wchar_t* IS_MAXIMIZED = L"IsMaximized";
 const wchar_t* IS_MINIMIZED = L"isMinimized";
 const wchar_t* WIDTH = L"width";
 const wchar_t* HEIGHT = L"height";
+callback_ptr callback{ nullptr };
 
 struct Window_settings {
     int x{ CW_USEDEFAULT };
@@ -165,6 +166,7 @@ void create_window(Configuration configuration) {
     window_settings_enabled = configuration.save_window_settings;
     organization = window_settings_enabled ? configuration.organization : L""s; 
     application = window_settings_enabled ? configuration.application : L""s;
+    callback = configuration.callback;
     reg_key = LR"(Software\)"s + organization + LR"(\)"s + application;
     auto settings = get_window_settings();
     auto instance = LoadLibrary(L"NativeWinWebView");
@@ -239,38 +241,30 @@ void create_window(Configuration configuration) {
 
                 // Step 6 - Communication between host and web content
                 // Set an event handler for the host to return received message back to the web content
-                EventRegistrationToken token;
-                webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
-                    [](IWebView2WebView* webview, IWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
-                        PWSTR message;
-                        args->get_WebMessageAsString(&message);
-                        // processMessage(&message);
-                        webview->PostWebMessageAsString(message);
-                        CoTaskMemFree(message);
-                        return S_OK;
-                    }).Get(), &token);
+                if (callback) {
+                    EventRegistrationToken token;
+                    webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
+                        [](auto webview, auto args) -> HRESULT {
+                            PWSTR message;
+                            args->get_WebMessageAsString(&message);
+                            callback(message);
+                            CoTaskMemFree(message);
+                            return S_OK;
+                        }).Get(), &token);
+                }
 
                 //// Schedule an async task to add initialization script that
                 //// 1) Add an listener to print message from the host
                 //// 2) Post document URL to the host
-                //webviewWindow->AddScriptToExecuteOnDocumentCreated(
-                //	L"window.chrome.webview.addEventListener(\'message\', event => alert(event.data));" \
- 					//	L"window.chrome.webview.postMessage(window.document.URL);",
-                        //	nullptr);
-
-//						EventRegistrationToken token;
-//						webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
-//							[](IWebView2WebView* webview, IWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
-//								PWSTR message;
-//								args->get_WebMessageAsString(&message);
-//								// processMessage(&message);
-////						webview->PostWebMessageAsString(message);
-//								CoTaskMemFree(message);
-//								return S_OK;
-//							}).Get(), &token);
-
+                webviewWindow->AddScriptToExecuteOnDocumentCreated(
+                	L"window.chrome.webview.addEventListener(\'message\', event => alert(event.data));" \
+                        L"var webWindowNetCore = window.chrome.webview;", nullptr);
                     return S_OK;
                 }).Get());
             return S_OK;
         }).Get());
+}
+
+void send_to_browser(const wchar_t* text) {
+    webviewWindow->PostWebMessageAsString(text);
 }
