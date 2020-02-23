@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
+using namespace std;
 
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
 
@@ -51,18 +52,17 @@ int main()
     char **argv = debug_mode ? args : nullptr;
     app = new QApplication(c, argv);
 
-    auto configuration = Configuration{
-        "Der Brauser",
-        //"https://www.google.de",
-        "file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html",
-        "/home/uwe/Dokumente/icon.svg",
-        true,
-        0,
-        "uriegel",
-        "brauser tester",
-        true,
-        true
-    };
+    auto configuration = Configuration();
+    configuration.title = "Der Brauser";
+        //"https://www.google.de";
+    configuration.url = "file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html";
+    configuration.icon_path = "/home/uwe/Dokumente/icon.svg";
+    configuration.debugging_enabled = true;
+    configuration.organization = "uriegel";
+    configuration.application ="brauser tester";
+    configuration.save_window_settings = true;
+    configuration.fullscreen_enabled = true;
+    configuration.callback = nullptr;
 
     MainWindow w(configuration);
     w.show();

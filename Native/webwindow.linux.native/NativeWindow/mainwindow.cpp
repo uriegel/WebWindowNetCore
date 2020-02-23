@@ -7,6 +7,7 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
     if (configuration.icon_path)
         setWindowIcon(QIcon(configuration.icon_path));
     webView = new QWebEngineView;
+    this->callback = configuration.callback;
 
     setAttribute( Qt::WA_NativeWindow, true );
 
@@ -31,7 +32,7 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
         connect(webView->page(),&QWebEnginePage::fullScreenRequested,this,&MainWindow::acceptFullScreen);
     }
 
-    initializeScript();
+    initializeScript(configuration.callback);
 
     QUrl url = QUrl(configuration.url);
     //url.setScheme("http");
@@ -54,27 +55,26 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
         showNormal();
 }
 
-void MainWindow::initializeScript() {
-    QFile file(":/qtwebchannel/qwebchannel.js");
-    file.open(QIODevice::ReadOnly);
-    auto channelJs = QString(file.readAll());
-    QWebEngineScript scriptChannel;
-    scriptChannel.setName("QTChannel");
-    scriptChannel.setSourceCode(channelJs);
-    scriptChannel.setInjectionPoint(QWebEngineScript::DocumentCreation);
-    scriptChannel.setRunsOnSubFrames(true);
-    scriptChannel.setWorldId(QWebEngineScript::MainWorld);
-//    webView->page()->scripts().insert(scriptChannel);
-
+void MainWindow::initializeScript(Callback_ptr callback) {
     QWebEngineScript script;
-    QString s =
+
+    QString scripttext;
+    if (callback) {
+        QFile file(":/qtwebchannel/qwebchannel.js");
+        file.open(QIODevice::ReadOnly);
+        scripttext = QString(file.readAll());
+    }
+
+    scripttext.append(
 R"(
+
 var webWindowNetCore = (function() {
-    new QWebChannel(qt.webChannelTransport,
-        function(channel) {
-            channelObject = channel.objects.webobj
-        }
-    )
+    if (window.QWebChannel)
+        new QWebChannel(qt.webChannelTransport,
+            function(channel) {
+                channelObject = channel.objects.webobj
+            }
+        )
 
     function setCallback(callbackFromHost) {
         callback = callbackFromHost
@@ -97,23 +97,20 @@ var webWindowNetCore = (function() {
         callCallback,
         postMessage
     }
-})())";
-
+})())");
     script.setName("Initial Script");
-    script.setSourceCode(s);
+    script.setSourceCode(scripttext);
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
     script.setRunsOnSubFrames(true);
     script.setWorldId(QWebEngineScript::MainWorld);
 
-    QList<QWebEngineScript> scripts;
-    scripts.append(scriptChannel);
-    scripts.append(script);
-    webView->page()->scripts().insert(scripts);
+    webView->page()->scripts().insert(script);
 
-    auto channel = new QWebChannel(this);
-    channel->registerObject("webobj", this);
-    webView->page()->setWebChannel(channel);
-
+    if (callback) {
+        auto channel = new QWebChannel(this);
+        channel->registerObject("webobj", this);
+        webView->page()->setWebChannel(channel);
+    }
 }
 
 void MainWindow::send_to_browser(const char* text) {
@@ -121,5 +118,5 @@ void MainWindow::send_to_browser(const char* text) {
 }
 
 void MainWindow::postMessage(const QString& msg) {
-    QMessageBox::information(NULL,"jscallme", msg);
+    callback(msg.toUtf8());
 }

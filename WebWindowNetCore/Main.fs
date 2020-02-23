@@ -80,9 +80,6 @@ let initialize (configuration: Configuration) =
             )
     NativeMethods.Initialize c
     
-    // TODO Linux
-    // SendMessage to host
-
     // TODO Window
     // setCallback in javascript
     

@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QtWebEngineWidgets/QtWebEngineWidgets>
 
+using Callback_ptr = std::add_pointer<void(const char* text)>::type;
+
 struct Configuration {
     const char* title;
     const char* url;
@@ -14,7 +16,7 @@ struct Configuration {
     const char* application;
     bool save_window_settings;
     bool fullscreen_enabled;
-    const void* affe;
+    Callback_ptr callback{nullptr};
 };
 
 class MainWindow : public QMainWindow
@@ -27,7 +29,7 @@ public:
 
     void acceptFullScreen(QWebEngineFullScreenRequest request);
 
-    void initializeScript();
+    void initializeScript(Callback_ptr callback);
     void send_to_browser(const char* text);
 public slots:
     void postMessage(const QString& msg);
@@ -36,5 +38,6 @@ private:
     QWebEngineView* webView;
     QString organization;
     QString application;
+    Callback_ptr callback{nullptr};
 };
 #endif // MAINWINDOW_H
