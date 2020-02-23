@@ -70,12 +70,11 @@ let initialize (configuration: Configuration) =
             )
     NativeMethods.Initialize c
     
-    // TODO: Save and Restore Window Settings
-    // TODO: Icon
-    // TODO: Developer Tools
-    // TODO: To debug: Chrome: localhost:8888
+    // TODO: To debug on Linux: Chrome: localhost:8888
     // TODO: Full screen
-    
+    // TODO: file:// Protocol
+    // TODO: SendMessage to javascript
+    // TODO: SendMessage to host
     // TODO: Menu
 
 let execute = NativeMethods.Execute 
