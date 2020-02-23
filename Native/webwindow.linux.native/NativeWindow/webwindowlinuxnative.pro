@@ -1,6 +1,6 @@
 #TEMPLATE = app
 #TEMPLATE = lib
-TEMPLATE = lib
+TEMPLATE = app
 
 QT       += core gui webengine webenginewidgets
 

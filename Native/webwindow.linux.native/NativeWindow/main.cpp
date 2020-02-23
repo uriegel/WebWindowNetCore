@@ -48,7 +48,8 @@ int main()
 
     auto configuration = Configuration{
         "Der Brauser",
-        "https://www.google.de",
+        //"https://www.google.de",
+        "file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html",
         "/home/uwe/Dokumente/icon.svg",
         true,
         0,

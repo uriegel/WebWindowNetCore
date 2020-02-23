@@ -81,7 +81,6 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // TODO Linux
-    // file:// Protocol
     // SendMessage to javascript
     // SendMessage to host
     
