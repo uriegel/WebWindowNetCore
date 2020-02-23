@@ -14,6 +14,7 @@ struct Configuration {
     const char* application;
     bool save_window_settings;
     bool fullscreen_enabled;
+    const void* affe;
 };
 
 class MainWindow : public QMainWindow
@@ -25,6 +26,12 @@ public:
     ~MainWindow();
 
     void acceptFullScreen(QWebEngineFullScreenRequest request);
+
+    void initializeScript();
+    void send_to_browser(const char* text);
+public slots:
+    void postMessage(const QString& msg);
+
 private:
     QWebEngineView* webView;
     QString organization;

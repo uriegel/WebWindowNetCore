@@ -81,8 +81,10 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // TODO Linux
-    // SendMessage to javascript
     // SendMessage to host
+
+    // TODO Window
+    // setCallback in javascript
     
     // TODO: Menu
     // TODO: To debug on Linux: Chrome: localhost:8888

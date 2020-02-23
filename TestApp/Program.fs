@@ -5,7 +5,8 @@ open WebWindowNetCore
 let main argv =
 
     let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
-    let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+    //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+    let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
     // let url = "https://google.de"
 
     let callback (text: string) =

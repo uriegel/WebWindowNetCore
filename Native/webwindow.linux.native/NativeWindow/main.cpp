@@ -5,6 +5,7 @@
 
 extern "C" DLL_PUBLIC void initialize_window(Configuration configuration);
 extern "C" DLL_PUBLIC int execute();
+extern "C" DLL_PUBLIC void send_to_browser(const char* text);
 
 QApplication* app{nullptr};
 MainWindow *window{nullptr};
@@ -34,6 +35,10 @@ int execute() {
     delete window;
     delete app;
     return ret;
+}
+
+void send_to_browser(const char* text) {
+    window->send_to_browser(text);
 }
 
 int main()
