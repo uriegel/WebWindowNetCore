@@ -257,8 +257,27 @@ void create_window(Configuration configuration) {
                 //// 1) Add an listener to print message from the host
                 //// 2) Post document URL to the host
                 webviewWindow->AddScriptToExecuteOnDocumentCreated(
-                	L"window.chrome.webview.addEventListener(\'message\', event => alert(event.data));" \
-                        L"var webWindowNetCore = window.chrome.webview;", nullptr);
+LR"(var webWindowNetCore = (function() {
+    var callback
+
+    window.chrome.webview.addEventListener('message', event => {
+        if (callback)
+            callback(event.data)
+    })
+
+    function postMessage(msg) {
+        window.chrome.webview.postMessage(msg)                    
+    }
+
+    function setCallback(callbackToHost) {
+        callback = callbackToHost
+    }
+
+    return {
+        setCallback,
+        postMessage
+    }
+})())", nullptr);
                     return S_OK;
                 }).Get());
             return S_OK;
