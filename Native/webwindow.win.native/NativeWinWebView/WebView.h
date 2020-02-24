@@ -16,4 +16,6 @@ struct Configuration {
     callback_ptr callback{ nullptr };
 };
 
+extern HACCEL hAccelTable;
+
 void create_window(Configuration configuration);

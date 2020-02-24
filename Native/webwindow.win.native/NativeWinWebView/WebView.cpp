@@ -8,6 +8,7 @@ using namespace Microsoft::WRL;
 using namespace std;
 
 static wil::com_ptr<IWebView2WebView5> webviewWindow;
+HACCEL hAccelTable{ nullptr };
 bool window_settings_enabled{ false };
 bool is_fullscreen{ false };
 wstring organization;
@@ -93,8 +94,8 @@ void AddMenus(HWND hwnd) {
     auto hMenubar = CreateMenu();
     auto hMenu = CreateMenu();
 
-    AppendMenuW(hMenu, MF_STRING, 1, L"&New");
-    AppendMenuW(hMenu, MF_STRING, 2, L"&Open");
+    AppendMenuW(hMenu, MF_STRING, 1, L"&New\tF5");
+    AppendMenuW(hMenu, MF_STRING, 2, L"&Open\tStrg+O");
     AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenuW(hMenu, MF_STRING, 3, L"&Quit");
     AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&File");
@@ -105,6 +106,16 @@ void AddMenus(HWND hwnd) {
     AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Ansicht");
 
     SetMenu(hwnd, hMenubar);
+
+    ACCEL azel[4];
+    azel[0].cmd = 1;
+    azel[0].key = VK_F5;
+    azel[0].fVirt = FVIRTKEY;
+    azel[1].cmd = 2;
+    azel[1].key = 'O';
+    azel[1].fVirt = FCONTROL | FVIRTKEY;
+
+    hAccelTable = CreateAcceleratorTable(azel, 2);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -317,10 +328,50 @@ LR"(var webWindowNetCore = (function() {
         postMessage
     }
 })())", nullptr);
-                    return S_OK;
-                }).Get());
-            return S_OK;
-        }).Get());
+
+                EventRegistrationToken acceleratorKeyPressedToken;
+                webviewWindow->add_AcceleratorKeyPressed(
+                    Callback<IWebView2AcceleratorKeyPressedEventHandler>(
+                        [](IWebView2WebView* sender, IWebView2AcceleratorKeyPressedEventArgs* args)-> HRESULT {
+                            WEBVIEW2_KEY_EVENT_TYPE type;
+                            args->get_KeyEventType(&type);
+                            // We only care about key down events.
+                            if (type == WEBVIEW2_KEY_EVENT_TYPE_KEY_DOWN || type == WEBVIEW2_KEY_EVENT_TYPE_SYSTEM_KEY_DOWN) {
+                                UINT key;
+                                args->get_VirtualKey(&key);
+                                if (key != VK_CONTROL && key != VK_MENU) {
+                                    auto altPressed = GetKeyState(VK_MENU) == -128 || GetKeyState(VK_MENU) == -127;
+                                    auto ctrlPressed = GetKeyState(VK_CONTROL) == -128 || GetKeyState(VK_CONTROL) == -127;
+                                    char baffer[2000];
+                                    wsprintfA(baffer, "Kie: %d %d %d\n", key, altPressed, ctrlPressed);
+                                    OutputDebugStringA(baffer);
+                                }
+                                    // Check if the key is one we want to handle.
+                            //    if (std::function<void()> action =
+                            //        m_appWindow->GetAcceleratorKeyFunction(key))
+                            //    {
+                            //        // Keep the browser from handling this key, whether it's autorepeated or
+                            //        // not.
+                            //        CHECK_FAILURE(args->Handle(TRUE));
+
+                            //        // Filter out autorepeated keys.
+                            //        WEBVIEW2_PHYSICAL_KEY_STATUS status;
+                            //        CHECK_FAILURE(args->get_PhysicalKeyStatus(&status));
+                            //        if (!status.WasKeyDown)
+                            //        {
+                            //            // Perform the action asynchronously to avoid blocking the
+                            //            // browser process's event queue.
+                            //            m_appWindow->RunAsync(action);
+                            //        }
+                            //    }
+                            }
+                            return S_OK;
+                        }).Get(), &acceleratorKeyPressedToken);
+
+                return S_OK;
+            }).Get());
+        return S_OK;
+    }).Get());
 }
 
 void send_to_browser(const wchar_t* text) {
