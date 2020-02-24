@@ -59,12 +59,20 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
 
 void MainWindow::action(QAction* action) {
     auto data = action->data();
+    if (data == 4) {
+        auto checked = action->isChecked();
+        auto test = 9;
+    }
 }
 
-QMenu* MainWindow::add_menu(const char* title) {
-    auto menu = menuBar()->addMenu(title);
+QMenu* MainWindow::add_menu(const char* title, QMenu* parent) {
+    auto menu = parent ? parent->addMenu(title) : menuBar()->addMenu(title);
     connect(menu, &QMenu::triggered, this, &MainWindow::action);
     return menu;
+}
+
+QActionGroup* MainWindow::createMenuGroup() {
+    return new QActionGroup(this);
 }
 
 int MainWindow::set_menu_item(QMenu* menu, Menu_item menu_item) {
@@ -72,15 +80,40 @@ int MainWindow::set_menu_item(QMenu* menu, Menu_item menu_item) {
     case Menu_item_type::Menu: {
         auto id = ++recentId;
         auto new_action = new QAction(menu_item.title, this);
-        new_action->setShortcut(QKeySequence(menu_item.accelerator));
+        if (menu_item.accelerator)
+            new_action->setShortcut(QKeySequence(menu_item.accelerator));
         new_action->setData(id);
         menu->addAction(new_action);
+        return id;
+    }
+    case Menu_item_type::Checkbox: {
+        auto id = ++recentId;
+        auto new_action = new QAction(menu_item.title, this);
+        if (menu_item.accelerator)
+            new_action->setShortcut(QKeySequence(menu_item.accelerator));
+        new_action->setData(id);
+        new_action->setCheckable(true);
+        menu->addAction(new_action);
+        checkableMenuItems[id] = new_action;
         return id;
     }
     case Menu_item_type::Separator:
         menu->addSeparator();
         return -1;
     }
+}
+
+int MainWindow::setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group) {
+    auto id = ++recentId;
+    auto new_action = new QAction(menu_item.title, this);
+    if (menu_item.accelerator)
+        new_action->setShortcut(QKeySequence(menu_item.accelerator));
+    new_action->setData(id);
+    new_action->setCheckable(true);
+    new_action->setActionGroup(group);
+    menu->addAction(new_action);
+    checkableMenuItems[id] = new_action;
+    return id;
 }
 
 void MainWindow::initializeScript(Callback_ptr callback) {

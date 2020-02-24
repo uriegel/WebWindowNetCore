@@ -16,12 +16,24 @@ void create_window(Configuration configuration) {
     window->show();
 }
 
-QMenu* add_menu(const char* title) {
+QMenu* addMenu(const char* title) {
     return window->add_menu(title);
 }
 
-int set_menu_item(QMenu* menu, Menu_item menu_item) {
+QMenu* addSubmenu(const char* title, QMenu* parent) {
+    return window->add_menu(title, parent);
+}
+
+int setMenuItem(QMenu* menu, Menu_item menu_item) {
    return window->set_menu_item(menu, menu_item);
+}
+
+int setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group) {
+   return window->setGroupedMenuItem(menu, menu_item, group);
+}
+
+QActionGroup* createMenuGroup() {
+    return window->createMenuGroup();
 }
 
 QString create_debugging_arg(int port) {
@@ -64,32 +76,64 @@ int main() {
     configuration.callback = nullptr;
     initialize_window(configuration);
 
-    auto menu = add_menu("&Datei");
-    auto id = set_menu_item(menu, {
+    auto menu = addMenu("&Datei");
+    auto id = setMenuItem(menu, {
         Menu_item_type::Menu,
         "&Neu",
         "Ctrl+N"
     });
-    id = set_menu_item(menu, {
+    id = setMenuItem(menu, {
         Menu_item_type::Menu,
         "&Kopieren",
         "F5"
     });
-    set_menu_item(menu, {
+    setMenuItem(menu, {
         Menu_item_type::Separator,
         "",
         ""
     });
-    id = set_menu_item(menu, {
+    id = setMenuItem(menu, {
         Menu_item_type::Menu,
         "&Beenden",
         "Alt+F4"
     });
-    menu = add_menu("&Ansicht");
-    id = set_menu_item(menu, {
-        Menu_item_type::Menu,
-        "&Anzeigen",
+    menu = addMenu("&Ansicht");
+    id = setMenuItem(menu, {
+        Menu_item_type::Checkbox,
+        "&Versteckte Dateien",
         "Ctrl+H"
+    });
+    setMenuItem(menu, {
+        Menu_item_type::Separator,
+        "",
+        ""
+    });
+    auto submenu = addSubmenu("&Themen", menu);
+    auto group = createMenuGroup();
+    id = setGroupedMenuItem(submenu, {
+        Menu_item_type::Checkbox,
+        "&Rot",
+        nullptr
+    }, group);
+    id = setGroupedMenuItem(submenu, {
+        Menu_item_type::Checkbox,
+        "&Blau",
+        nullptr
+    }, group);
+    id = setGroupedMenuItem(submenu, {
+        Menu_item_type::Checkbox,
+        "&Dunkel",
+        nullptr
+    }, group);
+    setMenuItem(menu, {
+        Menu_item_type::Separator,
+        "",
+        ""
+    });
+    id = setMenuItem(menu, {
+        Menu_item_type::Menu,
+        "&Vorschau",
+        "F3"
     });
     return execute();
 }

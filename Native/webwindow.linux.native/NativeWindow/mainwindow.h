@@ -22,6 +22,7 @@ struct Configuration {
 enum class Menu_item_type
 {
     Menu,
+    Checkbox,
     Separator,
 };
 
@@ -51,8 +52,10 @@ public:
 
     void initializeScript(Callback_ptr callback);
     void send_to_browser(const char* text);
-    QMenu* add_menu(const char* title);
+    QMenu* add_menu(const char* title, QMenu* parent = nullptr);
+    QActionGroup* createMenuGroup();
     int set_menu_item(QMenu* menu, Menu_item menu_item);
+    int setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group);
 
 public slots:
     void postMessage(const QString& msg);
@@ -63,5 +66,6 @@ private:
     QString organization;
     QString application;
     Callback_ptr callback{nullptr};
+    QMap<int, QAction*> checkableMenuItems;
 };
 #endif // MAINWINDOW_H
