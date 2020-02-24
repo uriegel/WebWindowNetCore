@@ -6,12 +6,13 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
     setWindowTitle(configuration.title);
     if (configuration.icon_path)
         setWindowIcon(QIcon(configuration.icon_path));
-    webView = new QWebEngineView;
+    webView = new WebEngineView;
     this->callback = configuration.callback;
 
     setAttribute( Qt::WA_NativeWindow, true );
 
     resize(800, 600);
+    createActions();
 
     if (configuration.save_window_settings) {
         organization = configuration.organization;
@@ -53,6 +54,37 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
         showFullScreen();
     else
         showNormal();
+}
+
+void MainWindow::action(QAction* action) {
+    auto data = action->data();
+}
+
+void MainWindow::createActions() {
+    auto newAction = new QAction("&Neu", this);
+    newAction->setShortcut(QKeySequence::New);
+    newAction->setData("1");
+
+    QAction* copyAction = new QAction("&Kopieren", this);
+    copyAction->setShortcut(QKeySequence::Copy);
+    copyAction->setData("2");
+
+    QAction* exitAction = new QAction("&Beenden", this);
+    exitAction->setShortcut(QKeySequence::Quit);
+
+    QAction* displayAction = new QAction("&Anzeigen", this);
+    displayAction->setShortcut(QKeySequence::Refresh);
+
+    auto fileMenu = menuBar()->addMenu("&Datei");
+    fileMenu->addAction(newAction);
+    fileMenu->addAction(copyAction);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAction);
+    connect(fileMenu, &QMenu::triggered, this, &MainWindow::action);
+
+    QMenu* displayMenu = menuBar()->addMenu("&Ansicht");
+    displayMenu->addAction(displayAction);
+    connect(displayMenu, &QMenu::triggered, this, &MainWindow::action);
 }
 
 void MainWindow::initializeScript(Callback_ptr callback) {

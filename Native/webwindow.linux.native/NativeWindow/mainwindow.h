@@ -19,6 +19,14 @@ struct Configuration {
     Callback_ptr callback{nullptr};
 };
 
+class WebEngineView : public QWebEngineView {
+    Q_OBJECT
+public:
+    WebEngineView(QWidget *parent = nullptr) : QWebEngineView(parent) {}
+protected:
+    void contextMenuEvent(QContextMenuEvent*) override {}
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -33,11 +41,14 @@ public:
     void send_to_browser(const char* text);
 public slots:
     void postMessage(const QString& msg);
+    void action(QAction* action);
 
 private:
     QWebEngineView* webView;
     QString organization;
     QString application;
     Callback_ptr callback{nullptr};
+
+    void createActions();
 };
 #endif // MAINWINDOW_H
