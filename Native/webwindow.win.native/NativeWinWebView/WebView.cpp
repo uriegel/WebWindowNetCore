@@ -210,12 +210,17 @@ void create_window(Configuration configuration) {
                 if (webview != nullptr)
                     webview->QueryInterface(IID_PPV_ARGS(&webviewWindow));
 
-                IWebView2Settings* Settings;
-                webviewWindow->get_Settings(&Settings);
-                Settings->put_IsScriptEnabled(TRUE);
-                Settings->put_AreDefaultScriptDialogsEnabled(TRUE);
-                Settings->put_IsWebMessageEnabled(TRUE);
-                Settings->put_AreDevToolsEnabled(dev_tools_enabled);
+                IWebView2Settings* settings;
+                webviewWindow->get_Settings(&settings);
+                settings->put_IsScriptEnabled(TRUE);
+                settings->put_AreDefaultScriptDialogsEnabled(TRUE);
+                settings->put_IsWebMessageEnabled(TRUE);
+                settings->put_AreDevToolsEnabled(dev_tools_enabled);
+
+                IWebView2Settings2* settings2;
+                settings->QueryInterface(IID_PPV_ARGS(&settings2));
+                settings2->put_AreDefaultContextMenusEnabled(FALSE);
+
                 // Resize WebView to fit the bounds of the parent window
                 RECT bounds;
                 GetClientRect(hWnd, &bounds);
@@ -223,7 +228,7 @@ void create_window(Configuration configuration) {
 
                 // Schedule an async task to navigate to Bing
                 webviewWindow->Navigate(url.c_str());
-
+                
                 if (fullscreen_enabled) {
                     (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
                         [hWnd](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
