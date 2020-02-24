@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+int recentId{0};
+
 MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
     : QMainWindow(parent)
 {
@@ -12,7 +14,6 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
     setAttribute( Qt::WA_NativeWindow, true );
 
     resize(800, 600);
-    createActions();
 
     if (configuration.save_window_settings) {
         organization = configuration.organization;
@@ -60,31 +61,26 @@ void MainWindow::action(QAction* action) {
     auto data = action->data();
 }
 
-void MainWindow::createActions() {
-    auto newAction = new QAction("&Neu", this);
-    newAction->setShortcut(QKeySequence::New);
-    newAction->setData("1");
+QMenu* MainWindow::add_menu(const char* title) {
+    auto menu = menuBar()->addMenu(title);
+    connect(menu, &QMenu::triggered, this, &MainWindow::action);
+    return menu;
+}
 
-    QAction* copyAction = new QAction("&Kopieren", this);
-    copyAction->setShortcut(QKeySequence::Copy);
-    copyAction->setData("2");
-
-    QAction* exitAction = new QAction("&Beenden", this);
-    exitAction->setShortcut(QKeySequence::Quit);
-
-    QAction* displayAction = new QAction("&Anzeigen", this);
-    displayAction->setShortcut(QKeySequence(tr("Ctrl+O")));
-
-    auto fileMenu = menuBar()->addMenu("&Datei");
-    fileMenu->addAction(newAction);
-    fileMenu->addAction(copyAction);
-    fileMenu->addSeparator();
-    fileMenu->addAction(exitAction);
-    connect(fileMenu, &QMenu::triggered, this, &MainWindow::action);
-
-    QMenu* displayMenu = menuBar()->addMenu("&Ansicht");
-    displayMenu->addAction(displayAction);
-    connect(displayMenu, &QMenu::triggered, this, &MainWindow::action);
+int MainWindow::set_menu_item(QMenu* menu, Menu_item menu_item) {
+    switch (menu_item.menu_item_type) {
+    case Menu_item_type::Menu: {
+        auto id = ++recentId;
+        auto new_action = new QAction(menu_item.title, this);
+        new_action->setShortcut(QKeySequence(menu_item.accelerator));
+        new_action->setData(id);
+        menu->addAction(new_action);
+        return id;
+    }
+    case Menu_item_type::Separator:
+        menu->addSeparator();
+        return -1;
+    }
 }
 
 void MainWindow::initializeScript(Callback_ptr callback) {

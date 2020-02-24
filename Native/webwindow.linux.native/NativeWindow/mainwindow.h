@@ -19,6 +19,18 @@ struct Configuration {
     Callback_ptr callback{nullptr};
 };
 
+enum class Menu_item_type
+{
+    Menu,
+    Separator,
+};
+
+struct Menu_item {
+    Menu_item_type menu_item_type;
+    const char* title;
+    const char* accelerator;
+};
+
 class WebEngineView : public QWebEngineView {
     Q_OBJECT
 public:
@@ -39,6 +51,9 @@ public:
 
     void initializeScript(Callback_ptr callback);
     void send_to_browser(const char* text);
+    QMenu* add_menu(const char* title);
+    int set_menu_item(QMenu* menu, Menu_item menu_item);
+
 public slots:
     void postMessage(const QString& msg);
     void action(QAction* action);
@@ -48,7 +63,5 @@ private:
     QString organization;
     QString application;
     Callback_ptr callback{nullptr};
-
-    void createActions();
 };
 #endif // MAINWINDOW_H

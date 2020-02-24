@@ -16,6 +16,14 @@ void create_window(Configuration configuration) {
     window->show();
 }
 
+QMenu* add_menu(const char* title) {
+    return window->add_menu(title);
+}
+
+int set_menu_item(QMenu* menu, Menu_item menu_item) {
+   return window->set_menu_item(menu, menu_item);
+}
+
 QString create_debugging_arg(int port) {
     return "--remote-debugging-port=" + QString::number(port > 0 ? port : 8888);
 }
@@ -42,16 +50,7 @@ void send_to_browser(const char* text) {
     window->send_to_browser(text);
 }
 
-int main()
-{
-    bool debug_mode = true;
-    int c = debug_mode ? 2 : 0;
-    char* args[2];
-    args[0] = (char*)"WebWindow";
-    args[1] = (char*)"--remote-debugging-port=8888";
-    char **argv = debug_mode ? args : nullptr;
-    app = new QApplication(c, argv);
-
+int main() {
     auto configuration = Configuration();
     configuration.title = "Der Brauser";
         //"https://www.google.de";
@@ -63,10 +62,35 @@ int main()
     configuration.save_window_settings = true;
     configuration.fullscreen_enabled = true;
     configuration.callback = nullptr;
+    initialize_window(configuration);
 
-    MainWindow w(configuration);
-    w.show();
-    auto ret = app->exec();
-    delete app;
-    return ret;
+    auto menu = add_menu("&Datei");
+    auto id = set_menu_item(menu, {
+        Menu_item_type::Menu,
+        "&Neu",
+        "Ctrl+N"
+    });
+    id = set_menu_item(menu, {
+        Menu_item_type::Menu,
+        "&Kopieren",
+        "F5"
+    });
+    set_menu_item(menu, {
+        Menu_item_type::Separator,
+        "",
+        ""
+    });
+    id = set_menu_item(menu, {
+        Menu_item_type::Menu,
+        "&Beenden",
+        "Alt+F4"
+    });
+    menu = add_menu("&Ansicht");
+    id = set_menu_item(menu, {
+        Menu_item_type::Menu,
+        "&Anzeigen",
+        "Ctrl+H"
+    });
+    return execute();
 }
+
