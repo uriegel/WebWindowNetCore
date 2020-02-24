@@ -89,8 +89,29 @@ Window_settings get_window_settings() {
     return ws;
 }
 
+void AddMenus(HWND hwnd) {
+    auto hMenubar = CreateMenu();
+    auto hMenu = CreateMenu();
+
+    AppendMenuW(hMenu, MF_STRING, 1, L"&New");
+    AppendMenuW(hMenu, MF_STRING, 2, L"&Open");
+    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+    AppendMenuW(hMenu, MF_STRING, 3, L"&Quit");
+    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&File");
+
+    hMenu = CreateMenu();
+    AppendMenuW(hMenu, MF_STRING, 4, L"&Statusbar");
+    CheckMenuItem(hMenu, 4, MF_CHECKED);
+    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Ansicht");
+
+    SetMenu(hwnd, hMenubar);
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
+    case WM_CREATE:
+        AddMenus(hWnd);
+        break;
     case WM_SIZE:
         if (webviewWindow != nullptr) {
             RECT bounds;
@@ -109,6 +130,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
             break;
         }        
         return DefWindowProc(hWnd, message, wParam, lParam);
+    case WM_COMMAND:
+    {
+        auto cmd = LOWORD(wParam);
+        if (cmd == 4) {
+            auto state = GetMenuState(GetMenu(hWnd), 4, MF_BYCOMMAND);
+            if (state == MF_CHECKED) 
+                CheckMenuItem(GetMenu(hWnd), 4, MF_UNCHECKED);
+            else 
+                CheckMenuItem(GetMenu(hWnd), 4, MF_CHECKED);
+                //CheckMenuRadioItem()
+        }
+    }
+        break;
     case WM_DESTROY:
         save_window_settings(hWnd);
         PostQuitMessage(0);

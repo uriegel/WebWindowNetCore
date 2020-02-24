@@ -80,8 +80,14 @@ let initialize (configuration: Configuration) =
             )
     NativeMethods.Initialize c
     
-    // TODO: Menu
-    // TODO: To debug on Linux: Chrome: localhost:8888
+    // TODO: http://zetcode.com/gui/winapi/menus/
+    // TODO: Submenus on Windows
+    // TODO: Accelerator on Windows
+    // TODO: Custom accelerator on Linux
+    // TODO: Submenus on Linux
+    // TODO: CheckBoxes in menu on Linux
+    // TODO: Radiobuttons in menu on Linux
+    // To debug on Linux: Chrome: localhost:8888
 
 let execute = NativeMethods.Execute 
 
