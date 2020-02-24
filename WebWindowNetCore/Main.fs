@@ -81,7 +81,7 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // TODO: Menu
-    // TODO: put_AreDefaultContextMenusEnabled om windows
+    // TODO: put_AreDefaultContextMenusEnabled on Windows
     // TODO: To debug on Linux: Chrome: localhost:8888
 
 let execute = NativeMethods.Execute 
