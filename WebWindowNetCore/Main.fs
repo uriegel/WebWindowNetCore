@@ -82,7 +82,6 @@ let initialize (configuration: Configuration) =
     
     // TODO: http://zetcode.com/gui/winapi/menus/
     // TODO: Submenus on Windows
-    // TODO: Custom accelerator on Linux
     // TODO: Submenus on Linux
     // TODO: CheckBoxes in menu on Linux
     // TODO: Radiobuttons in menu on Linux

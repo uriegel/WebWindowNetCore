@@ -73,7 +73,7 @@ void MainWindow::createActions() {
     exitAction->setShortcut(QKeySequence::Quit);
 
     QAction* displayAction = new QAction("&Anzeigen", this);
-    displayAction->setShortcut(QKeySequence::Refresh);
+    displayAction->setShortcut(QKeySequence(tr("Ctrl+O")));
 
     auto fileMenu = menuBar()->addMenu("&Datei");
     fileMenu->addAction(newAction);
