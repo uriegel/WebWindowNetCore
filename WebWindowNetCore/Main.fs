@@ -66,7 +66,7 @@ type Menu = {
     Items: MenuItem list
 }
 
-and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator of unit
+and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator
 
 [<AbstractClass>]
 type private NativeMethods() =
@@ -107,16 +107,16 @@ let menu: Menu = {
             Items = [ 
                 CmdItem { Title = "&Umbenennen"; Accelerator = Some "F2"; Cmd = 1 } 
                 CmdItem { Title = "&Erweitertes Umbenennen"; Accelerator = Some "Strg+F2"; Cmd = 2 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Kopieren"; Accelerator = Some "F5"; Cmd = 3 } 
                 CmdItem { Title = "&Verschieben"; Accelerator = Some "F6"; Cmd = 4 } 
                 CmdItem { Title = "&Löschen"; Accelerator = Some "Entf"; Cmd = 5 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Ordner anlegen"; Accelerator = Some "F7"; Cmd = 6 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Eigenschaften"; Accelerator = Some "Alt+Eingabe"; Cmd = 7 } 
                 CmdItem { Title = "&Öffnen mit"; Accelerator = Some "Strg+Eingabe"; Cmd = 8 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Beenden"; Accelerator = Some "Alt+F4"; Cmd = 9 } 
             ]
         } 
@@ -145,9 +145,9 @@ let menu: Menu = {
             Items = [ 
                 CmdItem { Title = "&Versteckte Dateien"; Accelerator = Some "Strg#H"; Cmd = 14 } 
                 CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Cmd = 15 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Vorschau"; Accelerator = Some "F3"; Cmd = 16 } 
-                Separator () 
+                Separator 
                 Menu {
                     Title = "&Themen"
                     Items = [ 
@@ -156,7 +156,7 @@ let menu: Menu = {
                         CmdItem { Title = "&Dunkel"; Accelerator = None; Cmd = 19 } 
                     ]
                 }
-                Separator () 
+                Separator 
                 Menu {
                     Title = "&Zoomlevel"
                     Items = [ 
@@ -172,11 +172,24 @@ let menu: Menu = {
                     ]
                 }
                 CmdItem { Title = "Voll%bild"; Accelerator = Some "F11"; Cmd = 29 } 
-                Separator () 
+                Separator 
                 CmdItem { Title = "&Entwicklungewerkzeuge"; Accelerator = Some "F12"; Cmd = 30 } 
             ]
         }
     ]
 }
 
-let affe = menu
+let affe = menu 
+
+let title = affe.Title
+let menu2 = 2
+
+let createMenuItem menu (item: MenuItem)  =
+    match item with
+    | CmdItem value -> ()
+    | Menu value -> ()
+    | Separator -> ()
+
+affe.Items |> List.iter (createMenuItem menu2)
+
+ 
