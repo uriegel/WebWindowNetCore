@@ -42,6 +42,7 @@ extern void sendToBrowser (string text)
 let main argv =
     printfn "Hello World from new F#!"
     let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+    let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
     //let url = "https://google.de"
 
     let callback (text: string) =
@@ -50,7 +51,7 @@ let main argv =
             ()
     let callbackDelegate = Callback callback
 
-    initialize (Configuration(title = "Web Brauser😎😎👌", url = url, iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
+    initialize (Configuration(title = "Web Brauser😎😎👌", url = url, iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
                                 debuggingEnabled = true, debuggingPort = 0, organization = "URiegel", application = "TestBrauser", saveWindowSettings = true, fullScreenEnabled = true,
                                 callback = callbackDelegate))
 

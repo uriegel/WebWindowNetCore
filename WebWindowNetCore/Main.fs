@@ -80,10 +80,6 @@ let initialize (configuration: Configuration) =
             )
     NativeMethods.Initialize c
     
-    // TODO: http://zetcode.com/gui/winapi/menus/
-    // TODO: Submenus on Windows
-    // TODO: CheckBoxes in menu on Windows
-    // TODO: Radiobuttons in menu on Windows
     // To debug on Linux: Chrome: localhost:8888
 
 let execute = NativeMethods.Execute 

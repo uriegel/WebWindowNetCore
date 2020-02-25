@@ -92,19 +92,29 @@ Window_settings get_window_settings() {
 
 void AddMenus(HWND hwnd) {
     auto hMenubar = CreateMenu();
+    
     auto hMenu = CreateMenu();
+    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&File");
 
     AppendMenuW(hMenu, MF_STRING, 1, L"&New\tF5");
     AppendMenuW(hMenu, MF_STRING, 2, L"&Open\tStrg+O");
     AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenuW(hMenu, MF_STRING, 3, L"&Quit");
-    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&File");
 
     hMenu = CreateMenu();
     AppendMenuW(hMenu, MF_STRING, 4, L"&Statusbar");
     CheckMenuItem(hMenu, 4, MF_CHECKED);
     AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Ansicht");
+    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
+    
+    auto hSubMenu = CreateMenu();
+    AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, L"&Themen");
 
+    AppendMenuW(hSubMenu, MF_STRING, 5, L"Balu");
+    AppendMenuW(hSubMenu, MF_STRING, 6, L"Rot");
+    AppendMenuW(hSubMenu, MF_STRING, 7, L"Dunkel");
+    CheckMenuRadioItem(hSubMenu, 5, 7, 5, MF_BYCOMMAND);
+    
     SetMenu(hwnd, hMenubar);
 
     ACCEL azel[4];
