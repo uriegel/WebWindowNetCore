@@ -1,13 +1,17 @@
 #include <string>
+#include <unordered_set>
 #include <type_traits>
 #include <windows.h>
 #include <wrl.h>
 #include <wil/com.h>
 #include <WebView2.h>
+
 using namespace Microsoft::WRL;
 using namespace std;
 
 using callback_ptr = std::add_pointer<void(const wchar_t* text)>::type;
+
+unordered_set<int> checkableMenuItems;
 
 struct Configuration {
     const wchar_t* title{ nullptr };
@@ -130,6 +134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_COMMAND:
     {
         auto cmd = LOWORD(wParam);
+        if (checkableMenuItems.find(cmd))
         if (cmd == 1) 
             SetMenu(mainWindow, menubar);
         if (cmd == 2)
@@ -431,6 +436,7 @@ int setMenuItem(HMENU menu, MenuItem menuItem) {
     case MenuItemType::Checkbox:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
         CheckMenuItem(menu, 4, MF_UNCHECKED);
+        checkableMenuItems.emplace(cmdId);
         break;
     }
     return cmdId;
