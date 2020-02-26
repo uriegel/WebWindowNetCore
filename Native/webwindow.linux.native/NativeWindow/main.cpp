@@ -4,9 +4,12 @@ using namespace std;
 
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
 
-extern "C" DLL_PUBLIC void initialize_window(Configuration configuration);
+extern "C" DLL_PUBLIC void initializeWindow(Configuration configuration);
 extern "C" DLL_PUBLIC int execute();
-extern "C" DLL_PUBLIC void send_to_browser(const char* text);
+extern "C" DLL_PUBLIC void sendToBrowser(const char* text);
+extern "C" DLL_PUBLIC QMenu* addMenu(const char* title);
+extern "C" DLL_PUBLIC QMenu* addSubmenu(const char* title, QMenu* parent);
+extern "C" DLL_PUBLIC int setMenuItem(QMenu* menu, MenuItem menuItem);
 
 QApplication* app{nullptr};
 MainWindow *window{nullptr};
@@ -40,7 +43,7 @@ QString create_debugging_arg(int port) {
     return "--remote-debugging-port=" + QString::number(port > 0 ? port : 8888);
 }
 
-void initialize_window(Configuration configuration) {
+void initializeWindow(Configuration configuration) {
     int c = configuration.debugging_enabled ? 2 : 0;
     char* args[2];
     args[0] = (char*)"WebWindow";
@@ -58,7 +61,7 @@ int execute() {
     return ret;
 }
 
-void send_to_browser(const char* text) {
+void sendToBrowser(const char* text) {
     window->send_to_browser(text);
 }
 

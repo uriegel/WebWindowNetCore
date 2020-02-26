@@ -19,15 +19,15 @@ struct Configuration {
     Callback_ptr callback{nullptr};
 };
 
-enum class Menu_item_type
+enum class MenuItemType
 {
-    Menu,
+    MenuItem,
     Checkbox,
     Separator,
 };
 
-struct Menu_item {
-    Menu_item_type menu_item_type;
+struct MenuItem {
+    MenuItemType menuItemType;
     const char* title;
     const char* accelerator;
 };

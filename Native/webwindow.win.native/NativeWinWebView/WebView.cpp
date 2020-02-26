@@ -151,6 +151,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         break;
     case WM_DESTROY:
         save_window_settings(hWnd);
+        if (menubar)
+            DestroyMenu(menubar);
         PostQuitMessage(0);
         break;
     default:
