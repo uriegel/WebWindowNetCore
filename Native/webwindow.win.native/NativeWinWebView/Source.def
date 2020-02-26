@@ -6,3 +6,5 @@ EXPORTS
 	addMenu
 	addSubmenu
 	setMenuItem
+	getMenuItemChecked
+	setMenuItemChecked

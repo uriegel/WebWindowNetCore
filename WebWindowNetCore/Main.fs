@@ -94,6 +94,11 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // To debug on Linux: Chrome: localhost:8888
+    // TODO: setMenuItemSelected on Windows
+    // TODO: attach Menu record
+    // TODO: do the same on Linux
+    // TODO: Accelerators on Linux
+    // TODO: Accelerators on Windows
 
 let execute = NativeMethods.Execute 
 

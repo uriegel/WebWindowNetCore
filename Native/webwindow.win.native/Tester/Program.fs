@@ -7,7 +7,10 @@ open System.Runtime.InteropServices
 let private DllName = "NativeWinWebView"
 
 [<UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Auto)>]
-type Callback = delegate of string -> unit
+type EventCallback = delegate of string -> unit
+
+[<UnmanagedFunctionPointer(CallingConvention.Cdecl)>]
+type MenuCallback = delegate of unit -> unit
 
 [<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type Configuration = 
@@ -24,10 +27,10 @@ type Configuration =
         val mutable saveWindowSettings: bool
         [<MarshalAs(UnmanagedType.U1)>]
         val mutable fullScreenEnabled: bool
-        val mutable callback: Callback
+        val mutable callback: EventCallback
     end
 
-type MenuItemType =  MenuItem = 0 | Checkbox = 1 | Separator = 2
+type MenuItemType =  MenuItem = 0 | Separator = 1 | Checkbox = 2 | Radio = 3
 
 [<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type MenuItem = 
@@ -35,6 +38,9 @@ type MenuItem =
         val mutable menuItemType: MenuItemType
         val mutable title: string
         val mutable accelerator: string 
+        val mutable onMenu: MenuCallback
+        val mutable groupCount: int
+        val mutable groupId: int
     end
 
 [<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
@@ -55,30 +61,59 @@ extern IntPtr addSubmenu (string title, IntPtr parentMenu)
 [<DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
 extern int setMenuItem (IntPtr menu, MenuItem menuItem)
 
+[<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
+extern [<MarshalAs(UnmanagedType.Bool)>] bool getMenuItemChecked (int cmdId)
+
+[<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
+extern void setMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool isChecked)
+ 
 [<EntryPoint>]
 let main argv =
     printfn "Hello World from new F#!"
     let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
-    let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
+    //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
     //let url = "https://google.de"
 
     let callback (text: string) =
             printfn "Das kam vom lieben Webview: %s" text
             let t = text
             ()
-    let callbackDelegate = Callback callback
+    let callbackDelegate = EventCallback callback
 
     initializeWindow (Configuration(title = "Web Brauser😎😎👌", url = url, iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
                                 debuggingEnabled = true, debuggingPort = 0, organization = "URiegel", application = "TestBrauser", saveWindowSettings = true, fullScreenEnabled = true,
                                 callback = callbackDelegate))
-    let menu = addMenu "&Datei"
-    let cmd = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Neu", accelerator = "Strg+N" ))
-    let cmd = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = null ))
-    let cmd = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null ))
-    let cmd = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4" ))
-    let menu = addMenu "Ansicht"
-    let cmd = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Versteckte Dateien", accelerator = "Strg+H" ))
 
+    let onNew () = printfn "onNew"
+    let onOpen () = printfn "onOpen"
+    let onExit () = printfn "onExit"
+    let onHidden () = printfn "onHidden" 
+    let onRot () = printfn "onRot" 
+    let onBlau () = printfn "onBlau" 
+    let onDunkel () = printfn "onDunkel" 
+    let dont () = ()
+    let dontDelegate = MenuCallback dont
+    let onNewDelegate = MenuCallback onNew
+    let onOpenDelegate = MenuCallback onOpen
+    let onExitDelegate = MenuCallback onExit
+    let onHiddenDelegate = MenuCallback onHidden
+    let onRotDelegate = MenuCallback onRot
+    let onBlauDelegate = MenuCallback onBlau
+    let onDunkelDelegate = MenuCallback onDunkel
+    
+    let menu = addMenu "&Datei"
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Neu", accelerator = "Strg+N", onMenu = onNewDelegate)) |> ignore
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = null, onMenu = onOpenDelegate ))|> ignore
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4", onMenu = onExitDelegate ))|> ignore
+    let menu = addMenu "Ansicht"
+    let hiddenId = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Checkbox, title = "&Versteckte Dateien", accelerator = "Strg+H", onMenu = onHiddenDelegate ))
+    setMenuItemChecked(hiddenId, true)
+    let submenu = addSubmenu ("&Themen", menu)
+    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Rot", accelerator = null, onMenu = onRotDelegate, groupCount = 3, groupId = 0 ))|> ignore
+    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Blau", accelerator = null, onMenu = onBlauDelegate, groupCount = 3, groupId = 1 ))|> ignore
+    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Dunkel", accelerator = null, onMenu = onDunkelDelegate, groupCount = 3, groupId = 2 ))|> ignore
+    
     async {
         let rec readLine () = 
             let line = Console.ReadLine ()

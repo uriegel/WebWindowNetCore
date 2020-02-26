@@ -1,5 +1,5 @@
 #include <string>
-#include <unordered_set>
+#include <map>
 #include <type_traits>
 #include <windows.h>
 #include <wrl.h>
@@ -9,9 +9,17 @@
 using namespace Microsoft::WRL;
 using namespace std;
 
-using callback_ptr = std::add_pointer<void(const wchar_t* text)>::type;
+using EventCallback = std::add_pointer<void(const wchar_t* text)>::type;
+using OnMenuCallback = std::add_pointer<void()>::type;
 
-unordered_set<int> checkableMenuItems;
+struct MenuItemData {
+    OnMenuCallback onMenu;
+    bool checkable{ false };
+    int groupCount{ 0 };
+    int groupId{ 0 };
+};
+
+map<int, MenuItemData> menuItemDatas;
 
 struct Configuration {
     const wchar_t* title{ nullptr };
@@ -23,7 +31,7 @@ struct Configuration {
     wchar_t* application{ nullptr };
     bool save_window_settings{ false };
     bool full_screen_enabled{ false };
-    callback_ptr callback{ nullptr };
+    EventCallback callback{ nullptr };
 };
 
 static wil::com_ptr<IWebView2WebView5> webviewWindow;
@@ -41,7 +49,7 @@ const wchar_t* IS_MAXIMIZED = L"IsMaximized";
 const wchar_t* IS_MINIMIZED = L"isMinimized";
 const wchar_t* WIDTH = L"width";
 const wchar_t* HEIGHT = L"height";
-callback_ptr callback{ nullptr };
+EventCallback callback{ nullptr };
 
 struct Window_settings {
     int x{ CW_USEDEFAULT };
@@ -134,25 +142,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_COMMAND:
     {
         auto cmd = LOWORD(wParam);
-        if (checkableMenuItems.find(cmd))
-        if (cmd == 1) 
-            SetMenu(mainWindow, menubar);
-        if (cmd == 2)
-            SetMenu(mainWindow, nullptr);
-        if (cmd == 4) {
-            auto state = GetMenuState(GetMenu(hWnd), 4, MF_BYCOMMAND);
-            if (state == MF_CHECKED) {
-                CheckMenuItem(GetMenu(hWnd), 4, MF_UNCHECKED);
-                SetMenu(mainWindow, menubar);
-
-            }
-            else {
-                CheckMenuItem(GetMenu(hWnd), 4, MF_CHECKED);
-                SetMenu(mainWindow, nullptr);
-                //CheckMenuRadioItem()
-            }
+        auto menuItemData = menuItemDatas[cmd];
+        if (menuItemData.checkable) {
+            auto state = GetMenuState(GetMenu(hWnd), cmd, MF_BYCOMMAND);
+            CheckMenuItem(GetMenu(hWnd), cmd, state == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
         }
+        else if (menuItemData.groupCount) {
+            auto first = cmd - menuItemData.groupId;
+            CheckMenuRadioItem(GetMenu(hWnd), first, first + menuItemData.groupCount - 1, cmd, MF_BYCOMMAND);
+        }
+        menuItemData.onMenu();
     }
+    break;
+    case WM_APP + 1:
+        CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
         break;
     case WM_DESTROY:
         save_window_settings(hWnd);
@@ -383,14 +386,18 @@ void sendToBrowser(const wchar_t* text) {
 enum class MenuItemType
 {
     MenuItem,
-    Checkbox,
     Separator,
+    Checkbox,
+    Radio
 };
 
 struct MenuItem {
     MenuItemType menuItemType;
     const wchar_t* title;
     const wchar_t* accelerator;
+    OnMenuCallback callback;
+    int groupCount;
+    int groupId;
 };
 
 int cmdIdSeed{ 0 };
@@ -429,17 +436,36 @@ int setMenuItem(HMENU menu, MenuItem menuItem) {
     switch (menuItem.menuItemType) {
     case MenuItemType::MenuItem:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        menuItemDatas[cmdId] = { menuItem.callback };
         break;
     case MenuItemType::Separator:
         AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
         break;
     case MenuItemType::Checkbox:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
-        CheckMenuItem(menu, 4, MF_UNCHECKED);
-        checkableMenuItems.emplace(cmdId);
+        menuItemDatas[cmdId] = { menuItem.callback, true };
+        CheckMenuItem(menu, cmdId, MF_UNCHECKED);
+        break;
+    case MenuItemType::Radio:
+        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        menuItemDatas[cmdId] = { menuItem.callback, false, menuItem.groupCount, menuItem.groupId };
+        if (menuItem.groupCount == menuItem.groupId + 1)
+            CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
         break;
     }
     return cmdId;
+}
+
+bool getMenuItemChecked(int cmdId) {
+    return GetMenuState(GetMenu(mainWindow), cmdId, MF_BYCOMMAND) == MF_CHECKED;
+}
+
+void setMenuItemChecked(int cmdId, bool checked) {
+    auto menu = GetMenu(mainWindow);
+    if (menu)
+        CheckMenuItem(menu, cmdId, checked ? MF_CHECKED : MF_UNCHECKED);
+    else
+        PostMessage(mainWindow, WM_APP + 1, cmdId, checked);
 }
 
 int execute() {
