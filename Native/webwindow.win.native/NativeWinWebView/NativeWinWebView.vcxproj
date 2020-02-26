@@ -155,7 +155,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="NativeWinWebView.cpp" />
     <ClCompile Include="WebView.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -168,9 +167,6 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Source.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="WebView.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

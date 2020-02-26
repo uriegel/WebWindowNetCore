@@ -1,14 +1,31 @@
 #include <string>
+#include <type_traits>
 #include <windows.h>
 #include <wrl.h>
 #include <wil/com.h>
 #include <WebView2.h>
-#include "WebView.h"
 using namespace Microsoft::WRL;
 using namespace std;
 
+using callback_ptr = std::add_pointer<void(const wchar_t* text)>::type;
+
+struct Configuration {
+    const wchar_t* title{ nullptr };
+    const wchar_t* url{ nullptr };
+    const wchar_t* icon_path{ nullptr };
+    bool debugging_enabled{ false };
+    int debuggingPort{ 8888 };
+    wchar_t* organization{ nullptr };
+    wchar_t* application{ nullptr };
+    bool save_window_settings{ false };
+    bool full_screen_enabled{ false };
+    callback_ptr callback{ nullptr };
+};
+
 static wil::com_ptr<IWebView2WebView5> webviewWindow;
+HWND mainWindow{ nullptr };
 HACCEL hAccelTable{ nullptr };
+HMENU menubar{ nullptr };
 bool window_settings_enabled{ false };
 bool is_fullscreen{ false };
 wstring organization;
@@ -90,49 +107,8 @@ Window_settings get_window_settings() {
     return ws;
 }
 
-void AddMenus(HWND hwnd) {
-    auto hMenubar = CreateMenu();
-    
-    auto hMenu = CreateMenu();
-    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&File");
-
-    AppendMenuW(hMenu, MF_STRING, 1, L"&New\tF5");
-    AppendMenuW(hMenu, MF_STRING, 2, L"&Open\tStrg+O");
-    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenuW(hMenu, MF_STRING, 3, L"&Quit");
-
-    hMenu = CreateMenu();
-    AppendMenuW(hMenu, MF_STRING, 4, L"&Statusbar");
-    CheckMenuItem(hMenu, 4, MF_CHECKED);
-    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Ansicht");
-    AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
-    
-    auto hSubMenu = CreateMenu();
-    AppendMenuW(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, L"&Themen");
-
-    AppendMenuW(hSubMenu, MF_STRING, 5, L"Balu");
-    AppendMenuW(hSubMenu, MF_STRING, 6, L"Rot");
-    AppendMenuW(hSubMenu, MF_STRING, 7, L"Dunkel");
-    CheckMenuRadioItem(hSubMenu, 5, 7, 5, MF_BYCOMMAND);
-    
-    SetMenu(hwnd, hMenubar);
-
-    ACCEL azel[4];
-    azel[0].cmd = 1;
-    azel[0].key = VK_F5;
-    azel[0].fVirt = FVIRTKEY;
-    azel[1].cmd = 2;
-    azel[1].key = 'O';
-    azel[1].fVirt = FCONTROL | FVIRTKEY;
-
-    hAccelTable = CreateAcceleratorTable(azel, 2);
-}
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
-    case WM_CREATE:
-        AddMenus(hWnd);
-        break;
     case WM_SIZE:
         if (webviewWindow != nullptr) {
             RECT bounds;
@@ -154,13 +130,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_COMMAND:
     {
         auto cmd = LOWORD(wParam);
+        if (cmd == 1) 
+            SetMenu(mainWindow, menubar);
+        if (cmd == 2)
+            SetMenu(mainWindow, nullptr);
         if (cmd == 4) {
             auto state = GetMenuState(GetMenu(hWnd), 4, MF_BYCOMMAND);
-            if (state == MF_CHECKED) 
+            if (state == MF_CHECKED) {
                 CheckMenuItem(GetMenu(hWnd), 4, MF_UNCHECKED);
-            else 
+                SetMenu(mainWindow, menubar);
+
+            }
+            else {
                 CheckMenuItem(GetMenu(hWnd), 4, MF_CHECKED);
+                SetMenu(mainWindow, nullptr);
                 //CheckMenuRadioItem()
+            }
         }
     }
         break;
@@ -217,7 +202,7 @@ void exit_fullscreen(HWND hWnd) {
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 }
 
-void create_window(Configuration configuration) {
+void initializeWindow(Configuration configuration) {
     window_settings_enabled = configuration.save_window_settings;
     organization = window_settings_enabled ? configuration.organization : L""s; 
     application = window_settings_enabled ? configuration.application : L""s;
@@ -241,27 +226,27 @@ void create_window(Configuration configuration) {
     wcex.hIconSm = nullptr;
     auto atom = RegisterClassExW(&wcex);
 
-    auto hWnd = CreateWindowW(window_class, configuration.title, WS_OVERLAPPEDWINDOW,
+    mainWindow = CreateWindowW(window_class, configuration.title, WS_OVERLAPPEDWINDOW,
         settings.x, settings.y, settings.width, settings.height, nullptr, nullptr, instance, nullptr);
 
-    if (!hWnd)
+    if (!mainWindow)
         return;
 
-    ShowWindow(hWnd, 
-        settings.is_maximized 
-        ? SW_SHOWMAXIMIZED 
+    ShowWindow(mainWindow,
+        settings.is_maximized
+        ? SW_SHOWMAXIMIZED
         : settings.isMinimized
-            ? SW_SHOWMINIMIZED
-            : SW_SHOWDEFAULT);
-    UpdateWindow(hWnd);
+        ? SW_SHOWMINIMIZED
+        : SW_SHOWDEFAULT);
+    UpdateWindow(mainWindow);
     auto url = wstring(configuration.url);
     auto dev_tools_enabled = configuration.debugging_enabled;
     auto fullscreen_enabled = configuration.full_screen_enabled;
 
     CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
-        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([hWnd, url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
-            env->CreateWebView(hWnd, Callback<IWebView2CreateWebViewCompletedHandler>(
-                    [hWnd, url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
+        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
+            env->CreateWebView(mainWindow, Callback<IWebView2CreateWebViewCompletedHandler>(
+                    [url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
                 if (webview != nullptr)
                     webview->QueryInterface(IID_PPV_ARGS(&webviewWindow));
 
@@ -278,7 +263,7 @@ void create_window(Configuration configuration) {
 
                 // Resize WebView to fit the bounds of the parent window
                 RECT bounds;
-                GetClientRect(hWnd, &bounds);
+                GetClientRect(mainWindow, &bounds);
                 webviewWindow->put_Bounds(bounds);
 
                 // Schedule an async task to navigate to Bing
@@ -286,13 +271,13 @@ void create_window(Configuration configuration) {
                 
                 if (fullscreen_enabled) {
                     (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
-                        [hWnd](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
+                        [](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
                             BOOL contains_fullscreen{ FALSE };
                             sender->get_ContainsFullScreenElement(&contains_fullscreen);
                             if (contains_fullscreen)
-                                enter_fullscreen(hWnd);
+                                enter_fullscreen(mainWindow);
                             else
-                                exit_fullscreen(hWnd);
+                                exit_fullscreen(mainWindow);
                             return S_OK;
                         })
                     .Get(),
@@ -384,6 +369,85 @@ LR"(var webWindowNetCore = (function() {
     }).Get());
 }
 
-void send_to_browser(const wchar_t* text) {
+void sendToBrowser(const wchar_t* text) {
     webviewWindow->PostWebMessageAsString(text);
 }
+
+enum class MenuItemType
+{
+    MenuItem,
+    Checkbox,
+    Separator,
+};
+
+struct MenuItem {
+    MenuItemType menuItemType;
+    const wchar_t* title;
+    const wchar_t* accelerator;
+};
+
+int cmdIdSeed{ 0 };
+
+HMENU addMenu(const wchar_t* title) {
+    if (!menubar) {
+        menubar = CreateMenu();
+
+        ACCEL azel[4];
+        azel[0].cmd = 1;
+        azel[0].key = VK_F5;
+        azel[0].fVirt = FVIRTKEY;
+        azel[1].cmd = 2;
+        azel[1].key = VK_F6;
+        azel[1].fVirt = FVIRTKEY;
+        azel[2].cmd = 3;
+        azel[3].key = 'O';
+        azel[3].fVirt = FCONTROL | FVIRTKEY;
+
+        hAccelTable = CreateAcceleratorTable(azel, 3);
+
+    }
+    auto menu = CreateMenu();
+    AppendMenuW(menubar, MF_POPUP, (UINT_PTR)menu, title);
+    return menu;
+}
+
+HMENU addSubmenu(const wchar_t* title, HMENU parentMenu) {
+    auto subMenu = CreateMenu();
+    AppendMenuW(parentMenu, MF_POPUP, (UINT_PTR)subMenu, title);
+    return subMenu;
+}
+
+int setMenuItem(HMENU menu, MenuItem menuItem) {
+    auto cmdId = ++cmdIdSeed;
+    switch (menuItem.menuItemType) {
+    case MenuItemType::MenuItem:
+        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        break;
+    case MenuItemType::Separator:
+        AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+        break;
+    case MenuItemType::Checkbox:
+        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        CheckMenuItem(menu, 4, MF_UNCHECKED);
+        break;
+    }
+    return cmdId;
+}
+
+int execute() {
+    if (menubar)
+        SetMenu(mainWindow, menubar);
+
+    MSG msg;
+
+    // Main message loop:
+    while (GetMessage(&msg, nullptr, 0, 0)) {
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    return (int)msg.wParam;
+}
+

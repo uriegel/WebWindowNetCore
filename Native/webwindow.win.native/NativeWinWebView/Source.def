@@ -1,5 +1,8 @@
 LIBRARY
 EXPORTS
-	initialize_window
+	initializeWindow
 	execute
-	send_to_browser
+	sendToBrowser
+	addMenu
+	addSubmenu
+	setMenuItem
