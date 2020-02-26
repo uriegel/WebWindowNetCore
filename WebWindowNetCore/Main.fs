@@ -11,6 +11,9 @@ let private DllName = "NativeWinWebView"
 [<UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Auto)>]
 type Callback = delegate of string -> unit
 
+[<UnmanagedFunctionPointer(CallingConvention.Cdecl)>]
+type MenuCallback = delegate of unit -> unit
+
 type Configuration = {
     title: string
     url: string
@@ -55,6 +58,19 @@ type private NativeConfiguration =
         val mutable callback: Callback
     end
 
+type MenuItemType =  MenuItem = 0 | Separator = 1 | Checkbox = 2 | Radio = 3
+
+[<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
+type private NativeMenuItem = 
+    struct 
+        val mutable menuItemType: MenuItemType
+        val mutable title: string
+        val mutable accelerator: string 
+        val mutable onMenu: MenuCallback
+        val mutable groupCount: int
+        val mutable groupId: int
+    end
+
 type MenuCmdItem = {
     Title: string
     Accelerator: string option
@@ -70,18 +86,30 @@ and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator
 
 [<AbstractClass>]
 type private NativeMethods() =
-    [<DllImport(DllName, EntryPoint = "initialize_window", CallingConvention = CallingConvention.Cdecl)>] 
+    [<DllImport(DllName, EntryPoint = "initializeWindow", CallingConvention = CallingConvention.Cdecl)>] 
     static extern void nativeInitialize (NativeConfiguration configuration)
 
     [<DllImport(DllName, EntryPoint = "execute", CallingConvention = CallingConvention.Cdecl)>] 
     static extern int nativeExecute ()
 
-    [<DllImport(DllName, EntryPoint = "send_to_browser", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
+    [<DllImport(DllName, EntryPoint = "sendToBrowser", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
     static extern void nativeSendToBrowser (string text)
+
+    [<DllImport(DllName, EntryPoint = "addMenu", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>]     
+    static extern IntPtr nativeAddMenu (string title)
+
+    [<DllImport(DllName, EntryPoint = "addSubmenu", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
+    static extern IntPtr nativeAddSubmenu (string title, IntPtr parentMenu)
+
+    [<DllImport(DllName, EntryPoint = "setMenuItem", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
+    static extern int nativeSetMenuItem (IntPtr menu, NativeMenuItem menuItem)
 
     static member Initialize = nativeInitialize
     static member Execute = nativeExecute
     static member SendToBrowser = nativeSendToBrowser
+    static member addMenu = nativeAddMenu
+    static member setMenuItem = nativeSetMenuItem
+    static member addSubmenu = nativeAddSubmenu
 
 let initialize (configuration: Configuration) =
     let c = NativeConfiguration(
@@ -95,7 +123,6 @@ let initialize (configuration: Configuration) =
     
     // To debug on Linux: Chrome: localhost:8888
     // TODO: setMenuItemSelected on Windows
-    // TODO: attach Menu record
     // TODO: do the same on Linux
     // TODO: Accelerators on Linux
     // TODO: Accelerators on Windows
@@ -104,97 +131,40 @@ let execute = NativeMethods.Execute
 
 let sendToBrowser = NativeMethods.SendToBrowser
 
-let menu: Menu = {
-    Title = ""
-    Items = [ 
-        Menu {
-            Title = "&Datei"
-            Items = [ 
-                CmdItem { Title = "&Umbenennen"; Accelerator = Some "F2"; Cmd = 1 } 
-                CmdItem { Title = "&Erweitertes Umbenennen"; Accelerator = Some "Strg+F2"; Cmd = 2 } 
-                Separator 
-                CmdItem { Title = "&Kopieren"; Accelerator = Some "F5"; Cmd = 3 } 
-                CmdItem { Title = "&Verschieben"; Accelerator = Some "F6"; Cmd = 4 } 
-                CmdItem { Title = "&Löschen"; Accelerator = Some "Entf"; Cmd = 5 } 
-                Separator 
-                CmdItem { Title = "&Ordner anlegen"; Accelerator = Some "F7"; Cmd = 6 } 
-                Separator 
-                CmdItem { Title = "&Eigenschaften"; Accelerator = Some "Alt+Eingabe"; Cmd = 7 } 
-                CmdItem { Title = "&Öffnen mit"; Accelerator = Some "Strg+Eingabe"; Cmd = 8 } 
-                Separator 
-                CmdItem { Title = "&Beenden"; Accelerator = Some "Alt+F4"; Cmd = 9 } 
-            ]
-        } 
-        Menu {
-            Title = "&Navigation"
-            Items = [ 
-                CmdItem { Title = "&Favoriten"; Accelerator = Some "F1"; Cmd = 10 } 
-                CmdItem { Title = "&Gleichen Ordner öffnen"; Accelerator = Some "F9"; Cmd = 11 } 
-            ]
-        }
-        Menu {
-            Title = "&Selektion"
-            Items = [ 
-                CmdItem { Title = "&Alles"; Accelerator = Some "Num +"; Cmd = 12 } 
-                CmdItem { Title = "Alle &deselektieren"; Accelerator = Some "Num -"; Cmd = 13 } 
-                Menu {
-                    Title = "&Datei"
-                    Items = [ 
-                        CmdItem { Title = "&Umbenennen"; Accelerator = Some "F2"; Cmd = 1 } 
-                    ]
-                }
-            ]
-        }
-        Menu {
-            Title = "&Ansicht"
-            Items = [ 
-                CmdItem { Title = "&Versteckte Dateien"; Accelerator = Some "Strg#H"; Cmd = 14 } 
-                CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Cmd = 15 } 
-                Separator 
-                CmdItem { Title = "&Vorschau"; Accelerator = Some "F3"; Cmd = 16 } 
-                Separator 
-                Menu {
-                    Title = "&Themen"
-                    Items = [ 
-                        CmdItem { Title = "&Blau"; Accelerator = None; Cmd = 17 } 
-                        CmdItem { Title = "&Hellblau"; Accelerator = None; Cmd = 18 } 
-                        CmdItem { Title = "&Dunkel"; Accelerator = None; Cmd = 19 } 
-                    ]
-                }
-                Separator 
-                Menu {
-                    Title = "&Zoomlevel"
-                    Items = [ 
-                        CmdItem { Title = "50%"; Accelerator = None; Cmd = 20 } 
-                        CmdItem { Title = "75%"; Accelerator = None; Cmd = 21 } 
-                        CmdItem { Title = "100%"; Accelerator = None; Cmd = 22 } 
-                        CmdItem { Title = "150%"; Accelerator = None; Cmd = 23 } 
-                        CmdItem { Title = "200%"; Accelerator = None; Cmd = 24 } 
-                        CmdItem { Title = "250%"; Accelerator = None; Cmd = 25 } 
-                        CmdItem { Title = "300%"; Accelerator = None; Cmd = 26 } 
-                        CmdItem { Title = "350%"; Accelerator = None; Cmd = 27 } 
-                        CmdItem { Title = "400%"; Accelerator = None; Cmd = 28 } 
-                    ]
-                }
-                CmdItem { Title = "Voll%bild"; Accelerator = Some "F11"; Cmd = 29 } 
-                Separator 
-                CmdItem { Title = "&Entwicklungewerkzeuge"; Accelerator = Some "F12"; Cmd = 30 } 
-            ]
-        }
-    ]
-}
+let private dont () = ()
+let private dontDelegate = MenuCallback dont
 
-let affe = menu 
+let setMenu (menu: MenuItem list) = 
 
-let title = affe.Title
-let menu2 = 2
 
-let createMenuItem menu (item: MenuItem)  =
-    match item with
-    | CmdItem value -> ()
-    | Menu value -> ()
-    | Separator -> ()
+    let rec setMenu (menu: MenuItem list) (menuHandle: IntPtr) = 
+        let createMenuItem (item: MenuItem)  =
+            match item with
+            | CmdItem value ->
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
+                                            menuItemType = MenuItemType.MenuItem,
+                                            title = value.Title, 
+                                            
+                                            
+                                            accelerator = "Strg+N",
+                                            onMenu = dontDelegate)
+                                        ) |> ignore
+            | Menu value -> 
+                let menuHandle = 
+                    if menuHandle = IntPtr.Zero then
+                        NativeMethods.addMenu value.Title
+                    else
+                        NativeMethods.addSubmenu (value.Title, menuHandle)
+                setMenu value.Items menuHandle
+            | Separator -> 
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, 
+                                            title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
 
-affe.Items |> List.iter (createMenuItem menu2)
+        menu |> List.iter createMenuItem
+    setMenu menu IntPtr.Zero
+
+
+
+
 
  

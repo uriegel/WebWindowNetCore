@@ -468,6 +468,16 @@ void setMenuItemChecked(int cmdId, bool checked) {
         PostMessage(mainWindow, WM_APP + 1, cmdId, checked);
 }
 
+//void setMenuItemSelected(int cmdId, bool checked) {
+//    auto menu = GetMenu(mainWindow);
+//    if (menu)
+//        CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
+//        CheckMenuItem(menu, cmdId, checked ? MF_CHECKED : MF_UNCHECKED);
+//    else
+//        PostMessage(mainWindow, WM_APP + 1, cmdId, checked);
+//}
+    
+
 int execute() {
     if (menubar)
         SetMenu(mainWindow, menubar);
