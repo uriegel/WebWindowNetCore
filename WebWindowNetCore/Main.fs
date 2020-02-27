@@ -74,13 +74,17 @@ type private NativeMenuItem =
 type MenuCmdItem = {
     Title: string
     Accelerator: string option
-    Cmd: int
+    Action: unit -> unit
 }
 
 type CheckBoxItem = {
     Title: string
     Accelerator: string option
-    Cmd: int
+}
+
+type RadioItem = {
+    Title: string
+    Accelerator: string option
 }
 
 type Menu = {
@@ -92,7 +96,7 @@ and MenuGroup = {
     Items: MenuItem list
 }
 
-and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator | Checkbox of CheckBoxItem | MenuGroup of MenuGroup
+and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator | Checkbox of CheckBoxItem | Radio of RadioItem | MenuGroup of MenuGroup
 
 [<AbstractClass>]
 type private NativeMethods() =
@@ -141,9 +145,17 @@ let execute = NativeMethods.Execute
 
 let sendToBrowser = NativeMethods.SendToBrowser
 
+
+
 let private dont () = ()
 let private dontDelegate = MenuCallback dont
 
+
+
+
+
+
+let mutable private delegatesHolder = []
 let setMenu (menu: MenuItem list) = 
     let rec setMenu (menu: MenuItem list) (menuHandle: IntPtr) = 
         let createMenuItem (item: MenuItem)  =
@@ -159,11 +171,13 @@ let setMenu (menu: MenuItem list) =
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, 
                                             title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
             | CmdItem value ->
+                let callback = MenuCallback value.Action
+                delegatesHolder <- callback :: delegatesHolder
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                             menuItemType = MenuItemType.MenuItem,
                                             title = value.Title, 
-                                            accelerator = "Strg+N",
-                                            onMenu = dontDelegate)
+                                            accelerator = "value.Accelerator",
+                                            onMenu = callback)
                                         ) |> ignore
             | Checkbox value ->                                        
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
@@ -176,7 +190,7 @@ let setMenu (menu: MenuItem list) =
                 let count = List.length value.Items
                 let createRadioItem i item =
                     match item with
-                    | CmdItem value ->
+                    | Radio value ->
                         NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                                         menuItemType = MenuItemType.Radio,
                                                         title = value.Title, 
@@ -187,6 +201,7 @@ let setMenu (menu: MenuItem list) =
                                                     ) |> ignore
                     | _ -> ()
                 value.Items |> List.iteri createRadioItem
+            | _ -> ()
         menu |> List.iter createMenuItem
     setMenu menu IntPtr.Zero
 

@@ -1,17 +1,17 @@
 ﻿open System
 open WebWindowNetCore
 open WebWindow
+open Commands
 
-let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
+//let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
+let iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
 //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
 let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
 //let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
 // let url = "https://google.de"
 
-let callback (text: string) =
-        printfn "Das kam vom lieben Webview: %s" text
-        let t = text
-        ()
+let callback (text: string) = ()
+
 let callbackDelegate = Callback callback
 
 let configuration = { 
@@ -29,63 +29,55 @@ let configuration = {
 
 initialize configuration
 
-async {
-    let rec readLine () = 
-        let line = Console.ReadLine ()
-        sendToBrowser line
-        readLine ()
-    readLine ()
-} |> Async.Start
-
 let menu = [ 
     Menu {
         Title = "&Datei"
         Items = [ 
-            CmdItem { Title = "&Umbenennen"; Accelerator = Some "F2"; Cmd = 1 } 
-            CmdItem { Title = "&Erweitertes Umbenennen"; Accelerator = Some "Strg+F2"; Cmd = 2 } 
+            CmdItem { Title = "&Umbenennen"; Accelerator = Some "F2"; Action = onRename } 
+            CmdItem { Title = "&Erweitertes Umbenennen"; Accelerator = Some "Strg+F2"; Action = onExtendedRename } 
             Separator 
-            CmdItem { Title = "&Kopieren"; Accelerator = Some "F5"; Cmd = 3 } 
-            CmdItem { Title = "&Verschieben"; Accelerator = Some "F6"; Cmd = 4 } 
-            CmdItem { Title = "&Löschen"; Accelerator = Some "Entf"; Cmd = 5 } 
+            CmdItem { Title = "&Kopieren"; Accelerator = Some "F5"; Action = onCopy } 
+            CmdItem { Title = "&Verschieben"; Accelerator = Some "F6"; Action = onMove } 
+            CmdItem { Title = "&Löschen"; Accelerator = Some "Entf"; Action = onDelete } 
             Separator 
-            CmdItem { Title = "&Ordner anlegen"; Accelerator = Some "F7"; Cmd = 6 } 
+            CmdItem { Title = "&Ordner anlegen"; Accelerator = Some "F7"; Action = onCreatefolder } 
             Separator 
-            CmdItem { Title = "&Eigenschaften"; Accelerator = Some "Alt+Eingabe"; Cmd = 7 } 
-            CmdItem { Title = "&Öffnen mit"; Accelerator = Some "Strg+Eingabe"; Cmd = 8 } 
+            CmdItem { Title = "&Eigenschaften"; Accelerator = Some "Alt+Eingabe"; Action = onProperties } 
+            CmdItem { Title = "&Öffnen mit"; Accelerator = Some "Strg+Eingabe"; Action = onOpenWith } 
             Separator 
-            CmdItem { Title = "&Beenden"; Accelerator = Some "Alt+F4"; Cmd = 9 } 
+            CmdItem { Title = "&Beenden"; Accelerator = Some "Alt+F4"; Action = onClose } 
         ]
     } 
     Menu {
         Title = "&Navigation"
         Items = [ 
-            CmdItem { Title = "&Favoriten"; Accelerator = Some "F1"; Cmd = 10 } 
-            CmdItem { Title = "&Gleichen Ordner öffnen"; Accelerator = Some "F9"; Cmd = 11 } 
+            CmdItem { Title = "&Favoriten"; Accelerator = Some "F1"; Action = onFavorites } 
+            CmdItem { Title = "&Gleichen Ordner öffnen"; Accelerator = Some "F9"; Action = onAdaptPath } 
         ]
     }
     Menu {
         Title = "&Selektion"
         Items = [ 
-            CmdItem { Title = "&Alles"; Accelerator = Some "Num +"; Cmd = 12 } 
-            CmdItem { Title = "Alle &deselektieren"; Accelerator = Some "Num -"; Cmd = 13 } 
+            CmdItem { Title = "&Alles"; Accelerator = Some "Num +"; Action = onSelectAll } 
+            CmdItem { Title = "Alle &deselektieren"; Accelerator = Some "Num -"; Action = onDeselectAll } 
         ]
     }
     Menu {
         Title = "&Ansicht"
         Items = [ 
-            Checkbox { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H"; Cmd = 14 } 
-            CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Cmd = 15 } 
+            Checkbox { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H" } 
+            CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Action = onRefresh } 
             Separator 
-            Checkbox { Title = "&Vorschau"; Accelerator = Some "F3"; Cmd = 16 } 
+            Checkbox { Title = "&Vorschau"; Accelerator = Some "F3" } 
             Separator 
             Menu {
                 Title = "&Themen"
                 Items = [
                     MenuGroup {
                         Items = [
-                            CmdItem { Title = "&Blau"; Accelerator = None; Cmd = 17 } 
-                            CmdItem { Title = "&Hellblau"; Accelerator = None; Cmd = 18 } 
-                            CmdItem { Title = "&Dunkel"; Accelerator = None; Cmd = 19 } 
+                            Radio { Title = "&Blau"; Accelerator = None; } 
+                            Radio { Title = "&Hellblau"; Accelerator = None; } 
+                            Radio { Title = "&Dunkel"; Accelerator = None; } 
                         ]
                     }
                 ]
@@ -96,22 +88,22 @@ let menu = [
                 Items = [
                     MenuGroup {
                         Items = [ 
-                            CmdItem { Title = "50%"; Accelerator = None; Cmd = 20 } 
-                            CmdItem { Title = "75%"; Accelerator = None; Cmd = 21 } 
-                            CmdItem { Title = "100%"; Accelerator = None; Cmd = 22 } 
-                            CmdItem { Title = "150%"; Accelerator = None; Cmd = 23 } 
-                            CmdItem { Title = "200%"; Accelerator = None; Cmd = 24 } 
-                            CmdItem { Title = "250%"; Accelerator = None; Cmd = 25 } 
-                            CmdItem { Title = "300%"; Accelerator = None; Cmd = 26 } 
-                            CmdItem { Title = "350%"; Accelerator = None; Cmd = 27 } 
-                            CmdItem { Title = "400%"; Accelerator = None; Cmd = 28 } 
+                            Radio { Title = "50%"; Accelerator = None } 
+                            Radio { Title = "75%"; Accelerator = None } 
+                            Radio { Title = "100%"; Accelerator = None } 
+                            Radio { Title = "150%"; Accelerator = None } 
+                            Radio { Title = "200%"; Accelerator = None } 
+                            Radio { Title = "250%"; Accelerator = None } 
+                            Radio { Title = "300%"; Accelerator = None } 
+                            Radio { Title = "350%"; Accelerator = None } 
+                            Radio { Title = "400%"; Accelerator = None } 
                         ]
                     }
                 ]
             }
-            CmdItem { Title = "Voll&bild"; Accelerator = Some "F11"; Cmd = 29 } 
+            CmdItem { Title = "Voll&bild"; Accelerator = Some "F11"; Action = onFullscreen } 
             Separator 
-            CmdItem { Title = "&Entwicklungewerkzeuge"; Accelerator = Some "F12"; Cmd = 30 } 
+            CmdItem { Title = "&Entwicklungswerkzeuge"; Accelerator = Some "F12"; Action = onDevTools } 
         ]
     }
 ]
