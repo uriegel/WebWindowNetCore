@@ -3,7 +3,8 @@ open WebWindowNetCore
 open WebWindow
 
 let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
-let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+//let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
 //let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
 // let url = "https://google.de"
 
@@ -72,32 +73,40 @@ let menu = [
     Menu {
         Title = "&Ansicht"
         Items = [ 
-            CmdItem { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H"; Cmd = 14 } 
+            Checkbox { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H"; Cmd = 14 } 
             CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Cmd = 15 } 
             Separator 
-            CmdItem { Title = "&Vorschau"; Accelerator = Some "F3"; Cmd = 16 } 
+            Checkbox { Title = "&Vorschau"; Accelerator = Some "F3"; Cmd = 16 } 
             Separator 
             Menu {
                 Title = "&Themen"
-                Items = [ 
-                    CmdItem { Title = "&Blau"; Accelerator = None; Cmd = 17 } 
-                    CmdItem { Title = "&Hellblau"; Accelerator = None; Cmd = 18 } 
-                    CmdItem { Title = "&Dunkel"; Accelerator = None; Cmd = 19 } 
+                Items = [
+                    MenuGroup {
+                        Items = [
+                            CmdItem { Title = "&Blau"; Accelerator = None; Cmd = 17 } 
+                            CmdItem { Title = "&Hellblau"; Accelerator = None; Cmd = 18 } 
+                            CmdItem { Title = "&Dunkel"; Accelerator = None; Cmd = 19 } 
+                        ]
+                    }
                 ]
             }
             Separator 
             Menu {
                 Title = "&Zoomlevel"
-                Items = [ 
-                    CmdItem { Title = "50%"; Accelerator = None; Cmd = 20 } 
-                    CmdItem { Title = "75%"; Accelerator = None; Cmd = 21 } 
-                    CmdItem { Title = "100%"; Accelerator = None; Cmd = 22 } 
-                    CmdItem { Title = "150%"; Accelerator = None; Cmd = 23 } 
-                    CmdItem { Title = "200%"; Accelerator = None; Cmd = 24 } 
-                    CmdItem { Title = "250%"; Accelerator = None; Cmd = 25 } 
-                    CmdItem { Title = "300%"; Accelerator = None; Cmd = 26 } 
-                    CmdItem { Title = "350%"; Accelerator = None; Cmd = 27 } 
-                    CmdItem { Title = "400%"; Accelerator = None; Cmd = 28 } 
+                Items = [
+                    MenuGroup {
+                        Items = [ 
+                            CmdItem { Title = "50%"; Accelerator = None; Cmd = 20 } 
+                            CmdItem { Title = "75%"; Accelerator = None; Cmd = 21 } 
+                            CmdItem { Title = "100%"; Accelerator = None; Cmd = 22 } 
+                            CmdItem { Title = "150%"; Accelerator = None; Cmd = 23 } 
+                            CmdItem { Title = "200%"; Accelerator = None; Cmd = 24 } 
+                            CmdItem { Title = "250%"; Accelerator = None; Cmd = 25 } 
+                            CmdItem { Title = "300%"; Accelerator = None; Cmd = 26 } 
+                            CmdItem { Title = "350%"; Accelerator = None; Cmd = 27 } 
+                            CmdItem { Title = "400%"; Accelerator = None; Cmd = 28 } 
+                        ]
+                    }
                 ]
             }
             CmdItem { Title = "Voll&bild"; Accelerator = Some "F11"; Cmd = 29 } 

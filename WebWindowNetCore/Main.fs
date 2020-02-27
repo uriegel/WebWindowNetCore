@@ -77,12 +77,22 @@ type MenuCmdItem = {
     Cmd: int
 }
 
+type CheckBoxItem = {
+    Title: string
+    Accelerator: string option
+    Cmd: int
+}
+
 type Menu = {
     Title: string
     Items: MenuItem list
 }
 
-and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator
+and MenuGroup = {
+    Items: MenuItem list
+}
+
+and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator | Checkbox of CheckBoxItem | MenuGroup of MenuGroup
 
 [<AbstractClass>]
 type private NativeMethods() =
@@ -135,20 +145,9 @@ let private dont () = ()
 let private dontDelegate = MenuCallback dont
 
 let setMenu (menu: MenuItem list) = 
-
-
     let rec setMenu (menu: MenuItem list) (menuHandle: IntPtr) = 
         let createMenuItem (item: MenuItem)  =
             match item with
-            | CmdItem value ->
-                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
-                                            menuItemType = MenuItemType.MenuItem,
-                                            title = value.Title, 
-                                            
-                                            
-                                            accelerator = "Strg+N",
-                                            onMenu = dontDelegate)
-                                        ) |> ignore
             | Menu value -> 
                 let menuHandle = 
                     if menuHandle = IntPtr.Zero then
@@ -159,7 +158,35 @@ let setMenu (menu: MenuItem list) =
             | Separator -> 
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, 
                                             title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
-
+            | CmdItem value ->
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
+                                            menuItemType = MenuItemType.MenuItem,
+                                            title = value.Title, 
+                                            accelerator = "Strg+N",
+                                            onMenu = dontDelegate)
+                                        ) |> ignore
+            | Checkbox value ->                                        
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
+                                            menuItemType = MenuItemType.Checkbox,
+                                            title = value.Title, 
+                                            accelerator = "Strg+N",
+                                            onMenu = dontDelegate)
+                                        ) |> ignore
+            | MenuGroup value -> 
+                let count = List.length value.Items
+                let createRadioItem i item =
+                    match item with
+                    | CmdItem value ->
+                        NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
+                                                        menuItemType = MenuItemType.Radio,
+                                                        title = value.Title, 
+                                                        accelerator = "Strg+N",
+                                                        onMenu = dontDelegate,
+                                                        groupCount = count,
+                                                        groupId = i)
+                                                    ) |> ignore
+                    | _ -> ()
+                value.Items |> List.iteri createRadioItem
         menu |> List.iter createMenuItem
     setMenu menu IntPtr.Zero
 
