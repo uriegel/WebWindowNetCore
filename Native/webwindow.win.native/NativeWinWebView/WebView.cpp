@@ -9,11 +9,13 @@
 using namespace Microsoft::WRL;
 using namespace std;
 
-using EventCallback = std::add_pointer<void(const wchar_t* text)>::type;
+using EventCallback = std::add_pointer<void(const wchar_t*)>::type;
 using OnMenuCallback = std::add_pointer<void()>::type;
+using OnCheckedCallback = std::add_pointer<void(bool)>::type;
 
 struct MenuItemData {
     OnMenuCallback onMenu;
+    OnCheckedCallback onChecked;
     bool checkable{ false };
     int groupCount{ 0 };
     int groupId{ 0 };
@@ -146,12 +148,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         if (menuItemData.checkable) {
             auto state = GetMenuState(GetMenu(hWnd), cmd, MF_BYCOMMAND);
             CheckMenuItem(GetMenu(hWnd), cmd, state == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
+            menuItemData.onChecked(state != MF_CHECKED);
         }
         else if (menuItemData.groupCount) {
             auto first = cmd - menuItemData.groupId;
             CheckMenuRadioItem(GetMenu(hWnd), first, first + menuItemData.groupCount - 1, cmd, MF_BYCOMMAND);
         }
-        menuItemData.onMenu();
+        else
+            menuItemData.onMenu();
     }
     break;
     case WM_APP + 1:
@@ -396,6 +400,7 @@ struct MenuItem {
     const wchar_t* title;
     const wchar_t* accelerator;
     OnMenuCallback callback;
+    OnCheckedCallback onChecked;
     int groupCount;
     int groupId;
 };
@@ -443,12 +448,12 @@ int setMenuItem(HMENU menu, MenuItem menuItem) {
         break;
     case MenuItemType::Checkbox:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
-        menuItemDatas[cmdId] = { menuItem.callback, true };
+        menuItemDatas[cmdId] = { nullptr, menuItem.onChecked, true };
         CheckMenuItem(menu, cmdId, MF_UNCHECKED);
         break;
     case MenuItemType::Radio:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
-        menuItemDatas[cmdId] = { menuItem.callback, false, menuItem.groupCount, menuItem.groupId };
+        menuItemDatas[cmdId] = { nullptr, nullptr, false, menuItem.groupCount, menuItem.groupId };
         if (menuItem.groupCount == menuItem.groupId + 1)
             CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
         break;

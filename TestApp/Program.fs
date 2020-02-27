@@ -3,10 +3,10 @@ open WebWindowNetCore
 open WebWindow
 open Commands
 
-//let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
-let iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
-//let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
-let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
+let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
+//let iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
+let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+//let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
 //let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
 // let url = "https://google.de"
 
@@ -63,10 +63,10 @@ let menu = [
     Menu {
         Title = "&Ansicht"
         Items = [ 
-            Checkbox { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H"; OnChecked = onHidden } 
+            Checkbox { Title = "&Versteckte Dateien"; Accelerator = Some "Strg+H"; OnChecked = onHidden; SetCheckedFunction = Some setSetHidden } 
             CmdItem { Title = "&Aktualisieren"; Accelerator = Some "Strg+R"; Action = onRefresh } 
             Separator 
-            Checkbox { Title = "&Vorschau"; Accelerator = Some "F3"; OnChecked = onPreview } 
+            Checkbox { Title = "&Vorschau"; Accelerator = Some "F3"; OnChecked = onPreview; SetCheckedFunction = None } 
             Separator 
             Menu {
                 Title = "&Themen"
@@ -107,5 +107,6 @@ let menu = [
 ]
 
 setMenu menu
+setHidden true
 
 execute () |> ignore

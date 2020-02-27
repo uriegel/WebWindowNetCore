@@ -87,6 +87,7 @@ type CheckBoxItem = {
     Title: string
     Accelerator: string option
     OnChecked: bool -> unit
+    SetCheckedFunction: ((bool -> unit) -> unit) option
 }
 
 type RadioItem = {
@@ -125,12 +126,16 @@ type private NativeMethods() =
     [<DllImport(DllName, EntryPoint = "setMenuItem", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Auto)>] 
     static extern int nativeSetMenuItem (IntPtr menu, NativeMenuItem menuItem)
 
+    [<DllImport(DllName, EntryPoint = "setMenuItemChecked", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeSetMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool isChecked)
+
     static member Initialize = nativeInitialize
     static member Execute = nativeExecute
     static member SendToBrowser = nativeSendToBrowser
     static member addMenu = nativeAddMenu
     static member setMenuItem = nativeSetMenuItem
     static member addSubmenu = nativeAddSubmenu
+    static member setMenuItemChecked = nativeSetMenuItemChecked
 
 let mutable private onEventDelegate = null
 
@@ -146,7 +151,6 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // To debug on Linux: Chrome: localhost:8888
-    // TODO: setMenuItemSelected on Windows
     // TODO: do the same on Linux
     // TODO: Accelerators on Linux
     // TODO: Accelerators on Windows
@@ -182,12 +186,18 @@ let setMenu (menu: MenuItem list) =
             | Checkbox value ->                                        
                 let callback = MenuCheckedCallback value.OnChecked
                 delegatesHolder <- MenuCheckedCallbackType callback :: delegatesHolder
-                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
-                                            menuItemType = MenuItemType.Checkbox,
-                                            title = value.Title, 
-                                            accelerator = "Strg+N",
-                                            onChecked = callback)
-                                        ) |> ignore
+                let id = NativeMethods.setMenuItem (
+                            menuHandle, NativeMenuItem( 
+                                menuItemType = MenuItemType.Checkbox,
+                                title = value.Title, 
+                                accelerator = "Strg+N",
+                                onChecked = callback)
+                            ) 
+                match value.SetCheckedFunction with
+                | Some value -> 
+                    let setChecked isChecked = NativeMethods.setMenuItemChecked (id, isChecked)
+                    value setChecked
+                | None -> ()
             | MenuGroup value -> 
                 let count = List.length value.Items
                 let createRadioItem i item =

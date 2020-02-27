@@ -19,4 +19,7 @@ let onFullscreen () = ()
 let onDevTools () = WebWindow.sendToBrowser "Hallöschen Web Brauser😎😎👌"
 
 let onHidden isChecked = ()
+let mutable setHidden: bool -> unit = ignore
+let setSetHidden (setHiddenFunction: bool -> unit) = setHidden <- setHiddenFunction
+
 let onPreview isChecked = ()
