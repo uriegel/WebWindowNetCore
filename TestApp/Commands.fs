@@ -17,3 +17,6 @@ let onDeselectAll () = ()
 let onRefresh () = ()
 let onFullscreen () = ()
 let onDevTools () = WebWindow.sendToBrowser "Hallöschen Web Brauser😎😎👌"
+
+let onHidden isChecked = ()
+let onPreview isChecked = ()

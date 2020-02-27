@@ -9,10 +9,15 @@ open System.Text
 let private DllName = "NativeWinWebView"
 
 [<UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet=CharSet.Auto)>]
-type Callback = delegate of string -> unit
+type private Callback = delegate of string -> unit
 
 [<UnmanagedFunctionPointer(CallingConvention.Cdecl)>]
-type MenuCallback = delegate of unit -> unit
+type private MenuCallback = delegate of unit -> unit
+
+[<UnmanagedFunctionPointer(CallingConvention.Cdecl)>]
+type private MenuCheckedCallback = delegate of bool -> unit
+
+type private MenuCallbacks = MenuCallbackType of MenuCallback | MenuCheckedCallbackType of MenuCheckedCallback
 
 type Configuration = {
     title: string
@@ -24,7 +29,7 @@ type Configuration = {
     application: string
     saveWindowSettings: bool
     fullScreenEnabled: bool
-    callback: Callback
+    onEvent: string -> unit
 }
 
 let defaultConfiguration () = {
@@ -37,7 +42,7 @@ let defaultConfiguration () = {
     application = ""
     saveWindowSettings = false
     fullScreenEnabled = false
-    callback = null
+    onEvent = fun s -> ()
 }
 
 [<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
@@ -67,6 +72,7 @@ type private NativeMenuItem =
         val mutable title: string
         val mutable accelerator: string 
         val mutable onMenu: MenuCallback
+        val mutable onChecked: MenuCheckedCallback
         val mutable groupCount: int
         val mutable groupId: int
     end
@@ -80,6 +86,7 @@ type MenuCmdItem = {
 type CheckBoxItem = {
     Title: string
     Accelerator: string option
+    OnChecked: bool -> unit
 }
 
 type RadioItem = {
@@ -125,13 +132,16 @@ type private NativeMethods() =
     static member setMenuItem = nativeSetMenuItem
     static member addSubmenu = nativeAddSubmenu
 
+let mutable private onEventDelegate = null
+
 let initialize (configuration: Configuration) =
+    onEventDelegate <- Callback configuration.onEvent 
     let c = NativeConfiguration(
                 title = configuration.title, url = configuration.url, iconPath = configuration.iconPath, 
                 debuggingEnabled = configuration.debuggingEnabled, debuggingPort = configuration.debuggingPort,
                 organization = configuration.organization, application = configuration.application, 
                 saveWindowSettings = configuration.saveWindowSettings, fullScreenEnabled = configuration.fullScreenEnabled,
-                callback = configuration.callback
+                callback = onEventDelegate
             )
     NativeMethods.Initialize c
     
@@ -145,17 +155,8 @@ let execute = NativeMethods.Execute
 
 let sendToBrowser = NativeMethods.SendToBrowser
 
+let mutable private delegatesHolder: MenuCallbacks list = []
 
-
-let private dont () = ()
-let private dontDelegate = MenuCallback dont
-
-
-
-
-
-
-let mutable private delegatesHolder = []
 let setMenu (menu: MenuItem list) = 
     let rec setMenu (menu: MenuItem list) (menuHandle: IntPtr) = 
         let createMenuItem (item: MenuItem)  =
@@ -168,11 +169,10 @@ let setMenu (menu: MenuItem list) =
                         NativeMethods.addSubmenu (value.Title, menuHandle)
                 setMenu value.Items menuHandle
             | Separator -> 
-                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, 
-                                            title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, title = null ))|> ignore
             | CmdItem value ->
                 let callback = MenuCallback value.Action
-                delegatesHolder <- callback :: delegatesHolder
+                delegatesHolder <- MenuCallbackType callback :: delegatesHolder
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                             menuItemType = MenuItemType.MenuItem,
                                             title = value.Title, 
@@ -180,11 +180,13 @@ let setMenu (menu: MenuItem list) =
                                             onMenu = callback)
                                         ) |> ignore
             | Checkbox value ->                                        
+                let callback = MenuCheckedCallback value.OnChecked
+                delegatesHolder <- MenuCheckedCallbackType callback :: delegatesHolder
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                             menuItemType = MenuItemType.Checkbox,
                                             title = value.Title, 
                                             accelerator = "Strg+N",
-                                            onMenu = dontDelegate)
+                                            onChecked = callback)
                                         ) |> ignore
             | MenuGroup value -> 
                 let count = List.length value.Items
@@ -195,7 +197,6 @@ let setMenu (menu: MenuItem list) =
                                                         menuItemType = MenuItemType.Radio,
                                                         title = value.Title, 
                                                         accelerator = "Strg+N",
-                                                        onMenu = dontDelegate,
                                                         groupCount = count,
                                                         groupId = i)
                                                     ) |> ignore
