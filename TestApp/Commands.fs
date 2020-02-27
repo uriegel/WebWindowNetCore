@@ -22,4 +22,12 @@ let onHidden isChecked = ()
 let mutable setHidden: bool -> unit = ignore
 let setSetHidden (setHiddenFunction: bool -> unit) = setHidden <- setHiddenFunction
 
+let onTheme (key: obj) =
+    let key = key :?> string
+    ()
+
+let onZoom (key: obj) = 
+    let key = key :?> int
+    ()
+
 let onPreview isChecked = ()

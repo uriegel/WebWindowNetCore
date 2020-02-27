@@ -93,6 +93,7 @@ type CheckBoxItem = {
 type RadioItem = {
     Title: string
     Accelerator: string option
+    Key: obj
 }
 
 type Menu = {
@@ -102,6 +103,7 @@ type Menu = {
 
 and MenuGroup = {
     Items: MenuItem list
+    OnSelected: obj -> unit
 }
 
 and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator | Checkbox of CheckBoxItem | Radio of RadioItem | MenuGroup of MenuGroup
@@ -200,6 +202,10 @@ let setMenu (menu: MenuItem list) =
                 | None -> ()
             | MenuGroup value -> 
                 let count = List.length value.Items
+
+                // TODO: setSelectedFunction
+
+                // TODO: let mutable map = Map.empty
                 let createRadioItem i item =
                     match item with
                     | Radio value ->
@@ -207,9 +213,11 @@ let setMenu (menu: MenuItem list) =
                                                         menuItemType = MenuItemType.Radio,
                                                         title = value.Title, 
                                                         accelerator = "Strg+N",
+                                                        // TODO : onChecked --> ruft MenuGroup.onSelected mit value.Key
                                                         groupCount = count,
                                                         groupId = i)
                                                     ) |> ignore
+                  // TODO: map <- map.Add (i, value.Key)
                     | _ -> ()
                 value.Items |> List.iteri createRadioItem
             | _ -> ()

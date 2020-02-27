@@ -72,10 +72,11 @@ let menu = [
                 Title = "&Themen"
                 Items = [
                     MenuGroup {
+                        OnSelected = onTheme
                         Items = [
-                            Radio { Title = "&Blau"; Accelerator = None; } 
-                            Radio { Title = "&Hellblau"; Accelerator = None; } 
-                            Radio { Title = "&Dunkel"; Accelerator = None; } 
+                            Radio { Title = "&Blau"; Accelerator = None; Key = "blau"} 
+                            Radio { Title = "&Hellblau"; Accelerator = None; Key = "hellblau"} 
+                            Radio { Title = "&Dunkel"; Accelerator = None; Key = "dunkel" } 
                         ]
                     }
                 ]
@@ -85,16 +86,17 @@ let menu = [
                 Title = "&Zoomlevel"
                 Items = [
                     MenuGroup {
+                        OnSelected = onZoom
                         Items = [ 
-                            Radio { Title = "50%"; Accelerator = None } 
-                            Radio { Title = "75%"; Accelerator = None } 
-                            Radio { Title = "100%"; Accelerator = None } 
-                            Radio { Title = "150%"; Accelerator = None } 
-                            Radio { Title = "200%"; Accelerator = None } 
-                            Radio { Title = "250%"; Accelerator = None } 
-                            Radio { Title = "300%"; Accelerator = None } 
-                            Radio { Title = "350%"; Accelerator = None } 
-                            Radio { Title = "400%"; Accelerator = None } 
+                            Radio { Title = "50%"; Accelerator = None; Key = "50" } 
+                            Radio { Title = "75%"; Accelerator = None; Key = "75" } 
+                            Radio { Title = "100%"; Accelerator = None; Key = "100" } 
+                            Radio { Title = "150%"; Accelerator = None; Key = "150" } 
+                            Radio { Title = "200%"; Accelerator = None; Key = "200" } 
+                            Radio { Title = "250%"; Accelerator = None; Key = "250" } 
+                            Radio { Title = "300%"; Accelerator = None; Key = "300" } 
+                            Radio { Title = "350%"; Accelerator = None; Key = "350" } 
+                            Radio { Title = "400%"; Accelerator = None; Key = "400" } 
                         ]
                     }
                 ]
