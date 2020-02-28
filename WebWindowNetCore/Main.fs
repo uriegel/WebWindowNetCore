@@ -160,7 +160,6 @@ let initialize (configuration: Configuration) =
     // To debug on Linux: Chrome: localhost:8888
     // TODO: do the same on Linux
     // TODO: Accelerators on Linux
-    // TODO: Accelerators on Windows
 
 let execute = NativeMethods.Execute 
 

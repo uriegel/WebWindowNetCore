@@ -123,6 +123,23 @@ Window_settings get_window_settings() {
     return ws;
 }
 
+void doCommand(int cmd) {
+    auto menuItemData = menuItemDatas[cmd];
+    if (menuItemData.checkable) {
+        auto state = GetMenuState(GetMenu(mainWindow), cmd, MF_BYCOMMAND);
+        CheckMenuItem(GetMenu(mainWindow), cmd, state == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
+        menuItemData.onChecked(state != MF_CHECKED);
+    }
+    else if (menuItemData.groupCount) {
+        auto first = cmd - menuItemData.groupId;
+        CheckMenuRadioItem(GetMenu(mainWindow), first, first + menuItemData.groupCount - 1, cmd, MF_BYCOMMAND);
+        menuItemData.onMenu();
+    }
+    else
+        menuItemData.onMenu();
+
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_SIZE:
@@ -144,23 +161,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         }        
         return DefWindowProc(hWnd, message, wParam, lParam);
     case WM_COMMAND:
-    {
-        auto cmd = LOWORD(wParam);
-        auto menuItemData = menuItemDatas[cmd];
-        if (menuItemData.checkable) {
-            auto state = GetMenuState(GetMenu(hWnd), cmd, MF_BYCOMMAND);
-            CheckMenuItem(GetMenu(hWnd), cmd, state == MF_CHECKED ? MF_UNCHECKED : MF_CHECKED);
-            menuItemData.onChecked(state != MF_CHECKED);
-        }
-        else if (menuItemData.groupCount) {
-            auto first = cmd - menuItemData.groupId;
-            CheckMenuRadioItem(GetMenu(hWnd), first, first + menuItemData.groupCount - 1, cmd, MF_BYCOMMAND);
-            menuItemData.onMenu();
-        }
-        else
-            menuItemData.onMenu();
-    }
-    break;
+        doCommand(LOWORD(wParam));
+        break;
     case WM_APP + 1:
         CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
         break;
@@ -227,6 +229,52 @@ void exit_fullscreen(HWND hWnd) {
     SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 }
+
+auto GetKey(wstring accelerator) {
+    if (accelerator == L"F1") return make_tuple(VK_F1, FVIRTKEY);
+    if (accelerator == L"F2") return make_tuple(VK_F2, FVIRTKEY);
+    if (accelerator == L"F3") return make_tuple(VK_F3, FVIRTKEY);
+    if (accelerator == L"F4") return make_tuple(VK_F4, FVIRTKEY);
+    if (accelerator == L"F5") return make_tuple(VK_F5, FVIRTKEY);
+    if (accelerator == L"F6") return make_tuple(VK_F6, FVIRTKEY);
+    if (accelerator == L"F7") return make_tuple(VK_F7, FVIRTKEY);
+    if (accelerator == L"F8") return make_tuple(VK_F8, FVIRTKEY);
+    if (accelerator == L"F9") return make_tuple(VK_F9, FVIRTKEY);
+    if (accelerator == L"F10") return make_tuple(VK_F10, FVIRTKEY);
+    if (accelerator == L"F11") return make_tuple(VK_F11, FVIRTKEY);
+    if (accelerator == L"F12") return make_tuple(VK_F12, FVIRTKEY);
+    else return make_tuple((int)accelerator[0], 0);
+}
+
+auto getVirtualKey(wstring accelerator) {
+    if (accelerator == L"Alt") return FALT | FVIRTKEY;
+    if (accelerator == L"Ctrl") return FCONTROL | FVIRTKEY;
+    if (accelerator == L"Strg") return FCONTROL | FVIRTKEY;
+    else return 0;
+}
+
+
+struct Accelerator {
+    int cmd;
+    int key;
+    BYTE virtkey;
+
+    Accelerator(int cmd, wstring accelerator) : cmd(cmd) {
+        auto pos = accelerator.find('+');
+        if (pos == string::npos) {
+            tie(key, virtkey) = GetKey(accelerator);
+        }
+        else {
+            auto virt = accelerator.substr(0, pos);
+            auto k = accelerator.substr(pos + 1);
+            int _;
+            tie(key, _) = GetKey(k);
+            virtkey = getVirtualKey(virt);
+        }
+    }
+};
+
+vector<Accelerator> accelerators;
 
 void initializeWindow(Configuration configuration) {
     window_settings_enabled = configuration.save_window_settings;
@@ -365,7 +413,18 @@ LR"(var webWindowNetCore = (function() {
                                     auto ctrlPressed = GetKeyState(VK_CONTROL) == -128 || GetKeyState(VK_CONTROL) == -127;
                                     char baffer[2000];
                                     wsprintfA(baffer, "Kie: %d %d %d\n", key, altPressed, ctrlPressed);
-                                    OutputDebugStringA(baffer);
+
+                                    auto cmd = find_if(accelerators.begin(), accelerators.end(), [key, altPressed, ctrlPressed](Accelerator n) {
+                                        if (n.key == key) {
+                                            bool ctrl = (n.virtkey & FCONTROL) == FCONTROL;
+                                            bool alt = (n.virtkey & FALT) == FALT;
+                                            return (ctrl == ctrlPressed && alt == altPressed);
+                                        }
+                                        else
+                                            return false;
+                                    });
+                                    if (cmd != end(accelerators))
+                                        doCommand(cmd->cmd);
                                 }
                                     // Check if the key is one we want to handle.
                             //    if (std::function<void()> action =
@@ -418,51 +477,6 @@ struct MenuItem {
 };
 
 int cmdIdSeed{ 0 };
-
-auto GetKey(wstring accelerator) {
-    if (accelerator == L"F1") return make_tuple(VK_F1, FVIRTKEY);
-    if (accelerator == L"F2") return make_tuple(VK_F2, FVIRTKEY);
-    if (accelerator == L"F3") return make_tuple(VK_F3, FVIRTKEY);
-    if (accelerator == L"F4") return make_tuple(VK_F4, FVIRTKEY);
-    if (accelerator == L"F5") return make_tuple(VK_F5, FVIRTKEY);
-    if (accelerator == L"F6") return make_tuple(VK_F6, FVIRTKEY);
-    if (accelerator == L"F7") return make_tuple(VK_F7, FVIRTKEY);
-    if (accelerator == L"F8") return make_tuple(VK_F8, FVIRTKEY);
-    if (accelerator == L"F9") return make_tuple(VK_F9, FVIRTKEY);
-    if (accelerator == L"F10") return make_tuple(VK_F10, FVIRTKEY);
-    if (accelerator == L"F11") return make_tuple(VK_F11, FVIRTKEY);
-    if (accelerator == L"F12") return make_tuple(VK_F12, FVIRTKEY);
-    else return make_tuple((int)accelerator[0], 0);
-}
-
-auto getVirtualKey(wstring accelerator) {
-    if (accelerator == L"Alt") return FALT | FVIRTKEY;
-    if (accelerator == L"Ctrl") return FCONTROL | FVIRTKEY;
-    if (accelerator == L"Strg") return FCONTROL | FVIRTKEY;
-    else return 0;
-}
-
-struct Accelerator {
-    int cmd;
-    int key;
-    BYTE virtkey;
-
-    Accelerator(int cmd, wstring accelerator) : cmd(cmd) {
-        auto pos = accelerator.find('+');
-        if (pos == string::npos) {
-            tie(key, virtkey) = GetKey(accelerator);
-        }
-        else {
-            auto virt = accelerator.substr(0, pos);
-            auto k = accelerator.substr(pos + 1);
-            int _;
-            tie(key, _) = GetKey(k);
-            virtkey = getVirtualKey(virt);
-        }
-    }
-};
-
-vector<Accelerator> accelerators;
 
 HMENU addMenu(const wchar_t* title) {
     if (!menubar) 
