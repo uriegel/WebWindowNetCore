@@ -106,7 +106,7 @@ let main argv =
     
     let menu = addMenu "&Datei"
     setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Neu", accelerator = "Strg+N", onMenu = onNewDelegate)) |> ignore
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = null, onMenu = onOpenDelegate ))|> ignore
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = "F5", onMenu = onOpenDelegate ))|> ignore
     setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
     setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4", onMenu = onExitDelegate ))|> ignore
     let menu = addMenu "Ansicht"

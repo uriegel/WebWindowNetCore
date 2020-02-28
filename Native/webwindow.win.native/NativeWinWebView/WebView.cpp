@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+#include <algorithm>
 #include <map>
 #include <type_traits>
 #include <windows.h>
@@ -417,24 +419,44 @@ struct MenuItem {
 
 int cmdIdSeed{ 0 };
 
-HMENU addMenu(const wchar_t* title) {
-    if (!menubar) {
-        menubar = CreateMenu();
+auto GetKey(wstring accelerator) {
+    if (accelerator == L"F1") return make_tuple(VK_F1, FVIRTKEY);
+    if (accelerator == L"F2") return make_tuple(VK_F2, FVIRTKEY);
+    if (accelerator == L"F3") return make_tuple(VK_F3, FVIRTKEY);
+    if (accelerator == L"F4") return make_tuple(VK_F4, FVIRTKEY);
+    if (accelerator == L"F5") return make_tuple(VK_F5, FVIRTKEY);
+    if (accelerator == L"F6") return make_tuple(VK_F6, FVIRTKEY);
+    if (accelerator == L"F7") return make_tuple(VK_F7, FVIRTKEY);
+    if (accelerator == L"F8") return make_tuple(VK_F8, FVIRTKEY);
+    if (accelerator == L"F9") return make_tuple(VK_F9, FVIRTKEY);
+    if (accelerator == L"F10") return make_tuple(VK_F10, FVIRTKEY);
+    if (accelerator == L"F11") return make_tuple(VK_F11, FVIRTKEY);
+    if (accelerator == L"F12") return make_tuple(VK_F12, FVIRTKEY);
+}
 
-        ACCEL azel[4];
-        azel[0].cmd = 1;
-        azel[0].key = VK_F5;
-        azel[0].fVirt = FVIRTKEY;
-        azel[1].cmd = 2;
-        azel[1].key = VK_F6;
-        azel[1].fVirt = FVIRTKEY;
-        azel[2].cmd = 3;
-        azel[3].key = 'O';
-        azel[3].fVirt = FCONTROL | FVIRTKEY;
 
-        hAccelTable = CreateAcceleratorTable(azel, 3);
+struct Accelerator {
+    int cmd;
+    int key;
+    BYTE virtkey;
 
+    Accelerator(int cmd, wstring accelerator) : cmd(cmd) {
+        auto pos = accelerator.find('+');
+        if (pos == string::npos) {
+            tie(key, virtkey) = GetKey(accelerator);
+        }
+        else {
+            key = 'O'; 
+            virtkey = FCONTROL | FVIRTKEY;
+        }
     }
+};
+
+vector<Accelerator> accelerators;
+
+HMENU addMenu(const wchar_t* title) {
+    if (!menubar) 
+        menubar = CreateMenu();
     auto menu = CreateMenu();
     AppendMenuW(menubar, MF_POPUP, (UINT_PTR)menu, title);
     return menu;
@@ -449,8 +471,10 @@ HMENU addSubmenu(const wchar_t* title, HMENU parentMenu) {
 int setMenuItem(HMENU menu, MenuItem menuItem) {
     auto cmdId = ++cmdIdSeed;
     wstring text = menuItem.title ? menuItem.title : L""s;
-    if (menuItem.accelerator)
+    if (menuItem.accelerator) {
         text += L"\t"s + menuItem.accelerator;
+        accelerators.emplace_back(cmdId, menuItem.accelerator);
+    }
     switch (menuItem.menuItemType) {
     case MenuItemType::MenuItem:
         AppendMenuW(menu, MF_STRING, cmdId, text.c_str());
@@ -499,6 +523,25 @@ int execute() {
     if (menubar)
         SetMenu(mainWindow, menubar);
 
+    auto size = (int)accelerators.size();
+    auto accel = new ACCEL[size];
+
+    auto createAccelerator = [accel, idx = 0](const Accelerator& n) mutable {
+        accel[idx].cmd = n.cmd;
+        accel[idx].key = n.key;
+        accel[idx++].fVirt = n.virtkey;
+    };
+
+    for_each(accelerators.begin(), accelerators.end(), createAccelerator);
+    //azel[1].cmd = 2;
+    //azel[1].key = VK_F6;
+    //azel[1].fVirt = FVIRTKEY;
+    //azel[2].cmd = 3;
+    //azel[3].key = 'O';
+    //azel[3].fVirt = FCONTROL | FVIRTKEY;
+
+    hAccelTable = CreateAcceleratorTable(accel, size);
+    
     MSG msg;
 
     // Main message loop:
