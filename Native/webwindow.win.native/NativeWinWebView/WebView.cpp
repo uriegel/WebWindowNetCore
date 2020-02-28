@@ -153,6 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         else if (menuItemData.groupCount) {
             auto first = cmd - menuItemData.groupId;
             CheckMenuRadioItem(GetMenu(hWnd), first, first + menuItemData.groupCount - 1, cmd, MF_BYCOMMAND);
+            menuItemData.onMenu();
         }
         else
             menuItemData.onMenu();
@@ -453,7 +454,7 @@ int setMenuItem(HMENU menu, MenuItem menuItem) {
         break;
     case MenuItemType::Radio:
         AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
-        menuItemDatas[cmdId] = { nullptr, nullptr, false, menuItem.groupCount, menuItem.groupId };
+        menuItemDatas[cmdId] = { menuItem.callback, nullptr, false, menuItem.groupCount, menuItem.groupId };
         if (menuItem.groupCount == menuItem.groupId + 1)
             CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
         break;

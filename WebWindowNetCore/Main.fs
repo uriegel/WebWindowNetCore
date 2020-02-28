@@ -202,22 +202,22 @@ let setMenu (menu: MenuItem list) =
                 | None -> ()
             | MenuGroup value -> 
                 let count = List.length value.Items
-
-                // TODO: setSelectedFunction
-
                 // TODO: let mutable map = Map.empty
                 let createRadioItem i item =
                     match item with
-                    | Radio value ->
+                    | Radio radio ->
+                        let onSelected () = value.OnSelected radio.Key
+                        let callback = MenuCallback onSelected
+                        delegatesHolder <- MenuCallbackType callback :: delegatesHolder
                         NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                                         menuItemType = MenuItemType.Radio,
-                                                        title = value.Title, 
+                                                        title = radio.Title, 
                                                         accelerator = "Strg+N",
-                                                        // TODO : onChecked --> ruft MenuGroup.onSelected mit value.Key
+                                                        onMenu = callback,
                                                         groupCount = count,
                                                         groupId = i)
                                                     ) |> ignore
-                  // TODO: map <- map.Add (i, value.Key)
+                  // TODO: map <- map.Add (i, radio.Key)
                     | _ -> ()
                 value.Items |> List.iteri createRadioItem
             | _ -> ()
