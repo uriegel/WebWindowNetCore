@@ -164,7 +164,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         break;
     case WM_APP + 2:
     {
-        int cmdId = wParam;
+        int cmdId = (int)wParam;
         int groupCount = LOWORD(lParam);
         int id = HIWORD(lParam);
         CheckMenuRadioItem(GetMenu(hWnd), cmdId, cmdId + groupCount - 1, cmdId + id, MF_BYCOMMAND);

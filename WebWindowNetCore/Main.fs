@@ -132,6 +132,9 @@ type private NativeMethods() =
     [<DllImport(DllName, EntryPoint = "setMenuItemChecked", CallingConvention = CallingConvention.Cdecl)>] 
     static extern void nativeSetMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool isChecked)
 
+    [<DllImport(DllName, EntryPoint = "setMenuItemSelected", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeSetMenuItemSelected (int cmdId, int groupCount, int id)
+
     static member Initialize = nativeInitialize
     static member Execute = nativeExecute
     static member SendToBrowser = nativeSendToBrowser
@@ -139,6 +142,7 @@ type private NativeMethods() =
     static member setMenuItem = nativeSetMenuItem
     static member addSubmenu = nativeAddSubmenu
     static member setMenuItemChecked = nativeSetMenuItemChecked
+    static member setMenuItemSelected = nativeSetMenuItemSelected
 
 let mutable private onEventDelegate = null
 
@@ -220,13 +224,19 @@ let setMenu (menu: MenuItem list) =
                                         groupId = i)
                                     ) 
                         if cmd = -1 then cmd <- id
-                    | _ -> ()
-                value.Items |> List.iteri createRadioItem
+                        radio.Key
+                    | _ -> null
+                let keys = 
+                    value.Items 
+                    |> List.mapi createRadioItem
 
                 match value.SetSelected with
                 | Some value -> 
-                    //let setSelected key = NativeMethods.setMenuItemChecked (id, isChecked)
-                    //value setSelected
+                    let setSelected key = 
+                        let id = keys |> List.findIndex (fun n -> n = key)
+                        NativeMethods.setMenuItemSelected (cmd, count, id)
+                        ()
+                    value setSelected
                     ()
                 | None -> ()
             | _ -> ()

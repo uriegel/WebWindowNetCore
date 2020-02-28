@@ -22,9 +22,6 @@ let onHidden isChecked = ()
 let mutable setHidden: bool -> unit = ignore
 let setSetHidden (setHiddenFunction: bool -> unit) = setHidden <- setHiddenFunction
 
-let onTheme (key: obj) =
-    let key = key :?> string
-    ()
 
 let onZoom (key: obj) = 
     let key = key :?> int
@@ -34,3 +31,11 @@ let setSetZoom (setZoom: obj -> unit) = setZoomFun <- setZoom
 let setZoom (key: int) = setZoomFun key
 
 let onPreview isChecked = ()
+
+let onTheme (key: obj) =
+    let key = key :?> string
+    match key with
+    | "blau" -> setZoom 200
+    | "hellblau" -> setZoom 350
+    | "dunkel" -> setZoom 50
+    | _ -> ()
