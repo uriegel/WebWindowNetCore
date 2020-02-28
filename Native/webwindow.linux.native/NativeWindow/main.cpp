@@ -10,6 +10,7 @@ extern "C" DLL_PUBLIC void sendToBrowser(const char* text);
 extern "C" DLL_PUBLIC QMenu* addMenu(const char* title);
 extern "C" DLL_PUBLIC QMenu* addSubmenu(const char* title, QMenu* parent);
 extern "C" DLL_PUBLIC int setMenuItem(QMenu* menu, MenuItem menuItem);
+extern "C" DLL_PUBLIC void setMenuItemChecked(int cmdId, bool checked);
 
 QApplication* app{nullptr};
 MainWindow *window{nullptr};
@@ -27,16 +28,20 @@ QMenu* addSubmenu(const char* title, QMenu* parent) {
     return window->add_menu(title, parent);
 }
 
-int setMenuItem(QMenu* menu, Menu_item menu_item) {
+int setMenuItem(QMenu* menu, MenuItem menu_item) {
    return window->set_menu_item(menu, menu_item);
 }
 
-int setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group) {
+int setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group) {
    return window->setGroupedMenuItem(menu, menu_item, group);
 }
 
 QActionGroup* createMenuGroup() {
     return window->createMenuGroup();
+}
+
+void setMenuItemChecked(int cmdId, bool checked) {
+    window->setMenuItemChecked(cmdId, checked);
 }
 
 QString create_debugging_arg(int port) {
@@ -76,68 +81,74 @@ int main() {
     configuration.application ="brauser tester";
     configuration.save_window_settings = true;
     configuration.fullscreen_enabled = true;
-    configuration.callback = nullptr;
-    initialize_window(configuration);
+    configuration.onEvent = nullptr;
+    initializeWindow(configuration);
 
     auto menu = addMenu("&Datei");
     auto id = setMenuItem(menu, {
-        Menu_item_type::Menu,
+        MenuItemType::MenuItem,
         "&Neu",
         "Ctrl+N"
     });
     id = setMenuItem(menu, {
-        Menu_item_type::Menu,
+        MenuItemType::MenuItem,
         "&Kopieren",
         "F5"
     });
     setMenuItem(menu, {
-        Menu_item_type::Separator,
+        MenuItemType::Separator,
         "",
         ""
     });
     id = setMenuItem(menu, {
-        Menu_item_type::Menu,
+        MenuItemType::MenuItem,
         "&Beenden",
         "Alt+F4"
     });
     menu = addMenu("&Ansicht");
     id = setMenuItem(menu, {
-        Menu_item_type::Checkbox,
+        MenuItemType::Checkbox,
         "&Versteckte Dateien",
         "Ctrl+H"
     });
+
+    auto hiddenID = id;
     setMenuItem(menu, {
-        Menu_item_type::Separator,
+        MenuItemType::Separator,
         "",
         ""
     });
     auto submenu = addSubmenu("&Themen", menu);
     auto group = createMenuGroup();
     id = setGroupedMenuItem(submenu, {
-        Menu_item_type::Checkbox,
+        MenuItemType::Checkbox,
         "&Rot",
         nullptr
     }, group);
     id = setGroupedMenuItem(submenu, {
-        Menu_item_type::Checkbox,
+        MenuItemType::Checkbox,
         "&Blau",
         nullptr
     }, group);
     id = setGroupedMenuItem(submenu, {
-        Menu_item_type::Checkbox,
+        MenuItemType::Checkbox,
         "&Dunkel",
         nullptr
     }, group);
     setMenuItem(menu, {
-        Menu_item_type::Separator,
+        MenuItemType::Separator,
         "",
         ""
     });
     id = setMenuItem(menu, {
-        Menu_item_type::Menu,
+        MenuItemType::MenuItem,
         "&Vorschau",
         "F3"
     });
+
+    setMenuItemChecked(hiddenID, true);
+
+
     return execute();
 }
 

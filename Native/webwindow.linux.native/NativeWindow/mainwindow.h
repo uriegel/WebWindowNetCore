@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QtWebEngineWidgets/QtWebEngineWidgets>
 
-using Callback_ptr = std::add_pointer<void(const char* text)>::type;
+using EventCallback = std::add_pointer<void(const char* text)>::type;
+using OnMenuCallback = std::add_pointer<void()>::type;
+using OnCheckedCallback = std::add_pointer<void(bool)>::type;
 
 struct Configuration {
     const char* title;
@@ -16,20 +18,23 @@ struct Configuration {
     const char* application;
     bool save_window_settings;
     bool fullscreen_enabled;
-    Callback_ptr callback{nullptr};
+    EventCallback onEvent{nullptr};
 };
 
 enum class MenuItemType
 {
     MenuItem,
-    Checkbox,
     Separator,
+    Checkbox,
+    Radio
 };
 
 struct MenuItem {
     MenuItemType menuItemType;
     const char* title;
     const char* accelerator;
+    OnMenuCallback onMenu;
+    OnCheckedCallback onChecked;
 };
 
 class WebEngineView : public QWebEngineView {
@@ -50,12 +55,13 @@ public:
 
     void acceptFullScreen(QWebEngineFullScreenRequest request);
 
-    void initializeScript(Callback_ptr callback);
+    void initializeScript(EventCallback onEvent);
     void send_to_browser(const char* text);
     QMenu* add_menu(const char* title, QMenu* parent = nullptr);
     QActionGroup* createMenuGroup();
-    int set_menu_item(QMenu* menu, Menu_item menu_item);
-    int setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group);
+    int set_menu_item(QMenu* menu, MenuItem menu_item);
+    int setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group);
+    void setMenuItemChecked(int cmdId, bool checked);
 
 public slots:
     void postMessage(const QString& msg);
@@ -65,7 +71,7 @@ private:
     QWebEngineView* webView;
     QString organization;
     QString application;
-    Callback_ptr callback{nullptr};
+    EventCallback onEvent{nullptr};
     QMap<int, QAction*> checkableMenuItems;
 };
 #endif // MAINWINDOW_H

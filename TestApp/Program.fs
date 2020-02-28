@@ -3,11 +3,12 @@ open WebWindowNetCore
 open WebWindow
 open Commands
 
-let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
+//let iconPath = @"C:\Users\urieg\source\repos\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
 //let iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico"
-let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+let iconPath = "/media/speicher/projekte/WebWindowNetCore/TestApp/icon.svg"
+//let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
 //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
-//let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
+let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
 // let url = "https://google.de"
 
 let callback (text: string) = ()

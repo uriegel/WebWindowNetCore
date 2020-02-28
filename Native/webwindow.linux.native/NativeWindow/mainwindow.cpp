@@ -9,7 +9,7 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
     if (configuration.icon_path)
         setWindowIcon(QIcon(configuration.icon_path));
     webView = new WebEngineView;
-    this->callback = configuration.callback;
+    this->onEvent = configuration.onEvent;
 
     setAttribute( Qt::WA_NativeWindow, true );
 
@@ -34,7 +34,7 @@ MainWindow::MainWindow(const Configuration& configuration, QWidget *parent)
         connect(webView->page(),&QWebEnginePage::fullScreenRequested,this,&MainWindow::acceptFullScreen);
     }
 
-    initializeScript(configuration.callback);
+    initializeScript(configuration.onEvent);
 
     QUrl url = QUrl(configuration.url);
     //url.setScheme("http");
@@ -57,11 +57,18 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
         showNormal();
 }
 
+QMap<int, MenuItem> menuItems;
+
 void MainWindow::action(QAction* action) {
-    auto data = action->data();
-    if (data == 4) {
-        auto checked = action->isChecked();
-        auto test = 9;
+    auto data = action->data().toUInt();
+    auto menuItem = menuItems[data];
+    switch (menuItem.menuItemType) {
+        case MenuItemType::MenuItem:
+            menuItem.onMenu();
+            break;
+        case MenuItemType::Checkbox:
+            menuItem.onChecked(action->isChecked());
+            break;
     }
 }
 
@@ -75,35 +82,40 @@ QActionGroup* MainWindow::createMenuGroup() {
     return new QActionGroup(this);
 }
 
-int MainWindow::set_menu_item(QMenu* menu, Menu_item menu_item) {
-    switch (menu_item.menu_item_type) {
-    case Menu_item_type::Menu: {
-        auto id = ++recentId;
-        auto new_action = new QAction(menu_item.title, this);
-        if (menu_item.accelerator)
-            new_action->setShortcut(QKeySequence(menu_item.accelerator));
+struct MenuData : public QObject {
+    MenuData(MenuItem menuItem) : menuItem(menuItem) {}
+    MenuItem menuItem;
+};
+
+int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
+    auto id = ++recentId;
+    menuItems[id] = menuItem;
+    switch (menuItem.menuItemType) {
+    case MenuItemType::MenuItem: {
+        auto new_action = new QAction(menuItem.title, this);
+        if (menuItem.accelerator)
+            new_action->setShortcut(QKeySequence(menuItem.accelerator));
         new_action->setData(id);
         menu->addAction(new_action);
         return id;
     }
-    case Menu_item_type::Checkbox: {
-        auto id = ++recentId;
-        auto new_action = new QAction(menu_item.title, this);
-        if (menu_item.accelerator)
-            new_action->setShortcut(QKeySequence(menu_item.accelerator));
+    case MenuItemType::Checkbox: {
+        auto new_action = new QAction(menuItem.title, this);
+        if (menuItem.accelerator)
+            new_action->setShortcut(QKeySequence(menuItem.accelerator));
         new_action->setData(id);
         new_action->setCheckable(true);
         menu->addAction(new_action);
         checkableMenuItems[id] = new_action;
         return id;
     }
-    case Menu_item_type::Separator:
+    case MenuItemType::Separator:
         menu->addSeparator();
         return -1;
     }
 }
 
-int MainWindow::setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGroup* group) {
+int MainWindow::setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group) {
     auto id = ++recentId;
     auto new_action = new QAction(menu_item.title, this);
     if (menu_item.accelerator)
@@ -116,11 +128,15 @@ int MainWindow::setGroupedMenuItem(QMenu* menu, Menu_item menu_item, QActionGrou
     return id;
 }
 
-void MainWindow::initializeScript(Callback_ptr callback) {
+void MainWindow::setMenuItemChecked(int cmdId, bool checked) {
+    checkableMenuItems[cmdId]->setChecked(checked);
+}
+
+void MainWindow::initializeScript(EventCallback onEvent) {
     QWebEngineScript script;
 
     QString scripttext;
-    if (callback) {
+    if (onEvent) {
         QFile file(":/qtwebchannel/qwebchannel.js");
         file.open(QIODevice::ReadOnly);
         scripttext = QString(file.readAll());
@@ -167,7 +183,7 @@ var webWindowNetCore = (function() {
 
     webView->page()->scripts().insert(script);
 
-    if (callback) {
+    if (onEvent) {
         auto channel = new QWebChannel(this);
         channel->registerObject("webobj", this);
         webView->page()->setWebChannel(channel);
@@ -179,5 +195,5 @@ void MainWindow::send_to_browser(const char* text) {
 }
 
 void MainWindow::postMessage(const QString& msg) {
-    callback(msg.toUtf8());
+    onEvent(msg.toUtf8());
 }

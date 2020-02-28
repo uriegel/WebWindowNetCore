@@ -22,7 +22,6 @@ let onHidden isChecked = ()
 let mutable setHidden: bool -> unit = ignore
 let setSetHidden (setHiddenFunction: bool -> unit) = setHidden <- setHiddenFunction
 
-
 let onZoom (key: obj) = 
     let key = key :?> int
     ()

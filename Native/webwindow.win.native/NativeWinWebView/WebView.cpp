@@ -11,9 +11,9 @@
 using namespace Microsoft::WRL;
 using namespace std;
 
-using EventCallback = std::add_pointer<void(const wchar_t*)>::type;
-using OnMenuCallback = std::add_pointer<void()>::type;
-using OnCheckedCallback = std::add_pointer<void(bool)>::type;
+using EventCallback = add_pointer<void(const wchar_t*)>::type;
+using OnMenuCallback = add_pointer<void()>::type;
+using OnCheckedCallback = add_pointer<void(bool)>::type;
 
 struct MenuItemData {
     OnMenuCallback onMenu;

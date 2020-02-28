@@ -142,7 +142,7 @@ type private NativeMethods() =
     static member setMenuItem = nativeSetMenuItem
     static member addSubmenu = nativeAddSubmenu
     static member setMenuItemChecked = nativeSetMenuItemChecked
-    static member setMenuItemSelected = nativeSetMenuItemSelected
+    //static member setMenuItemSelected = nativeSetMenuItemSelected
 
 let mutable private onEventDelegate = null
 
@@ -158,7 +158,8 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // To debug on Linux: Chrome: localhost:8888
-    // TODO: do the same on Linux
+    // TODO: Radios Linux
+    // TODO: Radios setSelection Linux
     // TODO: Accelerators on Linux
 
 let execute = NativeMethods.Execute 
@@ -237,8 +238,8 @@ let setMenu (menu: MenuItem list) =
                 match value.SetSelected with
                 | Some value -> 
                     let setSelected key = 
-                        let id = keys |> List.findIndex (fun n -> n = key)
-                        NativeMethods.setMenuItemSelected (cmd, count, id)
+                        // let id = keys |> List.findIndex (fun n -> n = key)
+                        // NativeMethods.setMenuItemSelected (cmd, count, id)
                         ()
                     value setSelected
                     ()
