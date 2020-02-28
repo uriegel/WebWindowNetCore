@@ -432,8 +432,15 @@ auto GetKey(wstring accelerator) {
     if (accelerator == L"F10") return make_tuple(VK_F10, FVIRTKEY);
     if (accelerator == L"F11") return make_tuple(VK_F11, FVIRTKEY);
     if (accelerator == L"F12") return make_tuple(VK_F12, FVIRTKEY);
+    else return make_tuple((int)accelerator[0], 0);
 }
 
+auto getVirtualKey(wstring accelerator) {
+    if (accelerator == L"Alt") return FALT | FVIRTKEY;
+    if (accelerator == L"Ctrl") return FCONTROL | FVIRTKEY;
+    if (accelerator == L"Strg") return FCONTROL | FVIRTKEY;
+    else return 0;
+}
 
 struct Accelerator {
     int cmd;
@@ -446,8 +453,11 @@ struct Accelerator {
             tie(key, virtkey) = GetKey(accelerator);
         }
         else {
-            key = 'O'; 
-            virtkey = FCONTROL | FVIRTKEY;
+            auto virt = accelerator.substr(0, pos);
+            auto k = accelerator.substr(pos + 1);
+            int _;
+            tie(key, _) = GetKey(k);
+            virtkey = getVirtualKey(virt);
         }
     }
 };
