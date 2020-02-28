@@ -162,6 +162,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_APP + 1:
         CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
         break;
+    case WM_APP + 2:
+    {
+        int cmdId = wParam;
+        int groupCount = LOWORD(lParam);
+        int id = HIWORD(lParam);
+        CheckMenuRadioItem(GetMenu(hWnd), cmdId, cmdId + groupCount - 1, cmdId + id, MF_BYCOMMAND);
+    }
+    break;
+
     case WM_DESTROY:
         save_window_settings(hWnd);
         if (menubar)
@@ -474,16 +483,14 @@ void setMenuItemChecked(int cmdId, bool checked) {
         PostMessage(mainWindow, WM_APP + 1, cmdId, checked);
 }
 
-//void setMenuItemSelected(int cmdId, bool checked) {
-//    auto menu = GetMenu(mainWindow);
-//    if (menu)
-//        CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
-//        CheckMenuItem(menu, cmdId, checked ? MF_CHECKED : MF_UNCHECKED);
-//    else
-//        PostMessage(mainWindow, WM_APP + 1, cmdId, checked);
-//}
+void setMenuItemSelected(int cmdId, int groupCount, int id) {
+    auto menu = GetMenu(mainWindow);
+    if (menu)
+        CheckMenuRadioItem(menu, cmdId, cmdId + groupCount - 1, cmdId + id, MF_BYCOMMAND);
+    else
+        PostMessage(mainWindow, WM_APP + 2, cmdId, MAKELPARAM(groupCount, id));
+}
     
-
 int execute() {
     if (menubar)
         SetMenu(mainWindow, menubar);

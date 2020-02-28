@@ -29,5 +29,8 @@ let onTheme (key: obj) =
 let onZoom (key: obj) = 
     let key = key :?> int
     ()
+let mutable private setZoomFun: obj -> unit = ignore
+let setSetZoom (setZoom: obj -> unit) = setZoomFun <- setZoom
+let setZoom (key: int) = setZoomFun key
 
 let onPreview isChecked = ()

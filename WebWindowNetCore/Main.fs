@@ -104,6 +104,7 @@ type Menu = {
 and MenuGroup = {
     Items: MenuItem list
     OnSelected: obj -> unit
+    SetSelected: ((obj -> unit) -> unit) option
 }
 
 and MenuItem = Menu of Menu | CmdItem of MenuCmdItem | Separator | Checkbox of CheckBoxItem | Radio of RadioItem | MenuGroup of MenuGroup
@@ -202,24 +203,32 @@ let setMenu (menu: MenuItem list) =
                 | None -> ()
             | MenuGroup value -> 
                 let count = List.length value.Items
-                // TODO: let mutable map = Map.empty
+                let mutable cmd = -1
                 let createRadioItem i item =
                     match item with
                     | Radio radio ->
                         let onSelected () = value.OnSelected radio.Key
                         let callback = MenuCallback onSelected
                         delegatesHolder <- MenuCallbackType callback :: delegatesHolder
-                        NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
-                                                        menuItemType = MenuItemType.Radio,
-                                                        title = radio.Title, 
-                                                        accelerator = "Strg+N",
-                                                        onMenu = callback,
-                                                        groupCount = count,
-                                                        groupId = i)
-                                                    ) |> ignore
-                  // TODO: map <- map.Add (i, radio.Key)
+                        let id = NativeMethods.setMenuItem (menuHandle, 
+                                    NativeMenuItem( 
+                                        menuItemType = MenuItemType.Radio,
+                                        title = radio.Title, 
+                                        accelerator = "Strg+N",
+                                        onMenu = callback,
+                                        groupCount = count,
+                                        groupId = i)
+                                    ) 
+                        if cmd = -1 then cmd <- id
                     | _ -> ()
                 value.Items |> List.iteri createRadioItem
+
+                match value.SetSelected with
+                | Some value -> 
+                    //let setSelected key = NativeMethods.setMenuItemChecked (id, isChecked)
+                    //value setSelected
+                    ()
+                | None -> ()
             | _ -> ()
         menu |> List.iter createMenuItem
     setMenu menu IntPtr.Zero

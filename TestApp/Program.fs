@@ -73,6 +73,7 @@ let menu = [
                 Items = [
                     MenuGroup {
                         OnSelected = onTheme
+                        SetSelected = None
                         Items = [
                             Radio { Title = "&Blau"; Accelerator = None; Key = "blau"} 
                             Radio { Title = "&Hellblau"; Accelerator = None; Key = "hellblau"} 
@@ -87,6 +88,7 @@ let menu = [
                 Items = [
                     MenuGroup {
                         OnSelected = onZoom
+                        SetSelected = Some setSetZoom
                         Items = [ 
                             Radio { Title = "50%"; Accelerator = None; Key = 50 } 
                             Radio { Title = "75%"; Accelerator = None; Key = 75 } 

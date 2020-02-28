@@ -66,6 +66,9 @@ extern [<MarshalAs(UnmanagedType.Bool)>] bool getMenuItemChecked (int cmdId)
 
 [<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
 extern void setMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool isChecked)
+
+[<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
+extern void setMenuItemSelected (int cmdId, int groupCount, int id)
  
 [<EntryPoint>]
 let main argv =
@@ -110,9 +113,11 @@ let main argv =
     let hiddenId = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Checkbox, title = "&Versteckte Dateien", accelerator = "Strg+H", onMenu = onHiddenDelegate ))
     setMenuItemChecked(hiddenId, true)
     let submenu = addSubmenu ("&Themen", menu)
-    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Rot", accelerator = null, onMenu = onRotDelegate, groupCount = 3, groupId = 0 ))|> ignore
+    let themeId = setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Rot", accelerator = null, onMenu = onRotDelegate, groupCount = 3, groupId = 0 ))
     setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Blau", accelerator = null, onMenu = onBlauDelegate, groupCount = 3, groupId = 1 ))|> ignore
     setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Dunkel", accelerator = null, onMenu = onDunkelDelegate, groupCount = 3, groupId = 2 ))|> ignore
+
+    setMenuItemSelected (themeId, 3, 1)
     
     async {
         let rec readLine () = 
