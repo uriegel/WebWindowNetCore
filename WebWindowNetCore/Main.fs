@@ -169,6 +169,11 @@ let sendToBrowser = NativeMethods.SendToBrowser
 let mutable private delegatesHolder: MenuCallbacks list = []
 
 let setMenu (menu: MenuItem list) = 
+    let getAccelerator acc =
+        match acc with
+        | Some value -> value
+        | None -> null
+
     let rec setMenu (menu: MenuItem list) (menuHandle: IntPtr) = 
         let createMenuItem (item: MenuItem)  =
             match item with
@@ -187,7 +192,7 @@ let setMenu (menu: MenuItem list) =
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
                                             menuItemType = MenuItemType.MenuItem,
                                             title = value.Title, 
-                                            accelerator = "value.Accelerator",
+                                            accelerator = getAccelerator value.Accelerator,
                                             onMenu = callback)
                                         ) |> ignore
             | Checkbox value ->                                        
@@ -197,7 +202,7 @@ let setMenu (menu: MenuItem list) =
                             menuHandle, NativeMenuItem( 
                                 menuItemType = MenuItemType.Checkbox,
                                 title = value.Title, 
-                                accelerator = "Strg+N",
+                                accelerator = getAccelerator value.Accelerator,
                                 onChecked = callback)
                             ) 
                 match value.SetCheckedFunction with
@@ -218,7 +223,7 @@ let setMenu (menu: MenuItem list) =
                                     NativeMenuItem( 
                                         menuItemType = MenuItemType.Radio,
                                         title = radio.Title, 
-                                        accelerator = "Strg+N",
+                                        accelerator = getAccelerator radio.Accelerator,    
                                         onMenu = callback,
                                         groupCount = count,
                                         groupId = i)

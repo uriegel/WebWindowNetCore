@@ -448,21 +448,25 @@ HMENU addSubmenu(const wchar_t* title, HMENU parentMenu) {
 
 int setMenuItem(HMENU menu, MenuItem menuItem) {
     auto cmdId = ++cmdIdSeed;
+    wstring text = menuItem.title ? menuItem.title : L""s;
+    if (menuItem.accelerator)
+        text += L"\t"s + menuItem.accelerator;
     switch (menuItem.menuItemType) {
     case MenuItemType::MenuItem:
-        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        AppendMenuW(menu, MF_STRING, cmdId, text.c_str());
         menuItemDatas[cmdId] = { menuItem.callback };
         break;
     case MenuItemType::Separator:
         AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
         break;
     case MenuItemType::Checkbox:
-        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        AppendMenuW(menu, MF_STRING, cmdId, text.c_str());
+        text += L"\t"s + menuItem.accelerator;
         menuItemDatas[cmdId] = { nullptr, menuItem.onChecked, true };
         CheckMenuItem(menu, cmdId, MF_UNCHECKED);
         break;
     case MenuItemType::Radio:
-        AppendMenuW(menu, MF_STRING, cmdId, menuItem.title);
+        AppendMenuW(menu, MF_STRING, cmdId, text.c_str());
         menuItemDatas[cmdId] = { menuItem.callback, nullptr, false, menuItem.groupCount, menuItem.groupId };
         if (menuItem.groupCount == menuItem.groupId + 1)
             CheckMenuRadioItem(menu, cmdId - menuItem.groupCount + 1, cmdId, cmdId - menuItem.groupCount + 1, MF_BYCOMMAND);
