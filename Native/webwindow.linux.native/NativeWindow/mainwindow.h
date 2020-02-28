@@ -35,6 +35,8 @@ struct MenuItem {
     const char* accelerator;
     OnMenuCallback onMenu;
     OnCheckedCallback onChecked;
+    int groupCount;
+    int groupId;
 };
 
 class WebEngineView : public QWebEngineView {
@@ -58,9 +60,7 @@ public:
     void initializeScript(EventCallback onEvent);
     void send_to_browser(const char* text);
     QMenu* add_menu(const char* title, QMenu* parent = nullptr);
-    QActionGroup* createMenuGroup();
     int set_menu_item(QMenu* menu, MenuItem menu_item);
-    int setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group);
     void setMenuItemChecked(int cmdId, bool checked);
 
 public slots:
@@ -72,6 +72,7 @@ private:
     QString organization;
     QString application;
     EventCallback onEvent{nullptr};
+    QMap<int, MenuItem> menuItems;
     QMap<int, QAction*> checkableMenuItems;
 };
 #endif // MAINWINDOW_H

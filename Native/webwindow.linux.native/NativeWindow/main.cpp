@@ -11,6 +11,7 @@ extern "C" DLL_PUBLIC QMenu* addMenu(const char* title);
 extern "C" DLL_PUBLIC QMenu* addSubmenu(const char* title, QMenu* parent);
 extern "C" DLL_PUBLIC int setMenuItem(QMenu* menu, MenuItem menuItem);
 extern "C" DLL_PUBLIC void setMenuItemChecked(int cmdId, bool checked);
+extern "C" DLL_PUBLIC void setMenuItemSelected (int cmdId, int groupCount, int id);
 
 QApplication* app{nullptr};
 MainWindow *window{nullptr};
@@ -32,18 +33,13 @@ int setMenuItem(QMenu* menu, MenuItem menu_item) {
    return window->set_menu_item(menu, menu_item);
 }
 
-int setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group) {
-   return window->setGroupedMenuItem(menu, menu_item, group);
-}
-
-QActionGroup* createMenuGroup() {
-    return window->createMenuGroup();
-}
-
 void setMenuItemChecked(int cmdId, bool checked) {
     window->setMenuItemChecked(cmdId, checked);
 }
 
+void setMenuItemSelected (int cmdId, int groupCount, int id) {
+    window->setMenuItemChecked(cmdId, true);
+}
 QString create_debugging_arg(int port) {
     return "--remote-debugging-port=" + QString::number(port > 0 ? port : 8888);
 }
@@ -84,11 +80,11 @@ int main() {
     configuration.onEvent = nullptr;
     initializeWindow(configuration);
 
-    auto menu = addMenu("&Datei");
+/*    auto menu = addMenu("&Datei");
     auto id = setMenuItem(menu, {
         MenuItemType::MenuItem,
         "&Neu",
-        "Ctrl+N"
+        "Ctrl+N",
     });
     id = setMenuItem(menu, {
         MenuItemType::MenuItem,
@@ -147,7 +143,7 @@ int main() {
     });
 
     setMenuItemChecked(hiddenID, true);
-
+*/
 
     return execute();
 }

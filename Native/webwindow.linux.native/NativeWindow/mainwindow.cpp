@@ -57,17 +57,18 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
         showNormal();
 }
 
-QMap<int, MenuItem> menuItems;
-
 void MainWindow::action(QAction* action) {
     auto data = action->data().toUInt();
     auto menuItem = menuItems[data];
     switch (menuItem.menuItemType) {
         case MenuItemType::MenuItem:
+        case MenuItemType::Radio:
             menuItem.onMenu();
             break;
         case MenuItemType::Checkbox:
             menuItem.onChecked(action->isChecked());
+            break;
+        default:
             break;
     }
 }
@@ -78,14 +79,12 @@ QMenu* MainWindow::add_menu(const char* title, QMenu* parent) {
     return menu;
 }
 
-QActionGroup* MainWindow::createMenuGroup() {
-    return new QActionGroup(this);
-}
-
 struct MenuData : public QObject {
     MenuData(MenuItem menuItem) : menuItem(menuItem) {}
     MenuItem menuItem;
 };
+
+QActionGroup* recentGroup {nullptr};
 
 int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
     auto id = ++recentId;
@@ -105,31 +104,41 @@ int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
             new_action->setShortcut(QKeySequence(menuItem.accelerator));
         new_action->setData(id);
         new_action->setCheckable(true);
+        checkableMenuItems[id] = new_action;
+        menu->addAction(new_action);
+        return id;
+    }
+    case MenuItemType::Radio: {
+
+        auto new_action = new QAction(menuItem.title, this);
+        new_action->setCheckable(true);
+        if (!recentGroup) {
+            recentGroup = new QActionGroup(this);
+            new_action->setChecked(true);
+        }
+        if (menuItem.accelerator)
+            new_action->setShortcut(QKeySequence(menuItem.accelerator));
+        new_action->setData(id);
+        new_action->setActionGroup(recentGroup);
         menu->addAction(new_action);
         checkableMenuItems[id] = new_action;
+        if (menuItem.groupCount == menuItem.groupId + 1)
+            recentGroup = nullptr;
         return id;
     }
     case MenuItemType::Separator:
         menu->addSeparator();
         return -1;
+    default:
+        return -1;
     }
-}
-
-int MainWindow::setGroupedMenuItem(QMenu* menu, MenuItem menu_item, QActionGroup* group) {
-    auto id = ++recentId;
-    auto new_action = new QAction(menu_item.title, this);
-    if (menu_item.accelerator)
-        new_action->setShortcut(QKeySequence(menu_item.accelerator));
-    new_action->setData(id);
-    new_action->setCheckable(true);
-    new_action->setActionGroup(group);
-    menu->addAction(new_action);
-    checkableMenuItems[id] = new_action;
-    return id;
 }
 
 void MainWindow::setMenuItemChecked(int cmdId, bool checked) {
     checkableMenuItems[cmdId]->setChecked(checked);
+
+    auto affe = checkableMenuItems[cmdId];
+    auto af = affe;
 }
 
 void MainWindow::initializeScript(EventCallback onEvent) {
