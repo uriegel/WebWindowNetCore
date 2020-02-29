@@ -74,7 +74,7 @@ let menu = [
                 Items = [
                     MenuGroup {
                         OnSelected = onTheme
-                        SetSelected = None
+                        SetSelected = Some setSetTheme
                         Items = [
                             Radio { Title = "&Blau"; Accelerator = None; Key = "blau"} 
                             Radio { Title = "&Hellblau"; Accelerator = None; Key = "hellblau"} 
