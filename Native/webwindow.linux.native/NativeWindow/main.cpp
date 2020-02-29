@@ -37,9 +37,10 @@ void setMenuItemChecked(int cmdId, bool checked) {
     window->setMenuItemChecked(cmdId, checked);
 }
 
-void setMenuItemSelected (int cmdId, int groupCount, int id) {
-    window->setMenuItemChecked(cmdId, true);
+void setMenuItemSelected (int cmdId, int, int id) {
+    window->setMenuItemChecked(cmdId + id, true);
 }
+
 QString create_debugging_arg(int port) {
     return "--remote-debugging-port=" + QString::number(port > 0 ? port : 8888);
 }
@@ -64,87 +65,5 @@ int execute() {
 
 void sendToBrowser(const char* text) {
     window->send_to_browser(text);
-}
-
-int main() {
-    auto configuration = Configuration();
-    configuration.title = "Der Brauser";
-        //"https://www.google.de";
-    configuration.url = "file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html";
-    configuration.icon_path = "/home/uwe/Dokumente/icon.svg";
-    configuration.debugging_enabled = true;
-    configuration.organization = "uriegel";
-    configuration.application ="brauser tester";
-    configuration.save_window_settings = true;
-    configuration.fullscreen_enabled = true;
-    configuration.onEvent = nullptr;
-    initializeWindow(configuration);
-
-/*    auto menu = addMenu("&Datei");
-    auto id = setMenuItem(menu, {
-        MenuItemType::MenuItem,
-        "&Neu",
-        "Ctrl+N",
-    });
-    id = setMenuItem(menu, {
-        MenuItemType::MenuItem,
-        "&Kopieren",
-        "F5"
-    });
-    setMenuItem(menu, {
-        MenuItemType::Separator,
-        "",
-        ""
-    });
-    id = setMenuItem(menu, {
-        MenuItemType::MenuItem,
-        "&Beenden",
-        "Alt+F4"
-    });
-    menu = addMenu("&Ansicht");
-    id = setMenuItem(menu, {
-        MenuItemType::Checkbox,
-        "&Versteckte Dateien",
-        "Ctrl+H"
-    });
-
-    auto hiddenID = id;
-    setMenuItem(menu, {
-        MenuItemType::Separator,
-        "",
-        ""
-    });
-    auto submenu = addSubmenu("&Themen", menu);
-    auto group = createMenuGroup();
-    id = setGroupedMenuItem(submenu, {
-        MenuItemType::Checkbox,
-        "&Rot",
-        nullptr
-    }, group);
-    id = setGroupedMenuItem(submenu, {
-        MenuItemType::Checkbox,
-        "&Blau",
-        nullptr
-    }, group);
-    id = setGroupedMenuItem(submenu, {
-        MenuItemType::Checkbox,
-        "&Dunkel",
-        nullptr
-    }, group);
-    setMenuItem(menu, {
-        MenuItemType::Separator,
-        "",
-        ""
-    });
-    id = setMenuItem(menu, {
-        MenuItemType::MenuItem,
-        "&Vorschau",
-        "F3"
-    });
-
-    setMenuItemChecked(hiddenID, true);
-*/
-
-    return execute();
 }
 

@@ -15,7 +15,7 @@ let onAdaptPath () = ()
 let onSelectAll () = ()
 let onDeselectAll () = ()
 let onRefresh () = ()
-let onFullscreen () = ()
+
 let onDevTools () = WebWindow.sendToBrowser "Hallöschen Web Brauser😎😎👌"
 
 let onHidden isChecked = ()
@@ -33,8 +33,15 @@ let onPreview isChecked = ()
 
 let onTheme (key: obj) =
     let key = key :?> string
-    match key with
-    | "blau" -> setZoom 200
-    | "hellblau" -> setZoom 350
-    | "dunkel" -> setZoom 50
-    | _ -> ()
+    ()
+    // match key with
+    // | "blau" -> setZoom 200
+    // | "hellblau" -> setZoom 350
+    // | "dunkel" -> setZoom 50
+    // | _ -> ()
+let mutable private setThemeFun: obj -> unit = ignore
+let setSetTheme (setTheme: obj -> unit) = setThemeFun <- setTheme
+let setTheme (key: string) = setThemeFun key
+
+
+let onFullscreen () = setZoom 250

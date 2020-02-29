@@ -114,5 +114,6 @@ let menu = [
 setMenu menu
 setHidden true
 setZoom 100
+setTheme "hellblau"
 
 execute () |> ignore
