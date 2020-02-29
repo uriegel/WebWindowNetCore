@@ -136,9 +136,6 @@ int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
 
 void MainWindow::setMenuItemChecked(int cmdId, bool checked) {
     checkableMenuItems[cmdId]->setChecked(checked);
-
-    auto affe = checkableMenuItems[cmdId];
-    auto af = affe;
 }
 
 void MainWindow::initializeScript(EventCallback onEvent) {

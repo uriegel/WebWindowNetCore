@@ -74,7 +74,7 @@ let menu = [
                 Items = [
                     MenuGroup {
                         OnSelected = onTheme
-                        SetSelected = Some setSetTheme
+                        SetSelected = None
                         Items = [
                             Radio { Title = "&Blau"; Accelerator = None; Key = "blau"} 
                             Radio { Title = "&Hellblau"; Accelerator = None; Key = "hellblau"} 
@@ -114,6 +114,5 @@ let menu = [
 setMenu menu
 setHidden true
 setZoom 100
-setTheme "hellblau"
 
 execute () |> ignore
