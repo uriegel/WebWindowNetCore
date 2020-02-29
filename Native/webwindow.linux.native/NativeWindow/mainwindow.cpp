@@ -1,4 +1,6 @@
+#include <string>
 #include "mainwindow.h"
+using namespace std;
 
 int recentId{0};
 
@@ -86,6 +88,14 @@ struct MenuData : public QObject {
 
 QActionGroup* recentGroup {nullptr};
 
+QKeySequence createAccelerator(string acc) {
+    return acc.find("Strg") == 0
+            ? (QString)acc.replace(0, 4, "Ctrl").c_str()
+            : acc.find("Strg+F2") == 0
+               ? QKeySequence(Qt::CTRL, Qt::Key_F2)
+               : (QString)acc.c_str();
+}
+
 int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
     auto id = ++recentId;
     menuItems[id] = menuItem;
@@ -93,7 +103,7 @@ int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
     case MenuItemType::MenuItem: {
         auto new_action = new QAction(menuItem.title, this);
         if (menuItem.accelerator)
-            new_action->setShortcut(QKeySequence(menuItem.accelerator));
+            new_action->setShortcut(QKeySequence(createAccelerator(menuItem.accelerator)));
         new_action->setData(id);
         menu->addAction(new_action);
         return id;
@@ -101,7 +111,7 @@ int MainWindow::set_menu_item(QMenu* menu, MenuItem menuItem) {
     case MenuItemType::Checkbox: {
         auto new_action = new QAction(menuItem.title, this);
         if (menuItem.accelerator)
-            new_action->setShortcut(QKeySequence(menuItem.accelerator));
+            new_action->setShortcut(QKeySequence(createAccelerator(menuItem.accelerator)));
         new_action->setData(id);
         new_action->setCheckable(true);
         checkableMenuItems[id] = new_action;

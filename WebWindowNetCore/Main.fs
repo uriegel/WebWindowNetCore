@@ -158,9 +158,7 @@ let initialize (configuration: Configuration) =
     NativeMethods.Initialize c
     
     // To debug on Linux: Chrome: localhost:8888
-    // TODO: Radios setSelection Linux!!
-    // TODO: Accelerators on Linux
-
+    
 let execute = NativeMethods.Execute 
 
 let sendToBrowser = NativeMethods.SendToBrowser
