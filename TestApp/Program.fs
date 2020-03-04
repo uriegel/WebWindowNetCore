@@ -8,7 +8,8 @@ open Commands
 let iconPath = "/media/speicher/projekte/WebWindowNetCore/TestApp/icon.svg"
 //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
 //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
-let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
+//let url = @"file:///media/speicher/projekte/WebWindowNetCore/WebRoot/index.html"
+let url = "http://localhost:8080"
 // let url = "https://google.de"
 
 let callback (text: string) = ()

@@ -135,6 +135,15 @@ type private NativeMethods() =
     [<DllImport(DllName, EntryPoint = "setMenuItemSelected", CallingConvention = CallingConvention.Cdecl)>] 
     static extern void nativeSetMenuItemSelected (int cmdId, int groupCount, int id)
 
+    [<DllImport(DllName, EntryPoint = "exit", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeExit ()
+
+    [<DllImport(DllName, EntryPoint = "showDevTools", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeShowDevTools ()
+    
+    [<DllImport(DllName, EntryPoint = "showFullscreen", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeShowFullscreen (bool fullscreen)
+
     static member Initialize = nativeInitialize
     static member Execute = nativeExecute
     static member SendToBrowser = nativeSendToBrowser
@@ -143,6 +152,9 @@ type private NativeMethods() =
     static member addSubmenu = nativeAddSubmenu
     static member setMenuItemChecked = nativeSetMenuItemChecked
     static member setMenuItemSelected = nativeSetMenuItemSelected
+    static member exit = nativeExit
+    static member showDevTools = nativeShowDevTools
+    static member showFullscreen = nativeShowFullscreen
 
 let mutable private onEventDelegate = null
 
@@ -160,8 +172,10 @@ let initialize (configuration: Configuration) =
     // To debug on Linux: Chrome: localhost:8888
     
 let execute = NativeMethods.Execute 
-
 let sendToBrowser = NativeMethods.SendToBrowser
+let exit = NativeMethods.exit
+let showDevTools = NativeMethods.showDevTools
+let showFullscreen = NativeMethods.showFullscreen
 
 let mutable private delegatesHolder: MenuCallbacks list = []
 

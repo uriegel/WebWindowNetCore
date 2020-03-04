@@ -317,7 +317,7 @@ void initializeWindow(Configuration configuration) {
     auto dev_tools_enabled = configuration.debugging_enabled;
     auto fullscreen_enabled = configuration.full_screen_enabled;
 
-    CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
+    auto result = CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
         Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
             env->CreateWebView(mainWindow, Callback<IWebView2CreateWebViewCompletedHandler>(
                     [url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
@@ -579,3 +579,17 @@ int execute() {
     return (int)msg.wParam;
 }
 
+void exit() {
+    DestroyWindow(mainWindow);
+}
+
+void showDevTools() {
+    webviewWindow->OpenDevToolsWindow();
+}
+
+void showFullscreen(bool fullscreen) {
+    if (fullscreen)
+        enter_fullscreen(mainWindow);
+    else
+        exit_fullscreen(mainWindow);
+}

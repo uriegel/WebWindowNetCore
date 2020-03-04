@@ -9,14 +9,14 @@ let onDelete () = ()
 let onCreatefolder () = ()
 let onProperties () = ()
 let onOpenWith () = ()
-let onClose () = ()
+let onClose () = WebWindow.exit ()
 let onFavorites () = ()
 let onAdaptPath () = ()
 let onSelectAll () = ()
 let onDeselectAll () = ()
 let onRefresh () = ()
 
-let onDevTools () = WebWindow.sendToBrowser "Hallöschen Web Brauser😎😎👌"
+let onDevTools () = WebWindow.showDevTools ()
 
 let onHidden isChecked = ()
 let mutable setHidden: bool -> unit = ignore
@@ -43,5 +43,7 @@ let mutable private setThemeFun: obj -> unit = ignore
 let setSetTheme (setTheme: obj -> unit) = setThemeFun <- setTheme
 let setTheme (key: string) = setThemeFun key
 
-
-let onFullscreen () = setZoom 250
+let mutable fullscreen = false
+let onFullscreen () =
+    fullscreen <- not fullscreen
+    WebWindow.showFullscreen fullscreen
