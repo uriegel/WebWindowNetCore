@@ -579,7 +579,7 @@ int execute() {
     return (int)msg.wParam;
 }
 
-void exit() {
+void closeWindow() {
     DestroyWindow(mainWindow);
 }
 

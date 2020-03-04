@@ -9,6 +9,6 @@ EXPORTS
 	getMenuItemChecked
 	setMenuItemChecked
 	setMenuItemSelected
-	exit
+	closeWindow
 	showDevTools
 	showFullscreen
