@@ -135,8 +135,8 @@ type private NativeMethods() =
     [<DllImport(DllName, EntryPoint = "setMenuItemSelected", CallingConvention = CallingConvention.Cdecl)>] 
     static extern void nativeSetMenuItemSelected (int cmdId, int groupCount, int id)
 
-    [<DllImport(DllName, EntryPoint = "exit", CallingConvention = CallingConvention.Cdecl)>] 
-    static extern void nativeExit ()
+    [<DllImport(DllName, EntryPoint = "closeWindow", CallingConvention = CallingConvention.Cdecl)>] 
+    static extern void nativeCloseWindow ()
 
     [<DllImport(DllName, EntryPoint = "showDevTools", CallingConvention = CallingConvention.Cdecl)>] 
     static extern void nativeShowDevTools ()
@@ -152,7 +152,7 @@ type private NativeMethods() =
     static member addSubmenu = nativeAddSubmenu
     static member setMenuItemChecked = nativeSetMenuItemChecked
     static member setMenuItemSelected = nativeSetMenuItemSelected
-    static member exit = nativeExit
+    static member closeWindow = nativeCloseWindow
     static member showDevTools = nativeShowDevTools
     static member showFullscreen = nativeShowFullscreen
 
@@ -173,7 +173,7 @@ let initialize (configuration: Configuration) =
     
 let execute = NativeMethods.Execute 
 let sendToBrowser = NativeMethods.SendToBrowser
-let exit = NativeMethods.exit
+let closeWindow = NativeMethods.closeWindow
 let showDevTools = NativeMethods.showDevTools
 let showFullscreen = NativeMethods.showFullscreen
 

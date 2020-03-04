@@ -62,7 +62,8 @@ public:
     QMenu* add_menu(const char* title, QMenu* parent = nullptr);
     int set_menu_item(QMenu* menu, MenuItem menu_item);
     void setMenuItemChecked(int cmdId, bool checked);
-
+    void exit();
+    void showFullscreen(bool fullscreen);
 public slots:
     void postMessage(const QString& msg);
     void action(QAction* action);

@@ -59,6 +59,13 @@ void MainWindow::acceptFullScreen(QWebEngineFullScreenRequest request){
         showNormal();
 }
 
+void MainWindow::showFullscreen(bool fullscreen) {
+    if (fullscreen)
+        showFullScreen();
+    else
+        showNormal();
+}
+
 void MainWindow::action(QAction* action) {
     auto data = action->data().toUInt();
     auto menuItem = menuItems[data];
@@ -85,6 +92,13 @@ struct MenuData : public QObject {
     MenuData(MenuItem menuItem) : menuItem(menuItem) {}
     MenuItem menuItem;
 };
+
+void MainWindow::exit() {
+    close();
+}
+
+
+
 
 QActionGroup* recentGroup {nullptr};
 

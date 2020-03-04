@@ -11,7 +11,10 @@ extern "C" DLL_PUBLIC QMenu* addMenu(const char* title);
 extern "C" DLL_PUBLIC QMenu* addSubmenu(const char* title, QMenu* parent);
 extern "C" DLL_PUBLIC int setMenuItem(QMenu* menu, MenuItem menuItem);
 extern "C" DLL_PUBLIC void setMenuItemChecked(int cmdId, bool checked);
-extern "C" DLL_PUBLIC void setMenuItemSelected (int cmdId, int groupCount, int id);
+extern "C" DLL_PUBLIC void setMenuItemSelected(int cmdId, int groupCount, int id);
+extern "C" DLL_PUBLIC void closeWindow();
+extern "C" DLL_PUBLIC void showDevTools();
+extern "C" DLL_PUBLIC void showFullscreen(bool fullscreen);
 
 QApplication* app{nullptr};
 MainWindow *window{nullptr};
@@ -39,6 +42,21 @@ void setMenuItemChecked(int cmdId, bool checked) {
 
 void setMenuItemSelected (int cmdId, int, int id) {
     window->setMenuItemChecked(cmdId + id, true);
+}
+
+void closeWindow() {
+    window->exit();
+}
+
+void showDevTools() {
+    auto webView = new WebEngineView;
+    auto url = QUrl("http://localhost:8888");
+    webView->page()->load(url);
+    webView->show();
+}
+
+void showFullscreen(bool fullscreen) {
+    window->showFullscreen(fullscreen);
 }
 
 QString create_debugging_arg(int port) {
