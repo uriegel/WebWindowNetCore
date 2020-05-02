@@ -163,6 +163,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
     case WM_COMMAND:
         doCommand(LOWORD(wParam));
         break;
+    case WM_SETFOCUS:
+        if (webviewWindow != nullptr) 
+            webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
+        break;
     case WM_APP + 1:
         CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
         break;
