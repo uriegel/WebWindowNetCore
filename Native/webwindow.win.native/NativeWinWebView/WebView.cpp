@@ -342,6 +342,7 @@ void initializeWindow(Configuration configuration) {
 
                 // Schedule an async task to navigate to Bing
                 webviewWindow->Navigate(url.c_str());
+                webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
                 
                 if (fullscreen_enabled) {
                     (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
