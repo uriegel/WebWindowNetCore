@@ -28,6 +28,7 @@ type Configuration =
         [<MarshalAs(UnmanagedType.U1)>]
         val mutable fullScreenEnabled: bool
         val mutable callback: EventCallback
+        val mutable dropFilesCallback: EventCallback
     end
 
 type MenuItemType =  MenuItem = 0 | Separator = 1 | Checkbox = 2 | Radio = 3
@@ -71,6 +72,7 @@ extern void setMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool 
 extern void setMenuItemSelected (int cmdId, int groupCount, int id)
  
 [<EntryPoint>]
+[<STAThread>]
 let main argv =
     printfn "Hello World from new F#!"
     let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
@@ -81,11 +83,17 @@ let main argv =
             printfn "Das kam vom lieben Webview: %s" text
             let t = text
             ()
+
+    let dropFiles (text: string) =
+        let files = text
+        ()
+
     let callbackDelegate = EventCallback callback
+    let dropFilesDelegate = EventCallback dropFiles
 
     initializeWindow (Configuration(title = "Web Brauser😎😎👌", url = url, iconPath = @"D:\Projekte\WebWindowNetCore\Native\webwindow.win.native\Tester\Brauser.ico",
                                 debuggingEnabled = true, debuggingPort = 0, organization = "URiegel", application = "TestBrauser", saveWindowSettings = true, fullScreenEnabled = true,
-                                callback = callbackDelegate))
+                                callback = callbackDelegate, dropFilesCallback = dropFilesDelegate))
 
     let onNew () = printfn "onNew"
     let onOpen () = printfn "onOpen"

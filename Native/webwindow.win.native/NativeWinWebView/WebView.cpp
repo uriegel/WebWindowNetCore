@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <windows.h>
 #include <wrl.h>
+#include <windowsx.h>
 #include <wil/com.h>
 #include <WebView2.h>
 
@@ -12,6 +13,7 @@ using namespace Microsoft::WRL;
 using namespace std;
 
 using EventCallback = add_pointer<void(const wchar_t*)>::type;
+using DropFilesCallback = add_pointer<void(const wchar_t*)>::type;
 using OnMenuCallback = add_pointer<void()>::type;
 using OnCheckedCallback = add_pointer<void(bool)>::type;
 
@@ -24,6 +26,7 @@ struct MenuItemData {
 };
 
 map<int, MenuItemData> menuItemDatas;
+DropFilesCallback dropFilesCallback{ nullptr };
 
 struct Configuration {
     const wchar_t* title{ nullptr };
@@ -36,6 +39,7 @@ struct Configuration {
     bool save_window_settings{ false };
     bool full_screen_enabled{ false };
     EventCallback callback{ nullptr };
+    DropFilesCallback dropFilesCallback{ nullptr };
 };
 
 static wil::com_ptr<IWebView2WebView5> webviewWindow;
@@ -139,6 +143,58 @@ void doCommand(int cmd) {
         menuItemData.onMenu();
 
 }
+
+struct DropTarget : public IDropTarget
+{
+    HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+    {
+        return S_OK;
+    }
+
+    HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+    {
+        return S_OK;
+    }
+
+    HRESULT __stdcall DragLeave(void)
+    {
+        return S_OK;
+    }
+
+    HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+    {
+        FORMATETC fmt = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        STGMEDIUM stg = { TYMED_HGLOBAL };
+        auto hr = pDataObj->GetData(&fmt, &stg);
+        auto hDrop = (HDROP)GlobalLock(stg.hGlobal);
+        auto uNumFiles = DragQueryFile(hDrop, -1, nullptr, 0);
+        wstring result;
+        for (UINT i = 0; i < uNumFiles; i++) {
+            wchar_t text[MAX_PATH];
+            DragQueryFile(hDrop, 0, text, MAX_PATH);
+            result += text;
+            if (i < uNumFiles - 1)
+                result += L"|";
+        }
+        dropFilesCallback(result.c_str());
+        return S_OK;
+    }
+
+    HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject)
+    {
+        return E_NOINTERFACE;
+    }
+
+    ULONG __stdcall AddRef(void) {
+        return 1;
+    }
+
+    ULONG __stdcall Release(void) {
+        return 0;
+    }
+};
+
+DropTarget dropTarget;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
@@ -281,6 +337,10 @@ struct Accelerator {
 vector<Accelerator> accelerators;
 
 void initializeWindow(Configuration configuration) {
+    dropFilesCallback = configuration.dropFilesCallback;
+    if (dropFilesCallback)
+        OleInitialize(0);
+
     window_settings_enabled = configuration.save_window_settings;
     organization = window_settings_enabled ? configuration.organization : L""s; 
     application = window_settings_enabled ? configuration.application : L""s;
@@ -322,7 +382,8 @@ void initializeWindow(Configuration configuration) {
     auto fullscreen_enabled = configuration.full_screen_enabled;
 
     auto result = CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
-        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2Environment* env) -> HRESULT {
+        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([url, dev_tools_enabled, fullscreen_enabled]
+                (HRESULT result, IWebView2Environment* env) -> HRESULT {
             env->CreateWebView(mainWindow, Callback<IWebView2CreateWebViewCompletedHandler>(
                     [url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
                 if (webview != nullptr)
@@ -375,6 +436,14 @@ void initializeWindow(Configuration configuration) {
                             CoTaskMemFree(message);
                             return S_OK;
                         }).Get(), &token);
+                }
+
+                if (dropFilesCallback) {
+                    auto webHost = GetFirstChild(mainWindow);
+                    auto chromium = GetFirstChild(webHost);
+                    RevokeDragDrop(chromium);
+                    HRESULT af = RegisterDragDrop(chromium, &dropTarget);
+                    int t = 0;
                 }
 
                 //// Schedule an async task to add initialization script that
@@ -580,6 +649,8 @@ int execute() {
             DispatchMessage(&msg);
         }
     }
+    if (dropFilesCallback)
+        OleUninitialize();
 
     return (int)msg.wParam;
 }

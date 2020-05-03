@@ -13,18 +13,21 @@ let iconPath = "/media/speicher/projekte/WebWindowNetCore/TestApp/icon.svg"
 let url = "https://google.de"
 
 let callback (text: string) = ()
+let dropFilesCallback (text: string) = 
+    ()
 
 let configuration = { 
     defaultConfiguration () with
-        title = "Web brauser😎😎👌"
-        url = url
-        iconPath = iconPath
-        debuggingEnabled = true
-        organization = "URiegel"
-        application = "TestBrauser"
-        saveWindowSettings = true
-        fullScreenEnabled = true
-        onEvent = callback
+        Title = "Web brauser😎😎👌"
+        Url = url
+        IconPath = iconPath
+        DebuggingEnabled = true
+        Organization = "URiegel"
+        Application = "TestBrauser"
+        SaveWindowSettings = true
+        FullScreenEnabled = true
+        OnEvent = callback
+        DropFiles = dropFilesCallback
 }
 
 initialize configuration

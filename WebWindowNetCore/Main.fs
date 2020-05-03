@@ -20,47 +20,50 @@ type private MenuCheckedCallback = delegate of bool -> unit
 type private MenuCallbacks = MenuCallbackType of MenuCallback | MenuCheckedCallbackType of MenuCheckedCallback
 
 type Configuration = {
-    title: string
-    url: string
-    iconPath: string
-    debuggingEnabled: bool
-    debuggingPort: int
-    organization: string
-    application: string
-    saveWindowSettings: bool
-    fullScreenEnabled: bool
-    onEvent: string -> unit
+    Title: string
+    Url: string
+    IconPath: string
+    DebuggingEnabled: bool
+    DebuggingPort: int
+    Organization: string
+    Application: string
+    SaveWindowSettings: bool
+    FullScreenEnabled: bool
+    OnEvent: string -> unit
+    DropFiles: string -> unit
 }
 
 let defaultConfiguration () = {
-    title = "Browser"
-    url = "https://www.google.de"
-    iconPath = ""
-    debuggingEnabled = false
-    debuggingPort = 8888
-    organization = ""
-    application = ""
-    saveWindowSettings = false
-    fullScreenEnabled = false
-    onEvent = fun s -> ()
+    Title = "Browser"
+    Url = "https://www.google.de"
+    IconPath = ""
+    DebuggingEnabled = false
+    DebuggingPort = 8888
+    Organization = ""
+    Application = ""
+    SaveWindowSettings = false
+    FullScreenEnabled = false
+    OnEvent = fun s -> ()
+    DropFiles = fun s -> ()
 }
 
 [<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type private NativeConfiguration = 
     struct 
-        val mutable title: string
-        val mutable url: string
-        val mutable iconPath: string
+        val mutable Title: string
+        val mutable Url: string
+        val mutable IconPath: string
         [<MarshalAs(UnmanagedType.U1)>]
-        val mutable debuggingEnabled: bool
-        val mutable debuggingPort: int
-        val mutable organization: string
-        val mutable application: string
+        val mutable DebuggingEnabled: bool
+        val mutable DebuggingPort: int
+        val mutable Organization: string
+        val mutable Application: string
         [<MarshalAs(UnmanagedType.U1)>]
-        val mutable saveWindowSettings: bool
+        val mutable SaveWindowSettings: bool
         [<MarshalAs(UnmanagedType.U1)>]
-        val mutable fullScreenEnabled: bool
-        val mutable callback: Callback
+        val mutable FullScreenEnabled: bool
+        val mutable Callback: Callback
+        val mutable DropFiles: Callback
     end
 
 type MenuItemType =  MenuItem = 0 | Separator = 1 | Checkbox = 2 | Radio = 3
@@ -68,13 +71,13 @@ type MenuItemType =  MenuItem = 0 | Separator = 1 | Checkbox = 2 | Radio = 3
 [<StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)>]
 type private NativeMenuItem = 
     struct 
-        val mutable menuItemType: MenuItemType
-        val mutable title: string
-        val mutable accelerator: string 
-        val mutable onMenu: MenuCallback
-        val mutable onChecked: MenuCheckedCallback
-        val mutable groupCount: int
-        val mutable groupId: int
+        val mutable MenuItemType: MenuItemType
+        val mutable Title: string
+        val mutable Accelerator: string 
+        val mutable OnMenu: MenuCallback
+        val mutable OnChecked: MenuCheckedCallback
+        val mutable GroupCount: int
+        val mutable GroupId: int
     end
 
 type MenuCmdItem = {
@@ -157,15 +160,17 @@ type private NativeMethods() =
     static member showFullscreen = nativeShowFullscreen
 
 let mutable private onEventDelegate = null
+let mutable private dropFilesDelegate = null
 
 let initialize (configuration: Configuration) =
-    onEventDelegate <- Callback configuration.onEvent 
+    onEventDelegate <- Callback configuration.OnEvent 
+    dropFilesDelegate <- Callback configuration.DropFiles
     let c = NativeConfiguration(
-                title = configuration.title, url = configuration.url, iconPath = configuration.iconPath, 
-                debuggingEnabled = configuration.debuggingEnabled, debuggingPort = configuration.debuggingPort,
-                organization = configuration.organization, application = configuration.application, 
-                saveWindowSettings = configuration.saveWindowSettings, fullScreenEnabled = configuration.fullScreenEnabled,
-                callback = onEventDelegate
+                Title = configuration.Title, Url = configuration.Url, IconPath = configuration.IconPath, 
+                DebuggingEnabled = configuration.DebuggingEnabled, DebuggingPort = configuration.DebuggingPort,
+                Organization = configuration.Organization, Application = configuration.Application, 
+                SaveWindowSettings = configuration.SaveWindowSettings, FullScreenEnabled = configuration.FullScreenEnabled,
+                Callback = onEventDelegate, DropFiles = dropFilesDelegate
             )
     NativeMethods.Initialize c
     
@@ -196,25 +201,25 @@ let setMenu (menu: MenuItem list) =
                         NativeMethods.addSubmenu (value.Title, menuHandle)
                 setMenu value.Items menuHandle
             | Separator -> 
-                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( menuItemType = MenuItemType.Separator, title = null ))|> ignore
+                NativeMethods.setMenuItem (menuHandle, NativeMenuItem( MenuItemType = MenuItemType.Separator, Title = null ))|> ignore
             | CmdItem value ->
                 let callback = MenuCallback value.Action
                 delegatesHolder <- MenuCallbackType callback :: delegatesHolder
                 NativeMethods.setMenuItem (menuHandle, NativeMenuItem( 
-                                            menuItemType = MenuItemType.MenuItem,
-                                            title = value.Title, 
-                                            accelerator = getAccelerator value.Accelerator,
-                                            onMenu = callback)
+                                            MenuItemType = MenuItemType.MenuItem,
+                                            Title = value.Title, 
+                                            Accelerator = getAccelerator value.Accelerator,
+                                            OnMenu = callback)
                                         ) |> ignore
             | Checkbox value ->                                        
                 let callback = MenuCheckedCallback value.OnChecked
                 delegatesHolder <- MenuCheckedCallbackType callback :: delegatesHolder
                 let id = NativeMethods.setMenuItem (
                             menuHandle, NativeMenuItem( 
-                                menuItemType = MenuItemType.Checkbox,
-                                title = value.Title, 
-                                accelerator = getAccelerator value.Accelerator,
-                                onChecked = callback)
+                                MenuItemType = MenuItemType.Checkbox,
+                                Title = value.Title, 
+                                Accelerator = getAccelerator value.Accelerator,
+                                OnChecked = callback)
                             ) 
                 match value.SetCheckedFunction with
                 | Some value -> 
@@ -232,12 +237,12 @@ let setMenu (menu: MenuItem list) =
                         delegatesHolder <- MenuCallbackType callback :: delegatesHolder
                         let id = NativeMethods.setMenuItem (menuHandle, 
                                     NativeMenuItem( 
-                                        menuItemType = MenuItemType.Radio,
-                                        title = radio.Title, 
-                                        accelerator = getAccelerator radio.Accelerator,    
-                                        onMenu = callback,
-                                        groupCount = count,
-                                        groupId = i)
+                                        MenuItemType = MenuItemType.Radio,
+                                        Title = radio.Title, 
+                                        Accelerator = getAccelerator radio.Accelerator,    
+                                        OnMenu = callback,
+                                        GroupCount = count,
+                                        GroupId = i)
                                     ) 
                         if cmd = -1 then cmd <- id
                         radio.Key
