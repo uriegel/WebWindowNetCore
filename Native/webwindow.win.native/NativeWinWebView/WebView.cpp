@@ -171,7 +171,7 @@ struct DropTarget : public IDropTarget
         wstring result;
         for (UINT i = 0; i < uNumFiles; i++) {
             wchar_t text[MAX_PATH];
-            DragQueryFile(hDrop, 0, text, MAX_PATH);
+            DragQueryFile(hDrop, i, text, MAX_PATH);
             result += text;
             if (i < uNumFiles - 1)
                 result += L"|";
