@@ -27,3 +27,5 @@ NativeDependencies/WebView2Loader.dll
 NativeDependencies/NativeWinWebView.so
 Native/webwindow.win.native/NativeWinWebView/NativeWinWebView.aps
 Native/webwindow.linux.native/build-webwindowlinuxnative-Desktop_Qt_5_14_1_GCC_64bit-Release
+
+.fake

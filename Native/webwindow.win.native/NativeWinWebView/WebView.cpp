@@ -8,7 +8,6 @@
 #include <windowsx.h>
 #include <wil/com.h>
 #include <WebView2.h>
-
 using namespace Microsoft::WRL;
 using namespace std;
 
@@ -30,7 +29,7 @@ DropFilesCallback dropFilesCallback{ nullptr };
 
 struct Configuration {
     const wchar_t* title{ nullptr };
-    const wchar_t* url{ nullptr };
+    const wchar_t* url{ L"about:blank" };
     const wchar_t* icon_path{ nullptr };
     bool debugging_enabled{ false };
     int debuggingPort{ 8888 };
@@ -42,7 +41,9 @@ struct Configuration {
     DropFilesCallback dropFilesCallback{ nullptr };
 };
 
-static wil::com_ptr<IWebView2WebView5> webviewWindow;
+static wil::com_ptr<ICoreWebView2> webviewWindow;
+static wil::com_ptr<ICoreWebView2Controller> webviewController;
+
 HWND mainWindow{ nullptr };
 HACCEL hAccelTable{ nullptr };
 HMENU menubar{ nullptr };
@@ -202,7 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         if (webviewWindow != nullptr) {
             RECT bounds;
             GetClientRect(hWnd, &bounds);
-            webviewWindow->put_Bounds(bounds);
+            webviewController->put_Bounds(bounds);
         };
         break;
     case WM_SYSCOMMAND:
@@ -220,8 +221,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         doCommand(LOWORD(wParam));
         break;
     case WM_SETFOCUS:
-        if (webviewWindow != nullptr) 
-            webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
+        //if (webviewWindow != nullptr) 
+        //    webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
         break;
     case WM_APP + 1:
         CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
@@ -377,155 +378,172 @@ void initializeWindow(Configuration configuration) {
         ? SW_SHOWMINIMIZED
         : SW_SHOWDEFAULT);
     UpdateWindow(mainWindow);
+
     auto url = wstring(configuration.url);
     auto dev_tools_enabled = configuration.debugging_enabled;
     auto fullscreen_enabled = configuration.full_screen_enabled;
 
-    auto result = CreateWebView2EnvironmentWithDetails(nullptr, nullptr, nullptr, 
-        Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>([url, dev_tools_enabled, fullscreen_enabled]
-                (HRESULT result, IWebView2Environment* env) -> HRESULT {
-            env->CreateWebView(mainWindow, Callback<IWebView2CreateWebViewCompletedHandler>(
-                    [url, dev_tools_enabled, fullscreen_enabled](HRESULT result, IWebView2WebView* webview) -> HRESULT {
-                if (webview != nullptr)
-                    webview->QueryInterface(IID_PPV_ARGS(&webviewWindow));
+    auto result = CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr,
+        Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+            [url, dev_tools_enabled](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+                env->CreateCoreWebView2Controller(mainWindow, Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+                    [url, dev_tools_enabled](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
+                        if (controller != nullptr) {
+                            webviewController = controller;
+                            webviewController->get_CoreWebView2(&webviewWindow);
+                        }
 
-                IWebView2Settings* settings;
-                webviewWindow->get_Settings(&settings);
-                settings->put_IsScriptEnabled(TRUE);
-                settings->put_AreDefaultScriptDialogsEnabled(TRUE);
-                settings->put_IsWebMessageEnabled(TRUE);
-                settings->put_AreDevToolsEnabled(dev_tools_enabled);
+                        // Add a few settings for the webview
+                        // The demo step is redundant since the values are the default settings
+                        ICoreWebView2Settings* settings;
+                        webviewWindow->get_Settings(&settings);
+                        settings->put_IsScriptEnabled(TRUE);
+                        settings->put_AreDefaultScriptDialogsEnabled(TRUE);
+                        settings->put_IsWebMessageEnabled(TRUE);
+                        settings->put_AreDevToolsEnabled(dev_tools_enabled);
 
-                IWebView2Settings2* settings2;
-                settings->QueryInterface(IID_PPV_ARGS(&settings2));
-                settings2->put_AreDefaultContextMenusEnabled(FALSE);
+                        // Resize WebView to fit the bounds of the parent window
+                        RECT bounds;
+                        GetClientRect(mainWindow, &bounds);
+                        webviewController->put_Bounds(bounds);
 
-                // Resize WebView to fit the bounds of the parent window
-                RECT bounds;
-                GetClientRect(mainWindow, &bounds);
-                webviewWindow->put_Bounds(bounds);
 
-                // Schedule an async task to navigate to Bing
-                webviewWindow->Navigate(url.c_str());
-                webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
-                
-                if (fullscreen_enabled) {
-                    (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
-                        [](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
-                            BOOL contains_fullscreen{ FALSE };
-                            sender->get_ContainsFullScreenElement(&contains_fullscreen);
-                            if (contains_fullscreen)
-                                enter_fullscreen(mainWindow);
-                            else
-                                exit_fullscreen(mainWindow);
-                            return S_OK;
-                        })
-                    .Get(),
-                    nullptr));
-                }
+                        // Schedule an async task to navigate to Bing
+                        webviewWindow->Navigate(url.c_str());
+                        // webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
 
-                // Step 6 - Communication between host and web content
-                // Set an event handler for the host to return received message back to the web content
-                if (callback) {
-                    EventRegistrationToken token;
-                    webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
-                        [](auto webview, auto args) -> HRESULT {
-                            PWSTR message;
-                            args->get_WebMessageAsString(&message);
-                            callback(message);
-                            CoTaskMemFree(message);
-                            return S_OK;
-                        }).Get(), &token);
-                }
+                        // Step 4 - Navigation events
 
-                if (dropFilesCallback) {
-                    auto webHost = GetFirstChild(mainWindow);
-                    auto chromium = GetFirstChild(webHost);
-                    RevokeDragDrop(chromium);
-                    HRESULT af = RegisterDragDrop(chromium, &dropTarget);
-                    int t = 0;
-                }
+                        // Step 5 - Scripting
 
-                //// Schedule an async task to add initialization script that
-                //// 1) Add an listener to print message from the host
-                //// 2) Post document URL to the host
-                webviewWindow->AddScriptToExecuteOnDocumentCreated(
-LR"(var webWindowNetCore = (function() {
-    var callback
+                        // Step 6 - Communication between host and web content
+                        //if (callback) {
+                        //    EventRegistrationToken token;
+                        //    webviewWindow->add_WebMessageReceived(Callback<IWebView2WebMessageReceivedEventHandler>(
+                        //        [](auto webview, auto args) -> HRESULT {
+                        //            PWSTR message;
+                        //            args->get_WebMessageAsString(&message);
+                        //            callback(message);
+                        //            CoTaskMemFree(message);
+                        //            return S_OK;
+                        //        }).Get(), &token);
+                        //}
 
-    window.chrome.webview.addEventListener('message', event => {
-        if (callback)
-            callback(event.data)
-    })
+                        //if (dropFilesCallback) {
+                        //    auto webHost = GetFirstChild(mainWindow);
+                        //    auto chromium = GetFirstChild(webHost);
+                        //    RevokeDragDrop(chromium);
+                        //    HRESULT af = RegisterDragDrop(chromium, &dropTarget);
+                        //    int t = 0;
+                        //}
 
-    function postMessage(msg) {
-        window.chrome.webview.postMessage(msg)                    
-    }
 
-    function setCallback(callbackToHost) {
-        callback = callbackToHost
-    }
+                        return S_OK;
 
-    return {
-        setCallback,
-        postMessage
-    }
-})())", nullptr);
+                    
 
-                EventRegistrationToken acceleratorKeyPressedToken;
-                webviewWindow->add_AcceleratorKeyPressed(
-                    Callback<IWebView2AcceleratorKeyPressedEventHandler>(
-                        [](IWebView2WebView* sender, IWebView2AcceleratorKeyPressedEventArgs* args)-> HRESULT {
-                            WEBVIEW2_KEY_EVENT_TYPE type;
-                            args->get_KeyEventType(&type);
-                            // We only care about key down events.
-                            if (type == WEBVIEW2_KEY_EVENT_TYPE_KEY_DOWN || type == WEBVIEW2_KEY_EVENT_TYPE_SYSTEM_KEY_DOWN) {
-                                UINT key;
-                                args->get_VirtualKey(&key);
-                                if (key != VK_CONTROL && key != VK_MENU) {
-                                    auto altPressed = GetKeyState(VK_MENU) == -128 || GetKeyState(VK_MENU) == -127;
-                                    auto ctrlPressed = GetKeyState(VK_CONTROL) == -128 || GetKeyState(VK_CONTROL) == -127;
-                                    char baffer[2000];
-                                    wsprintfA(baffer, "Kie: %d %d %d\n", key, altPressed, ctrlPressed);
+                //IWebView2Settings2* settings2;
+                //settings->QueryInterface(IID_PPV_ARGS(&settings2));
+                //settings2->put_AreDefaultContextMenusEnabled(FALSE);
 
-                                    auto cmd = find_if(accelerators.begin(), accelerators.end(), [key, altPressed, ctrlPressed](Accelerator n) {
-                                        if (n.key == key) {
-                                            bool ctrl = (n.virtkey & FCONTROL) == FCONTROL;
-                                            bool alt = (n.virtkey & FALT) == FALT;
-                                            return (ctrl == ctrlPressed && alt == altPressed);
-                                        }
-                                        else
-                                            return false;
-                                    });
-                                    if (cmd != end(accelerators))
-                                        doCommand(cmd->cmd);
-                                }
-                                    // Check if the key is one we want to handle.
-                            //    if (std::function<void()> action =
-                            //        m_appWindow->GetAcceleratorKeyFunction(key))
-                            //    {
-                            //        // Keep the browser from handling this key, whether it's autorepeated or
-                            //        // not.
-                            //        CHECK_FAILURE(args->Handle(TRUE));
+                //if (fullscreen_enabled) {
+                //    (webviewWindow->add_ContainsFullScreenElementChanged(Callback<IWebView2ContainsFullScreenElementChangedEventHandler>(
+                //        [](IWebView2WebView5* sender, IUnknown* args) -> HRESULT {
+                //            BOOL contains_fullscreen{ FALSE };
+                //            sender->get_ContainsFullScreenElement(&contains_fullscreen);
+                //            if (contains_fullscreen)
+                //                enter_fullscreen(mainWindow);
+                //            else
+                //                exit_fullscreen(mainWindow);
+                //            return S_OK;
+                //        })
+                //    .Get(),
+                //    nullptr));
+                //}
 
-                            //        // Filter out autorepeated keys.
-                            //        WEBVIEW2_PHYSICAL_KEY_STATUS status;
-                            //        CHECK_FAILURE(args->get_PhysicalKeyStatus(&status));
-                            //        if (!status.WasKeyDown)
-                            //        {
-                            //            // Perform the action asynchronously to avoid blocking the
-                            //            // browser process's event queue.
-                            //            m_appWindow->RunAsync(action);
-                            //        }
-                            //    }
-                            }
-                            return S_OK;
-                        }).Get(), &acceleratorKeyPressedToken);
+
+
+//                //// Schedule an async task to add initialization script that
+//                //// 1) Add an listener to print message from the host
+//                //// 2) Post document URL to the host
+//                webviewWindow->AddScriptToExecuteOnDocumentCreated(
+//LR"(var webWindowNetCore = (function() {
+//    var callback
+//
+//    window.chrome.webview.addEventListener('message', event => {
+//        if (callback)
+//            callback(event.data)
+//    })
+//
+//    function postMessage(msg) {
+//        window.chrome.webview.postMessage(msg)                    
+//    }
+//
+//    function setCallback(callbackToHost) {
+//        callback = callbackToHost
+//    }
+//
+//    return {
+//        setCallback,
+//        postMessage
+//    }
+//})())", nullptr);
+//
+                //EventRegistrationToken acceleratorKeyPressedToken;
+                //webviewWindow->add_AcceleratorKeyPressed(
+                //    Callback<IWebView2AcceleratorKeyPressedEventHandler>(
+                //        [](IWebView2WebView* sender, IWebView2AcceleratorKeyPressedEventArgs* args)-> HRESULT {
+                //            WEBVIEW2_KEY_EVENT_TYPE type;
+                //            args->get_KeyEventType(&type);
+                //            // We only care about key down events.
+                //            if (type == WEBVIEW2_KEY_EVENT_TYPE_KEY_DOWN || type == WEBVIEW2_KEY_EVENT_TYPE_SYSTEM_KEY_DOWN) {
+                //                UINT key;
+                //                args->get_VirtualKey(&key);
+                //                if (key != VK_CONTROL && key != VK_MENU) {
+                //                    auto altPressed = GetKeyState(VK_MENU) == -128 || GetKeyState(VK_MENU) == -127;
+                //                    auto ctrlPressed = GetKeyState(VK_CONTROL) == -128 || GetKeyState(VK_CONTROL) == -127;
+                //                    char baffer[2000];
+                //                    wsprintfA(baffer, "Kie: %d %d %d\n", key, altPressed, ctrlPressed);
+
+                //                    auto cmd = find_if(accelerators.begin(), accelerators.end(), [key, altPressed, ctrlPressed](Accelerator n) {
+                //                        if (n.key == key) {
+                //                            bool ctrl = (n.virtkey & FCONTROL) == FCONTROL;
+                //                            bool alt = (n.virtkey & FALT) == FALT;
+                //                            return (ctrl == ctrlPressed && alt == altPressed);
+                //                        }
+                //                        else
+                //                            return false;
+                //                    });
+                //                    if (cmd != end(accelerators))
+                //                        doCommand(cmd->cmd);
+                //                }
+                //                    // Check if the key is one we want to handle.
+                //            //    if (std::function<void()> action =
+                //            //        m_appWindow->GetAcceleratorKeyFunction(key))
+                //            //    {
+                //            //        // Keep the browser from handling this key, whether it's autorepeated or
+                //            //        // not.
+                //            //        CHECK_FAILURE(args->Handle(TRUE));
+
+                //            //        // Filter out autorepeated keys.
+                //            //        WEBVIEW2_PHYSICAL_KEY_STATUS status;
+                //            //        CHECK_FAILURE(args->get_PhysicalKeyStatus(&status));
+                //            //        if (!status.WasKeyDown)
+                //            //        {
+                //            //            // Perform the action asynchronously to avoid blocking the
+                //            //            // browser process's event queue.
+                //            //            m_appWindow->RunAsync(action);
+                //            //        }
+                //            //    }
+                //            }
+                //            return S_OK;
+                //        }).Get(), &acceleratorKeyPressedToken);
 
                 return S_OK;
             }).Get());
         return S_OK;
     }).Get());
+    auto aua = result;
 }
 
 void sendToBrowser(const wchar_t* text) {
@@ -669,3 +687,13 @@ void showFullscreen(bool fullscreen) {
     else
         exit_fullscreen(mainWindow);
 }
+
+//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
+//    Configuration configuration{
+//        L"Testbrauser",
+//        L"https://www.bing.com"
+//    };
+//    initializeWindow(configuration);
+//    execute();
+//    return 0;
+//}

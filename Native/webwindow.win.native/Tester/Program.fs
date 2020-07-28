@@ -70,14 +70,20 @@ extern void setMenuItemChecked (int cmdId, [<MarshalAs(UnmanagedType.I1)>] bool 
 
 [<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>] 
 extern void setMenuItemSelected (int cmdId, int groupCount, int id)
+
+[<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>]
+extern void showDevTools ()
  
+[<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>]
+extern void showFullscreen (bool show)
+
 [<EntryPoint>]
 [<STAThread>]
 let main argv =
     printfn "Hello World from new F#!"
-    let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
+    //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
     //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
-    //let url = "https://google.de"
+    let url = "https://google.de"
 
     let callback (text: string) =
             printfn "Das kam vom lieben Webview: %s" text
@@ -97,7 +103,9 @@ let main argv =
 
     let onNew () = printfn "onNew"
     let onOpen () = printfn "onOpen"
+    let onDev () = showDevTools ()
     let onExit () = printfn "onExit"
+    let onShowFullscreen () = showFullscreen true
     let onHidden () = printfn "onHidden" 
     let onRot () = printfn "onRot" 
     let onBlau () = printfn "onBlau" 
@@ -107,6 +115,8 @@ let main argv =
     let onNewDelegate = MenuCallback onNew
     let onOpenDelegate = MenuCallback onOpen
     let onExitDelegate = MenuCallback onExit
+    let onDevDelegate = MenuCallback onDev
+    let onShowFullscreenDelegate = MenuCallback onShowFullscreen
     let onHiddenDelegate = MenuCallback onHidden
     let onRotDelegate = MenuCallback onRot
     let onBlauDelegate = MenuCallback onBlau
@@ -118,6 +128,8 @@ let main argv =
     setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
     setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4", onMenu = onExitDelegate ))|> ignore
     let menu = addMenu "Ansicht"
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Deff-Tools", accelerator = "Strg+F12", onMenu = onDevDelegate ))|> ignore
+    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Vollbild", accelerator = "F11", onMenu = onShowFullscreenDelegate ))|> ignore
     let hiddenId = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Checkbox, title = "&Versteckte Dateien", accelerator = "Strg+H", onMenu = onHiddenDelegate ))
     setMenuItemChecked(hiddenId, true)
     let submenu = addSubmenu ("&Themen", menu)
