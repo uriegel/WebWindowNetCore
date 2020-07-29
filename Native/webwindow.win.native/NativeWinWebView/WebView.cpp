@@ -221,8 +221,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         doCommand(LOWORD(wParam));
         break;
     case WM_SETFOCUS:
-        //if (webviewWindow != nullptr) 
-        //    webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
+        if (webviewController != nullptr)
+            webviewController->MoveFocus(COREWEBVIEW2_MOVE_FOCUS_REASON_NEXT);
         break;
     case WM_APP + 1:
         CheckMenuItem(GetMenu(hWnd), (UINT)wParam, lParam ? MF_CHECKED : MF_UNCHECKED);
@@ -234,6 +234,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
         int id = HIWORD(lParam);
         CheckMenuRadioItem(GetMenu(hWnd), cmdId, cmdId + groupCount - 1, cmdId + id, MF_BYCOMMAND);
     }
+    break;
+    case WM_APP + 3:
+        webviewWindow->OpenDevToolsWindow();
     break;
 
     case WM_DESTROY:
@@ -410,9 +413,15 @@ void initializeWindow(Configuration configuration) {
 
                         // Schedule an async task to navigate to Bing
                         webviewWindow->Navigate(url.c_str());
-                        // webviewWindow->MoveFocus(WEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC);
-
+                        PostMessage(mainWindow, WM_SETFOCUS, 0, 0);
+                        webviewController->MoveFocus(COREWEBVIEW2_MOVE_FOCUS_REASON_NEXT);
                         // Step 4 - Navigation events
+                        EventRegistrationToken token;
+                        webviewWindow->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(
+                            [](ICoreWebView2* webview, ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT {
+                                PostMessage(mainWindow, WM_SETFOCUS, 0, 0);
+                                return S_OK;
+                            }).Get(), &token);
 
                         // Step 5 - Scripting
 
@@ -678,7 +687,7 @@ void closeWindow() {
 }
 
 void showDevTools() {
-    webviewWindow->OpenDevToolsWindow();
+    PostMessage(mainWindow, WM_APP + 3, 0, 0);
 }
 
 void showFullscreen(bool fullscreen) {
