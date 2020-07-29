@@ -83,7 +83,8 @@ let main argv =
     printfn "Hello World from new F#!"
     //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
     //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
-    let url = "https://google.de"
+    //let url = "https://google.de"
+    let url = "http://localhost:8080"
 
     let callback (text: string) =
             printfn "Das kam vom lieben Webview: %s" text
@@ -103,7 +104,9 @@ let main argv =
 
     let onNew () = printfn "onNew"
     let onOpen () = printfn "onOpen"
-    let onDev () = showDevTools ()
+    let onDev () = 
+        let th = System.Threading.Thread(fun () -> showDevTools ())
+        th.Start()
     let onExit () = printfn "onExit"
     let onShowFullscreen () = showFullscreen true
     let onHidden () = printfn "onHidden" 
@@ -122,22 +125,22 @@ let main argv =
     let onBlauDelegate = MenuCallback onBlau
     let onDunkelDelegate = MenuCallback onDunkel
     
-    let menu = addMenu "&Datei"
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Neu", accelerator = "Strg+N", onMenu = onNewDelegate)) |> ignore
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = "F5", onMenu = onOpenDelegate ))|> ignore
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4", onMenu = onExitDelegate ))|> ignore
-    let menu = addMenu "Ansicht"
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Deff-Tools", accelerator = "Strg+F12", onMenu = onDevDelegate ))|> ignore
-    setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Vollbild", accelerator = "F11", onMenu = onShowFullscreenDelegate ))|> ignore
-    let hiddenId = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Checkbox, title = "&Versteckte Dateien", accelerator = "Strg+H", onMenu = onHiddenDelegate ))
-    setMenuItemChecked(hiddenId, true)
-    let submenu = addSubmenu ("&Themen", menu)
-    let themeId = setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Rot", accelerator = null, onMenu = onRotDelegate, groupCount = 3, groupId = 0 ))
-    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Blau", accelerator = null, onMenu = onBlauDelegate, groupCount = 3, groupId = 1 ))|> ignore
-    setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Dunkel", accelerator = null, onMenu = onDunkelDelegate, groupCount = 3, groupId = 2 ))|> ignore
+    //let menu = addMenu "&Datei"
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Neu", accelerator = "Strg+N", onMenu = onNewDelegate)) |> ignore
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Öffnen", accelerator = "F5", onMenu = onOpenDelegate ))|> ignore
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Separator, title = null, accelerator = null, onMenu = dontDelegate ))|> ignore
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Beenden", accelerator = "Alt+F4", onMenu = onExitDelegate ))|> ignore
+    //let menu = addMenu "Ansicht"
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Deff-Tools", accelerator = "Strg+F12", onMenu = onDevDelegate ))|> ignore
+    //setMenuItem (menu, MenuItem( menuItemType = MenuItemType.MenuItem, title = "&Vollbild", accelerator = "F11", onMenu = onShowFullscreenDelegate ))|> ignore
+    //let hiddenId = setMenuItem (menu, MenuItem( menuItemType = MenuItemType.Checkbox, title = "&Versteckte Dateien", accelerator = "Strg+H", onMenu = onHiddenDelegate ))
+    //setMenuItemChecked(hiddenId, true)
+    //let submenu = addSubmenu ("&Themen", menu)
+    //let themeId = setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Rot", accelerator = null, onMenu = onRotDelegate, groupCount = 3, groupId = 0 ))
+    //setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Blau", accelerator = null, onMenu = onBlauDelegate, groupCount = 3, groupId = 1 ))|> ignore
+    //setMenuItem (submenu, MenuItem( menuItemType = MenuItemType.Radio, title = "&Dunkel", accelerator = null, onMenu = onDunkelDelegate, groupCount = 3, groupId = 2 ))|> ignore
 
-    setMenuItemSelected (themeId, 3, 1)
+    //setMenuItemSelected (themeId, 3, 1)
     
     async {
         let rec readLine () = 
