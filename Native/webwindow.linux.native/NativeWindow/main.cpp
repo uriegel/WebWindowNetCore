@@ -64,6 +64,8 @@ QString create_debugging_arg(int port) {
 }
 
 void initializeWindow(Configuration configuration) {
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     int c = configuration.debugging_enabled ? 2 : 0;
     char* args[2];
     args[0] = (char*)"WebWindow";
