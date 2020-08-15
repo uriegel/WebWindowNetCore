@@ -438,14 +438,13 @@ void initializeWindow(Configuration configuration) {
                         //        }).Get(), &token);
                         //}
 
-                        //if (dropFilesCallback) {
-                        //    auto webHost = GetFirstChild(mainWindow);
-                        //    auto chromium = GetFirstChild(webHost);
-                        //    RevokeDragDrop(chromium);
-                        //    HRESULT af = RegisterDragDrop(chromium, &dropTarget);
-                        //    int t = 0;
-                        //}
-
+                        if (dropFilesCallback) {
+                            auto webHost = GetFirstChild(mainWindow);
+                            auto chromium = GetFirstChild(webHost);
+                            RevokeDragDrop(chromium);
+                            HRESULT af = RegisterDragDrop(chromium, &dropTarget);
+                            int t = 0;
+                        }
 
                         return S_OK;
 

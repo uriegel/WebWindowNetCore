@@ -77,14 +77,20 @@ extern void showDevTools ()
 [<DllImport(DllName, CallingConvention = CallingConvention.Cdecl)>]
 extern void showFullscreen (bool show)
 
+[<DllImport("user32.dll", SetLastError = true)>]
+extern bool SetProcessDpiAwarenessContext(int dpiFlag)
+
 [<EntryPoint>]
 [<STAThread>]
 let main argv =
+
+    let affe = SetProcessDpiAwarenessContext 18
+    let errrr = Marshal.GetLastWin32Error ()
     printfn "Hello World from new F#!"
     //let url = @"file://C:\Users\urieg\source\repos\WebWindowNetCore\WebRoot\index.html"
     //let url = @"file://D:\Projekte\WebWindowNetCore\WebRoot\index.html"
-    //let url = "https://google.de"
-    let url = "http://localhost:8080"
+    let url = "https://google.de"
+    //let url = "http://localhost:8080"
 
     let callback (text: string) =
             printfn "Das kam vom lieben Webview: %s" text
