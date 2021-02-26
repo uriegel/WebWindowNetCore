@@ -33,10 +33,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Source.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)$(EffectivePlatform)\WebView2Loader.dll" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
