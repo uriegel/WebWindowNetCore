@@ -6,3 +6,5 @@ WebWindowNetCore/bin
 Native/WebWindowNetCore.Windows/bin
 Native/WebWindowNetCore.Windows/obj
 WebWindowNetCore/obj
+Native/WebWindowNetCore.Linux/bin
+Native/WebWindowNetCore.Linux/obj

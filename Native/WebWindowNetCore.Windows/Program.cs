@@ -1,4 +1,4 @@
-﻿namespace WebWindowNetCore.Windows;
+﻿namespace WebWindowNetCore;
 public static class Program
 {
     public static void Execute()

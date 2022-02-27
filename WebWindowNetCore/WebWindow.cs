@@ -1,5 +1,4 @@
-﻿using WebWindowNetCore.Windows;
-namespace WebWindowNetCore;
+﻿namespace WebWindowNetCore;
 
 public static class WebWindow
 {
