@@ -6,6 +6,17 @@
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>4.0.0-alpha.1</Version>
+		<FileVersion>4.0.0.0</FileVersion>
+		<AssemblyVersion>4.0.0.0</AssemblyVersion>
+		<Authors>Uwe Riegel</Authors>
+    <Company>Uwe Riegel</Company>		
+		<Description>Web View in an native window based on chromium (Windows, Linux) written for .Net Core</Description>
+		<PackageLicenseUrl></PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
@@ -23,5 +34,12 @@
   <ItemGroup Condition="'$(IsLinux)'=='true'">
     <ProjectReference Include="..\Native\WebWindowNetCore.Linux\WebWindowNetCore.Linux.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+   	<None Include="..\LICENSE">
+   		<Pack>True</Pack>
+     	<PackagePath></PackagePath>
+   	</None>
+  </ItemGroup>	  
 
 </Project>
