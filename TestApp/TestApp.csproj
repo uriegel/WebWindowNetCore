@@ -1,25 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
 		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
+    <RuntimeIdentifier>windows-x64</RuntimeIdentifier>
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup> 
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
+  </ItemGroup>
 
 </Project>
