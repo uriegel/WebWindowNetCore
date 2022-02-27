@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestApp/bin/Debug/netcoreapp3.1/TestApp.exe",
+            "program": "${workspaceFolder}/TestApp/bin/Debug/net6.0/TestApp.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
