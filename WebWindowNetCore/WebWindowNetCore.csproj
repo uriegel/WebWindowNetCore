@@ -17,7 +17,7 @@
   </PropertyGroup> 
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <ProjectReference Include="..\Native\WebWindowNetCore.Windows\WebWindowNetCore.Windows.csproj" />
+    <PackageReference Include="WebWindowNetCore.Windows" Version="0.0.1-alpha.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
