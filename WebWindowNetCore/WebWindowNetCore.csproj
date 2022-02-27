@@ -6,7 +6,7 @@
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>4.0.0-alpha.1</Version>
+    <Version>4.0.0-alpha.2</Version>
 		<FileVersion>4.0.0.0</FileVersion>
 		<AssemblyVersion>4.0.0.0</AssemblyVersion>
 		<Authors>Uwe Riegel</Authors>
@@ -16,6 +16,7 @@
 		<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		    
   </PropertyGroup>
 
@@ -32,14 +33,15 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <ProjectReference Include="..\Native\WebWindowNetCore.Linux\WebWindowNetCore.Linux.csproj" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="0.0.1-alpha.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
    	<None Include="..\LICENSE">
    		<Pack>True</Pack>
      	<PackagePath></PackagePath>
    	</None>
-  </ItemGroup>	  
+  </ItemGroup>
 
 </Project>
