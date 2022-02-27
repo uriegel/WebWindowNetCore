@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GtkDotNet" Version="5.5.0" />
+  </ItemGroup>
+
 </Project>

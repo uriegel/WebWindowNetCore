@@ -19,7 +19,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestApp/bin/Debug/net6.0/TestApp.dll",
+            "program": "${workspaceFolder}/TestApp/bin/Debug/net6.0/linux-x64/TestApp.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
