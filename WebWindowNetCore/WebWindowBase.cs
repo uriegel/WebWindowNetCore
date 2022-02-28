@@ -16,7 +16,6 @@ public abstract class WebWindowBase
 
         var settings = new Settings(configuration.InitialPosition?.X ?? -1, configuration.InitialPosition?.Y ?? -1, 
             configuration.InitialSize?.Width ?? 800, configuration.InitialSize?.Height ?? 600, configuration.IsMaximized == true);
-        var settingsFile = "";      
 
         if (configuration.SaveWindowSettings == true)
         {
@@ -38,10 +37,18 @@ public abstract class WebWindowBase
                 }
             }
         }  
-        Run(settings, settingsFile);
+        Run(settings);
     }
 
-    protected abstract void Run(Settings settings, string settingsFile);
+    protected abstract void Run(Settings settings);
+
+    protected void SaveSettings(Settings settings)
+    {
+        var json = JsonSerializer.Serialize(settings);
+        using var writer = new StreamWriter(File.Create(settingsFile));
+        writer.Write(json);
+    }
 
     protected Configuration configuration;
+    string settingsFile = "";      
 }
