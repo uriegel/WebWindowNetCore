@@ -4,7 +4,7 @@ namespace WebWindowNetCore;
 
 public abstract class WebWindowBase
 {
-    public record Settings(int x, int y, int width, int height, bool isMaximized);
+    public record Settings(int X, int Y, int Width, int Height, bool IsMaximized);
 
     public WebWindowBase(Configuration configuration) 
         => this.configuration = configuration;
