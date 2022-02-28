@@ -2,18 +2,15 @@ using System.Text.Json;
 
 namespace WebWindowNetCore;
 
-public record Settings(int x, int y, int width, int height, bool isMaximized);
-
 public abstract class WebWindowBase
 {
-    protected record Settings(int x, int y, int width, int height, bool isMaximized);
+    public record Settings(int x, int y, int width, int height, bool isMaximized);
 
     public WebWindowBase(Configuration configuration) 
         => this.configuration = configuration;
 
     public void Execute()
     {
-
         var settings = new Settings(configuration.InitialPosition?.X ?? -1, configuration.InitialPosition?.Y ?? -1, 
             configuration.InitialSize?.Width ?? 800, configuration.InitialSize?.Height ?? 600, configuration.IsMaximized == true);
 
@@ -42,7 +39,7 @@ public abstract class WebWindowBase
 
     protected abstract void Run(Settings settings);
 
-    protected void SaveSettings(Settings settings)
+    protected void SaveSettings(WebWindowBase.Settings settings)
     {
         var json = JsonSerializer.Serialize(settings);
         using var writer = new StreamWriter(File.Create(settingsFile));
