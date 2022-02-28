@@ -8,7 +8,7 @@ static class Program
     [STAThread]
     static void Main()
     {
-        WebWindow.Execute();
+        var setting = new Configuration(FullscreenEnabled: true);
     }
 }
 

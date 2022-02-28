@@ -1,12 +1,39 @@
 # WebWindowNetCore
-## Build nuget package
-```dotnet publish -c Release```
-## Test nuget package
-In test project, run 
-```dotnet add package WebWindowNetCore -s file:///media/speicher/projekte/WebWindowNetCore/WebWindowNetCore/bin/Release/```
+## New concept
+WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
 
-## Clean nuget cache
-```dotnet nuget locals all --clear```
+| Windows  | Linux  |
+|---|---|
+| WebWindowNetCore.Window  |  WebWindowNetCore.Linux |
 
-## Debug Windows Version
-Do  N O T  us ```dotnet``` as Debugger (Ionide), use F5 and debug .exe!
+How to setup .NET project:
+
+```
+<PropertyGroup>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
+		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
+	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>    
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+</PropertyGroup> 
+
+<PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+</PropertyGroup>
+
+<ItemGroup Condition="'$(IsWindows)'=='true'">
+    <PackageReference Include="WebWindowNetCore.Windows" Version="0.0.1-alpha.2" />
+</ItemGroup> 
+
+<ItemGroup Condition="'$(IsLinux)'=='true'">
+    <PackageReference Include="WebWindowNetCore.Linux" Version="0.0.1-alpha.2" />
+</ItemGroup> 
+
+
+```
