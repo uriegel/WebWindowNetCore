@@ -6,11 +6,14 @@ public record Settings(int x, int y, int width, int height, bool isMaximized);
 
 public abstract class WebWindowBase
 {
+    protected record Settings(int x, int y, int width, int height, bool isMaximized);
+
     public WebWindowBase(Configuration configuration) 
         => this.configuration = configuration;
 
     public void Execute()
     {
+
         var settings = new Settings(configuration.InitialPosition?.X ?? -1, configuration.InitialPosition?.Y ?? -1, 
             configuration.InitialSize?.Width ?? 800, configuration.InitialSize?.Height ?? 600, configuration.IsMaximized == true);
         var settingsFile = "";      
@@ -35,10 +38,10 @@ public abstract class WebWindowBase
                 }
             }
         }  
-        Run();
+        Run(settings, settingsFile);
     }
 
-    protected abstract void Run();
+    protected abstract void Run(Settings settings, string settingsFile);
 
     protected Configuration configuration;
 }
