@@ -35,5 +35,7 @@ How to setup .NET project:
     <PackageReference Include="WebWindowNetCore.Linux" Version="0.0.1-alpha.2" />
 </ItemGroup> 
 
-
 ```
+
+## Loading application icon
+In order to attach an application icon, an icon has to be inserted as resource. Look at READ in the platform specific package (WebWindowNetCore.Windows, WebWindowNetCore.Linux).
