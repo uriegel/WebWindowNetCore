@@ -37,11 +37,10 @@
 </ItemGroup>
 
 <ItemGroup Condition="'$(IsWindows)'=='true'">
-	<ProjectReference Include="..\Windows\WebWindow\WebWindow.csproj" />
+	<PackageReference Include="WebWindowNetCore.Windows" Version="0.0.1-alpha.4" />
 </ItemGroup>
 
 <ItemGroup Condition="'$(IsLinux)'=='true'">
-  	<ProjectReference Include="..\Linux\WebWindow\WebWindow.csproj" />
 </ItemGroup>
 
 </Project>
