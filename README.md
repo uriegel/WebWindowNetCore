@@ -15,6 +15,10 @@ runtimes
     \linux-x64
         \lib\WebWindow
 ```
+## Test
+
+Small sample with Gtk Window ans Windows Forms,
+publish under Version 0.0.9
 
 ## Deprecated
 WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
