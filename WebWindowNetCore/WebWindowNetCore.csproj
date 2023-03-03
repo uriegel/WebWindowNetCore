@@ -1,21 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
     <targetFramework>net6.0</targetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>4.0.0-alpha.5</Version>
-		<FileVersion>4.0.0.0</FileVersion>
-		<AssemblyVersion>4.0.0.0</AssemblyVersion>
-		<Authors>Uwe Riegel</Authors>
+    <Version>0.0.1-alpha.6</Version>
+	<FileVersion>0.0.1.0</FileVersion>
+	<AssemblyVersion>0.0.1.0</AssemblyVersion>
+	<Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>		
-		<Description>Web View in an native window based on chromium (Windows, Linux) written for .Net Core</Description>
-		<PackageLicenseUrl></PackageLicenseUrl>
-		<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<Description>Web View in an native window based on WebView2 (WindowsLinux) and GTK WebKit (Linux) written for .Net Core</Description>
+	<PackageLicenseUrl></PackageLicenseUrl>
+	<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
+	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		    
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +33,14 @@
    		<Pack>True</Pack>
      	<PackagePath></PackagePath>
    	</None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <ProjectReference Include="..\Windows\WebWindow\WebWindow.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsLinux)'=='true'">
+    <ProjectReference Include="..\Linux\WebWindow\WebWindow.csproj" />
   </ItemGroup>
 
 </Project>

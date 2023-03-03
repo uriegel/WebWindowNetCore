@@ -2,14 +2,12 @@
 
 static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     static void Main()
     {
-        var setting = new Configuration(FullscreenEnabled: true);
-        // TODO: App.run();
+        WebViewApp.Run();
+        // var setting = new Configuration(FullscreenEnabled: true);
+        // // TODO: App.run();
     }
 }
 

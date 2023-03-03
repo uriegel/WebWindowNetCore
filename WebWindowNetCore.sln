@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindowNetCore", "WebWind
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Native", "Native", "{6E588D1F-7E6F-4A49-A142-9A78184C800B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Linux", "Linux", "{DE195E20-ED8D-45B9-AE78-BA7A7F410C8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindow", "Linux\WebWindow\WebWindow.csproj", "{FDEC547E-F4AD-494A-B3D8-7E7C904842BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{A2E07327-F792-4155-8750-4DDD41D791C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindow", "Windows\WebWindow\WebWindow.csproj", "{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,5 +34,17 @@ Global
 		{E7FFE92B-0541-4260-A6FE-055C10C7D965}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7FFE92B-0541-4260-A6FE-055C10C7D965}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7FFE92B-0541-4260-A6FE-055C10C7D965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDEC547E-F4AD-494A-B3D8-7E7C904842BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDEC547E-F4AD-494A-B3D8-7E7C904842BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDEC547E-F4AD-494A-B3D8-7E7C904842BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDEC547E-F4AD-494A-B3D8-7E7C904842BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FDEC547E-F4AD-494A-B3D8-7E7C904842BF} = {DE195E20-ED8D-45B9-AE78-BA7A7F410C8F}
+		{FA9365E8-B6DD-46E1-9E91-C96D4EF065D5} = {A2E07327-F792-4155-8750-4DDD41D791C0}
 	EndGlobalSection
 EndGlobal

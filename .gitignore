@@ -1,10 +1,12 @@
 .ionide
+.vs
 TestApp/bin
 TestApp/obj
 WebWindowNetCore/bin
-.vs
-Native/WebWindowNetCore.Windows/bin
-Native/WebWindowNetCore.Windows/obj
 WebWindowNetCore/obj
-Native/WebWindowNetCore.Linux/bin
-Native/WebWindowNetCore.Linux/obj
+Windows/WebWindow/bin
+Windows/WebWindow/obj
+Linux/WebWindow/bin
+Linux/WebWindow/obj
+
+
