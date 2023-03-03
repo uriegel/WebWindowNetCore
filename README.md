@@ -38,4 +38,4 @@ How to setup .NET project:
 ```
 
 ## Loading application icon
-In order to attach an application icon, an icon has to be inserted as resource. Look at READ in the platform specific package (WebWindowNetCore.Windows, WebWindowNetCore.Linux).
+In order to attach an application icon, an icon has to be inserted as resource. Look at README.md in the platform specific package (WebWindowNetCore.Windows, WebWindowNetCore.Linux).
