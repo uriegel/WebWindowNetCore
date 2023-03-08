@@ -5,7 +5,7 @@
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>0.0.1-alpha.7</Version>
+	<Version>0.0.1-alpha.8</Version>
 	<FileVersion>0.0.1.0</FileVersion>
 	<AssemblyVersion>0.0.1.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
@@ -34,14 +34,6 @@
 		<Pack>True</Pack>
 		<PackagePath></PackagePath>
 	</None>
-</ItemGroup>
-
-<ItemGroup Condition="'$(IsWindows)'=='true'">
-	<PackageReference Include="WebWindowNetCore.Windows" Version="0.0.1-alpha.4" />
-</ItemGroup>
-
-<ItemGroup Condition="'$(IsLinux)'=='true'">
-	<PackageReference Include="WebWindowNetCore.Linux" Version="0.0.1-alpha.4" />
 </ItemGroup>
 
 </Project>

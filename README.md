@@ -1,26 +1,5 @@
 # WebWindowNetCore
-## New concept
 
-Only this package including 3 assemblies:
-* WebWindowNetCore
-* WindowsWebWindow
-* LinuxWebWindow
-
-WindowsWebWindow in Directory 
-```
-runtimes
-    \win10-x64
-        \lib\WebWindow
-        \native\WebViewLoader.dll
-    \linux-x64
-        \lib\WebWindow
-```
-## Test
-
-Small sample with Gtk Window ans Windows Forms,
-publish under Version 0.0.9
-
-## Deprecated
 WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
 
 | Windows  | Linux  |

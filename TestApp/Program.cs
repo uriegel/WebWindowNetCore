@@ -1,20 +1,17 @@
-﻿using WebWindowNetCore;
-
-static class Program
+﻿static class Program
 {
-    [STAThread]
+    [STAThread]    
     static void Main()
     {
-        WebViewApp.Run();
-        // var setting = new Configuration(FullscreenEnabled: true);
-        // // TODO: App.run();
-    }
+        WebView
+            .Create()
+            .InitialBounds(600, 800)
+            .Title("Commander")
+            .Url($"file://{Directory.GetCurrentDirectory()}/public/index.html")
+#if DEBUG            
+            .DebuggingEnabled()
+#endif            
+            .Build()
+            .Run("de.uriegel.Commander");    }
 }
 
-// TODO: Structure:
-// TODO: WebWindoNetCore is a Dll with a webView
-// TODO: the app is a program with resources such as web site, icon, native webViewHandler
-// TODO: Builder concept
-// TODO: Nuget with platform dependant references
-// TODO: Windows Make Sln WebWindowNetCore.Windows with Tester
-// TODO: Windows Make Nuget package 
