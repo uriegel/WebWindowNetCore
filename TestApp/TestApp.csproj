@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>false</SelfContained>
+    <LangVersion>Preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">

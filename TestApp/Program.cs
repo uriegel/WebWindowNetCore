@@ -7,7 +7,7 @@
             .Create()
             .InitialBounds(600, 800)
             .Title("Commander")
-            .Url($"file://{Directory.GetCurrentDirectory()}/public/index.html")
+            .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
 #if DEBUG            
             .DebuggingEnabled()
 #endif            

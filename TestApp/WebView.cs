@@ -23,6 +23,8 @@ public class WebView : WebWindowNetCore.WebView
                 window.SetTitle(builder?.Data.TitleString);
                 window.SetSizeRequest(builder!.Data.Width, builder!.Data.Height);
                 window.ShowAll();
+
+
                 builder = null;
             });
 

@@ -29,7 +29,7 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO htmlPage with button
+// TODO load-changed event in gtkDotNet
 // TODO run javascript get button, set click handler, show devtools
 // TODO save/restore bounds if requested
 // TODO host web site in kestrel and resources
