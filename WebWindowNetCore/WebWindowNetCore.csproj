@@ -36,4 +36,8 @@
 	</None>
 </ItemGroup>
 
+<ItemGroup>
+  <PackageReference Include="LinqTools" Version="0.0.1-alpha.4" />
+</ItemGroup>
+
 </Project>

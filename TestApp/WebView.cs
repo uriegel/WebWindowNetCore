@@ -1,5 +1,6 @@
+using CsTools.Extensions;
 using GtkDotNet;
-using LinqExtensions.Extensions;
+using LinqTools;
 
 public class WebView : WebWindowNetCore.WebView
 {
