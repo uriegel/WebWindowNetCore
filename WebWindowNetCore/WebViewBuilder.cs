@@ -11,10 +11,13 @@ public abstract class WebViewBuilder
                 .SideEffect(n => Data.Height = height);
 
     public WebViewBuilder Title(string title)
-        => this.SideEffect(n => Data.TitleString = title);
+        => this.SideEffect(n => Data.Title = title);
 
     public WebViewBuilder Url(string url)
-        => this.SideEffect(n => Data.UrlString = url);
+        => this.SideEffect(n => Data.Url = url);
+
+    public WebViewBuilder SaveBounds()
+        => this.SideEffect(n => Data.SaveBounds = true);
 
     public WebViewBuilder DebuggingEnabled()
         => this.SideEffect(n => Data.DevTools = true);
@@ -29,9 +32,9 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO load-changed event in gtkDotNet
-// TODO run javascript get button, set click handler, show devtools
-// TODO save/restore bounds if requested
+                        
+// TODO string getbetween ( , getbetween , ) trim
+// TODO save/restore bounds, maximized if requested
 // TODO host web site in kestrel and resources
 // TODO To WebWindowDotNet nuget 0.0.1alpha
 // TODO Then to WebWindowDotNet.Linux nuget 0.0.1alpha
