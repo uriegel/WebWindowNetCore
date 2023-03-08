@@ -33,8 +33,8 @@ public abstract class WebViewBuilder
 }
 
                         
-// TODO string getbetween ( , getbetween , ) trim
 // TODO save/restore bounds, maximized if requested
+// TODO Gtk: Maximize event
 // TODO host web site in kestrel and resources
 // TODO To WebWindowDotNet nuget 0.0.1alpha
 // TODO Then to WebWindowDotNet.Linux nuget 0.0.1alpha
