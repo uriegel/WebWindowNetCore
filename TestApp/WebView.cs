@@ -44,8 +44,9 @@ public class WebView : WebWindowNetCore.WebView
                             devTools.onclick = () => alert(`devtools`)
 
                             const bounds = JSON.parse(localStorage.getItem('window-bounds') || '{}')
+                            const isMaximized = localStorage.getItem('isMaximized')
                             if (bounds.width && bounds.height)
-                                alert(`show(${bounds.width}, ${bounds.height})`)
+                                alert(`show(${bounds.width}, ${bounds.height}, isMaximized)`)
                             else
                                 alert('initialShow')
                         """);
@@ -54,9 +55,17 @@ public class WebView : WebWindowNetCore.WebView
                 window.Configure += (s, e) =>
                 {
                     timer?.Dispose();
-                    timer = new(() 
-                        => webView.RunJavascript($"localStorage.setItem('window-bounds', JSON.stringify({{width: {e.Width}, height: {e.Height}}}))"), 
-                        TimeSpan.FromMilliseconds(400), Timeout.InfiniteTimeSpan);
+                    timer = new(() => 
+                    {
+                        if (window.IsMaximized())
+                            webView.RunJavascript(
+                                $$"""
+                                    localStorage.setItem('window-bounds', JSON.stringify({width: {{e.Width}}, height: {{e.Height}}}))
+                                    localStorage.setItem('isMaximized', false)
+                                """);
+                        else
+                            webView.RunJavascript($"localStorage.setItem('isMaximized', true)");
+                    }, TimeSpan.FromMilliseconds(400), Timeout.InfiniteTimeSpan);
                 };
             }
 
@@ -71,10 +80,16 @@ public class WebView : WebWindowNetCore.WebView
                         .GetOrDefault(200);
                     var height = e
                         .Message
-                        .StringBetween(',', ')')
+                        .StringBetween(',', ',')
                         .ParseInt()
                         .GetOrDefault(200);
+                    var isMaximized = e
+                        .Message
+                        .StringBetween(',', ')')
+                        .GetOrDefault("false");
                     window.Resize(width, height);                            
+                    if (isMaximized == "true")
+                        window.Maximize();
                     window.ShowAll();
                 } else if (e.Message == "devtools")
                     webView.Inspector.Show();
