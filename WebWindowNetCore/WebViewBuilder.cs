@@ -33,11 +33,9 @@ public abstract class WebViewBuilder
 }
 
                         
-// TODO save/restore isMaximized
-// TODO host web site in kestrel and resources
 // TODO Then to WebWindowDotNet.Linux nuget 0.0.1alpha
 // TODO Windows version
-// TODO initial webview showing splash screen
+// TODO host web site in kestrel and resources
 // TODO string IconPath = "", 
 // TODO bool FullscreenEnabled = false,
 // TODO bool SaveWindowSettings = false,

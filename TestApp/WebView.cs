@@ -1,7 +1,15 @@
-using CsTools.Extensions;
 using GtkDotNet;
-using LinqTools;
 using WebWindowNetCore.Data;
+using System.Text.Json;
+using LinqTools;
+
+enum Action
+{
+    DevTools = 1,
+    Show,
+}
+
+record ScriptAction(Action Action, int? Width, int? Height, bool? IsMaximized);
 
 public class WebView : WebWindowNetCore.WebView
 {
@@ -41,14 +49,14 @@ public class WebView : WebWindowNetCore.WebView
                         webView.RunJavascript(
                         """ 
                             const devTools = document.getElementById('devTools')
-                            devTools.onclick = () => alert(`devtools`)
+                            devTools.onclick = () => alert(JSON.stringify({action: 1}))
 
                             const bounds = JSON.parse(localStorage.getItem('window-bounds') || '{}')
                             const isMaximized = localStorage.getItem('isMaximized')
                             if (bounds.width && bounds.height)
-                                alert(`show(${bounds.width}, ${bounds.height}, isMaximized)`)
+                                alert(JSON.stringify({action: 2, width: bounds.width, height: bounds.height, isMaximized: isMaximized == 'true'}))
                             else
-                                alert('initialShow')
+                                alert(JSON.stringify({action: 2}))
                         """);
                 };
 
@@ -57,7 +65,7 @@ public class WebView : WebWindowNetCore.WebView
                     timer?.Dispose();
                     timer = new(() => 
                     {
-                        if (window.IsMaximized())
+                        if (!window.IsMaximized())
                             webView.RunJavascript(
                                 $$"""
                                     localStorage.setItem('window-bounds', JSON.stringify({width: {{e.Width}}, height: {{e.Height}}}))
@@ -71,30 +79,21 @@ public class WebView : WebWindowNetCore.WebView
 
             webView.ScriptDialog += (s, e) =>
             {
-                if (e.Message.StartsWith("show"))
+                Console.WriteLine(e.Message);
+                var action = JsonSerializer.Deserialize<ScriptAction>(e.Message, JsonDefault.Value);
+                switch (action?.Action)
                 {
-                    var width = e
-                        .Message
-                        .StringBetween('(', ',')
-                        .ParseInt()
-                        .GetOrDefault(200);
-                    var height = e
-                        .Message
-                        .StringBetween(',', ',')
-                        .ParseInt()
-                        .GetOrDefault(200);
-                    var isMaximized = e
-                        .Message
-                        .StringBetween(',', ')')
-                        .GetOrDefault("false");
-                    window.Resize(width, height);                            
-                    if (isMaximized == "true")
-                        window.Maximize();
-                    window.ShowAll();
-                } else if (e.Message == "devtools")
-                    webView.Inspector.Show();
-                else if (e.Message == "initialShow")
-                    window.ShowAll();   
+                    case Action.DevTools:
+                        webView.Inspector.Show();
+                        break;
+                    case Action.Show:
+                        if (action.Width.HasValue && action.Height.HasValue)
+                            window.Resize(action.Width.Value, action.Height.Value);                            
+                        if (action.IsMaximized.GetOrDefault(false))
+                           window.Maximize();
+                        window.ShowAll();   
+                        break;
+                }
             };
 
             settings = null;
