@@ -33,6 +33,7 @@ public abstract class WebViewBuilder
 }
 
 // TODO Windows version
+// TODO xml doku in nuget
 // TODO host web site in kestrel and resources
 // TODO string IconPath = "", 
 // TODO bool FullscreenEnabled = false,
