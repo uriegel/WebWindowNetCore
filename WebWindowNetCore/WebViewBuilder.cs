@@ -32,8 +32,6 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-                        
-// TODO Then to WebWindowDotNet.Linux nuget 0.0.1alpha
 // TODO Windows version
 // TODO host web site in kestrel and resources
 // TODO string IconPath = "", 
