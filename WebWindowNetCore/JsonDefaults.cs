@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-static class JsonDefault
+public static class JsonDefault
 {
     public static JsonSerializerOptions Value {get; }
 
