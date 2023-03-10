@@ -1,15 +1,25 @@
 using LinqTools;
+using WebWindowNetCore.Data;
 
 namespace WebWindowNetCore;
 
 public class HttpBuilder
 {
+    public HttpBuilder Port(int port)
+        => this.SideEffect(n => Data.Port = port);
     public HttpBuilder CorsOrigin(string origin)
-        => this.SideEffect(n => CorsOriginString = origin);
+        => this.SideEffect(n => Data.CorsOrigin = origin);
 
-    internal HttpBuilder(int port)
-        => Port = port;
+    public HttpBuilder ResourceWebroot(string resourcePath, string webrootUri)
+        => this.SideEffect(n => 
+        {
+            Data.ResourceWebroot = resourcePath;
+            Data.WebrootUri = webrootUri;
+        });
 
-    internal string? CorsOriginString { get; private set; }
-    internal int Port { get; private set; }
+    public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
+
+    internal HttpSettings Data { get; } = new();
+
+    internal HttpBuilder() { }
 }

@@ -16,20 +16,14 @@ public abstract class WebViewBuilder
     public WebViewBuilder Url(string url)
         => this.SideEffect(n => Data.Url = url);
 
-    public WebViewBuilder ResourceFavicon(string path)
-        => this.SideEffect(n => Data.ResourceFavicon = path);
-
-    public WebViewBuilder ResourceWebroot(string path)
-        => this.SideEffect(n => Data.ResourceWebroot = path);
-
     public WebViewBuilder SaveBounds()
         => this.SideEffect(n => Data.SaveBounds = true);
 
     public WebViewBuilder DebuggingEnabled()
         => this.SideEffect(n => Data.DevTools = true);
 
-    public WebViewBuilder ConfigureHttp(int port = 20000)
-        => this.SideEffect(n => Data.HttpBuilder = new HttpBuilder(port));
+    public WebViewBuilder ConfigureHttp(Func<HttpBuilder, HttpSettings> builder)
+        => this.SideEffect(n => Data.HttpSettings = builder(new HttpBuilder()));
 
     public abstract WebView Build();
     
@@ -39,6 +33,7 @@ public abstract class WebViewBuilder
 }
 
 // TODO Kestrel
-// TODO host web site in kestrel
+// TODO host web site in kestrel 
+// TODO favicon in resource
 // TODO bool FullscreenEnabled = false,
 // TODO bool SaveWindowSettings = false,

@@ -28,12 +28,15 @@
     <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="../webroot/index.html">
+      <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 
-
-    <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CsTools" Version="0.0.1-alpha.2" />
     <PackageReference Include="GtkDotNet" Version="5.10.0" />
   </ItemGroup>  
-
 
 </Project>

@@ -9,6 +9,6 @@ public class WebViewSettings
     public string? ResourceFavicon { get; internal set; }
     public string? ResourceWebroot { get; internal set; }
     public bool SaveBounds { get; internal set; }
-    public HttpBuilder? HttpBuilder { get; internal set; }
+    public HttpSettings? HttpSettings { get; internal set; }
     public bool DevTools { get; internal set; }
 }

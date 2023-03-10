@@ -43,7 +43,8 @@
 </ItemGroup>
 
 <ItemGroup>
-  <PackageReference Include="LinqTools" Version="0.0.1-alpha.4" />
-</ItemGroup>
+  <PackageReference Include="AspNetExtensions" Version="0.0.1-alpha.2" />
+  <PackageReference Include="LinqTools" Version="0.0.1-alpha.5" />
+  </ItemGroup>
 
 </Project>
