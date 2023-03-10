@@ -32,10 +32,16 @@
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/css/styles.css">
+      <LogicalName>webroot/css/styles.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/favicon.png">
+      <LogicalName>favicon</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsTools" Version="0.0.1-alpha.2" />
+    <PackageReference Include="CsTools" Version="0.0.1-alpha.4" />
     <PackageReference Include="GtkDotNet" Version="5.10.0" />
   </ItemGroup>  
 

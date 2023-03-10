@@ -33,6 +33,8 @@ public class WebView : WebWindowNetCore.WebView
                 webView.LoadUri(settings?.Url);
             if (settings?.DevTools == true)
                 webView.Settings.EnableDeveloperExtras = true;
+            if (settings?.HttpSettings?.WebrootUri != null)
+                webView.LoadUri($"http://localhost:{settings?.HttpSettings?.Port ?? 80}{settings?.HttpSettings?.WebrootUri}/index.html");
             app.AddWindow(window);
             window.SetTitle(settings?.Title);
             window.SetSizeRequest(200, 200);

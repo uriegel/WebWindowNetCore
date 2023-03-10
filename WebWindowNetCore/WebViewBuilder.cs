@@ -32,8 +32,5 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO Kestrel
-// TODO host web site in kestrel 
-// TODO favicon in resource
+// TODO index.html
 // TODO bool FullscreenEnabled = false,
-// TODO bool SaveWindowSettings = false,

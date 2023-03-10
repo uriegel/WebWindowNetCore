@@ -17,6 +17,12 @@ public class HttpBuilder
             Data.WebrootUri = webrootUri;
         });
 
+    public HttpBuilder ResourceFavicon(string resourcePath)
+        => this.SideEffect(n => 
+        {
+            Data.ResourceFavicon = resourcePath;
+        });
+
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
 
     internal HttpSettings Data { get; } = new();

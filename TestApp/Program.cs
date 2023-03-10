@@ -6,6 +6,7 @@
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
+        .ResourceFavicon("favicon")
         .Build())
 #if DEBUG            
     .DebuggingEnabled()
