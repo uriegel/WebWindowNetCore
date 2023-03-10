@@ -16,6 +16,12 @@ public abstract class WebViewBuilder
     public WebViewBuilder Url(string url)
         => this.SideEffect(n => Data.Url = url);
 
+    public WebViewBuilder ResourceFavicon(string path)
+        => this.SideEffect(n => Data.ResourceFavicon = path);
+
+    public WebViewBuilder ResourceWebroot(string path)
+        => this.SideEffect(n => Data.ResourceWebroot = path);
+
     public WebViewBuilder SaveBounds()
         => this.SideEffect(n => Data.SaveBounds = true);
 
@@ -32,9 +38,7 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO xml doku in nuget
-// TODO Icon in Resource, 
 // TODO Kestrel
-// TODO host web site in kestrel and resources
+// TODO host web site in kestrel
 // TODO bool FullscreenEnabled = false,
 // TODO bool SaveWindowSettings = false,

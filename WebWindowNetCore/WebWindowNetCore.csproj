@@ -5,7 +5,7 @@
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>0.0.1-alpha.8</Version>
+	<Version>0.0.1-alpha.9</Version>
 	<FileVersion>0.0.1.0</FileVersion>
 	<AssemblyVersion>0.0.1.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
@@ -16,7 +16,8 @@
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		    
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		  
+	<NoWarn>CS1591</NoWarn>      
 </PropertyGroup>
 
 <PropertyGroup Condition="'$(IsWindows)'=='true'">
@@ -27,6 +28,11 @@
 	<targetFramework>net6.0</targetFramework>
   	<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
 </PropertyGroup>
+
+<PropertyGroup>
+	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+</PropertyGroup>
+
 
 <ItemGroup>
 	<None Include="..\README.md" Pack="true" PackagePath="\" />
