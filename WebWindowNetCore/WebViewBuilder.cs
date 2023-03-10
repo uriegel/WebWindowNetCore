@@ -32,8 +32,8 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO Windows version
 // TODO xml doku in nuget
+// TODO Kestrel
 // TODO host web site in kestrel and resources
 // TODO string IconPath = "", 
 // TODO bool FullscreenEnabled = false,
