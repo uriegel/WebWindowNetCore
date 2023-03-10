@@ -33,8 +33,8 @@ public abstract class WebViewBuilder
 }
 
 // TODO xml doku in nuget
+// TODO Icon in Resource, 
 // TODO Kestrel
 // TODO host web site in kestrel and resources
-// TODO string IconPath = "", 
 // TODO bool FullscreenEnabled = false,
 // TODO bool SaveWindowSettings = false,
