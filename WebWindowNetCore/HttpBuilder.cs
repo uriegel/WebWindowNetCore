@@ -10,6 +10,9 @@ public class HttpBuilder
     public HttpBuilder CorsOrigin(string origin)
         => this.SideEffect(n => Data.CorsOrigin = origin);
 
+    public HttpBuilder DefaultHtml(string defaultHtml)
+        => this.SideEffect(n =>  Data.DefaultHtml = defaultHtml);
+
     public HttpBuilder ResourceWebroot(string resourcePath, string webrootUri)
         => this.SideEffect(n => 
         {
@@ -18,10 +21,7 @@ public class HttpBuilder
         });
 
     public HttpBuilder ResourceFavicon(string resourcePath)
-        => this.SideEffect(n => 
-        {
-            Data.ResourceFavicon = resourcePath;
-        });
+        => this.SideEffect(n =>  Data.ResourceFavicon = resourcePath);
 
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
 

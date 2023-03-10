@@ -32,5 +32,9 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO index.html
+// TODO Linux icon
+// TODO RestApi
+// TODO Sse
+// TODO showDevtools
 // TODO bool FullscreenEnabled = false,
+// TODO File Drag and Drop (Windows)

@@ -5,7 +5,7 @@
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>0.0.1-alpha.9</Version>
+	<Version>0.0.1-alpha.10</Version>
 	<FileVersion>0.0.1.0</FileVersion>
 	<AssemblyVersion>0.0.1.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
@@ -43,7 +43,7 @@
 </ItemGroup>
 
 <ItemGroup>
-  <PackageReference Include="AspNetExtensions" Version="0.0.1-alpha.2" />
+  <PackageReference Include="AspNetExtensions" Version="0.0.1-alpha.3" />
   <PackageReference Include="CsTools" Version="0.0.1-alpha.4" />
   <PackageReference Include="LinqTools" Version="0.0.1-alpha.5" />
   </ItemGroup>
