@@ -32,6 +32,7 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
+// TODO DebugUrl (instead of ResourceUrl)
 // TODO Linux icon
 // TODO RestApi
 // TODO Sse
