@@ -1,7 +1,7 @@
 ﻿WebView
     .Create()
     .InitialBounds(600, 800)
-    .Title("Commander")
+    .Title("WebView Test")
     .SaveBounds()
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
