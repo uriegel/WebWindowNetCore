@@ -42,8 +42,8 @@
 </ItemGroup>
 
 <ItemGroup>
-  <PackageReference Include="AspNetExtensions" Version="0.0.1-alpha.6" />
-  <PackageReference Include="CsTools" Version="0.0.1-alpha.4" />
+  <PackageReference Include="AspNetExtensions" Version="1.0.0" />
+  <PackageReference Include="CsTools" Version="1.0.0" />
   <PackageReference Include="LinqTools" Version="1.0.0" />
   </ItemGroup>
 
