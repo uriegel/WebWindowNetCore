@@ -49,8 +49,6 @@ public abstract class WebViewBuilder
 // TODO Cors?
 // TODO RestApi
 // TODO fetch for post api
-// TODO showDevtools in linux
-// TODO debugUrl in linux
 // TODO showDevtools in windows
 // TODO debugUrl in windows
 // TODO inject d.ts
