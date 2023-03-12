@@ -10,7 +10,7 @@
 	<AssemblyVersion>4.0.0.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
-	<Description>Web View in an native window based on WebView2 (WindowsLinux) and GTK WebKit (Linux) written for .Net Core</Description>
+	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
 	<PackageLicenseUrl></PackageLicenseUrl>
 	<PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
 	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
