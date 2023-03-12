@@ -1,5 +1,8 @@
 # WebWindowNetCore
 
+A Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. It has an integrted Asp.NET (Kestrel) server which can be used to host the app and to cummunicate between the C# application and the web app.
+
+
 WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
 
 | Windows  | Linux  |
@@ -28,14 +31,12 @@ How to setup .NET project:
 </PropertyGroup>
 
 <ItemGroup Condition="'$(IsWindows)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Windows" Version="0.0.1-alpha.2" />
+    <PackageReference Include="WebWindowNetCore.Windows" Version="1.0.0.1" />
 </ItemGroup> 
 
 <ItemGroup Condition="'$(IsLinux)'=='true'">
-    <PackageReference Include="WebWindowNetCore.Linux" Version="0.0.1-alpha.2" />
+    <PackageReference Include="WebWindowNetCore.Linux" Version="1.0.0.1" />
 </ItemGroup> 
 
 ```
 
-## Loading application icon
-In order to attach an application icon, an icon has to be inserted as resource. Look at README.md in the platform specific package (WebWindowNetCore.Windows, WebWindowNetCore.Linux).
