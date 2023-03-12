@@ -5,7 +5,6 @@ using WebWindowNetCore.Data;
 using AspNetExtensions;
 using Microsoft.Extensions.Logging;
 using CsTools.Extensions;
-using Microsoft.AspNetCore.Http;
 
 namespace WebWindowNetCore;
 
@@ -37,17 +36,11 @@ static class Kestrel
                         .AllowAnyHeader()
                         .AllowAnyMethod()))
             .WithRouting()
-            .When(!string.IsNullOrEmpty(settings.WebrootUri), app =>
-                app.WithMapSubPath(settings.WebrootUri!, async (context, subPath) =>
+            .When(!string.IsNullOrEmpty(settings.WebrootUrl), app =>
+                app.WithMapSubPath(settings.WebrootUrl!, async (context, subPath) =>
                 {
                     await context.Response.StartAsync();
                     await Resources.Get("webroot/" + subPath).CopyToAsync(context.Response.Body);
-                }))
-            .When(!string.IsNullOrEmpty(settings.ResourceFavicon), app =>
-                app.WithMapGet("/favicon.ico", async context =>
-                {
-                    await context.Response.StartAsync();
-                    await Resources.Get(settings.ResourceFavicon!).CopyToAsync(context.Response.Body);
                 }))
             .StartAsync(); 
     }

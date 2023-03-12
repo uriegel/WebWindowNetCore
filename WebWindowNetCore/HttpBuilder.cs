@@ -13,15 +13,12 @@ public class HttpBuilder
     public HttpBuilder DefaultHtml(string defaultHtml)
         => this.SideEffect(n =>  Data.DefaultHtml = defaultHtml);
 
-    public HttpBuilder ResourceWebroot(string resourcePath, string webrootUri)
+    public HttpBuilder ResourceWebroot(string resourcePath, string webrootUrl)
         => this.SideEffect(n => 
         {
             Data.ResourceWebroot = resourcePath;
-            Data.WebrootUri = webrootUri;
+            Data.WebrootUrl = webrootUrl;
         });
-
-    public HttpBuilder ResourceFavicon(string resourcePath)
-        => this.SideEffect(n =>  Data.ResourceFavicon = resourcePath);
 
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
 

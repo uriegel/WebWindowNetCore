@@ -35,8 +35,8 @@
     <EmbeddedResource Include="../webroot/css/styles.css">
       <LogicalName>webroot/css/styles.css</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../webroot/favicon.png">
-      <LogicalName>favicon</LogicalName>
+    <EmbeddedResource Include="./icon.png">
+      <LogicalName>icon</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 
