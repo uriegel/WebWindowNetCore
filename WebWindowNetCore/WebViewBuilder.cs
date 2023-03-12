@@ -46,8 +46,15 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
+// TODO Cors
 // TODO RestApi
 // TODO Sse
-// TODO showDevtools
+// TODO showDevtools only when debug is set
+// TODO showDevtools in linux
+// TODO showDevtools in windows
+// TODO fetch for post api
+// TODO inject d.ts
+// TODO DebugUrl in platform dependant projects
+// TODO Linux icon
 // TODO bool FullscreenEnabled = false,
 // TODO File Drag and Drop (Windows)

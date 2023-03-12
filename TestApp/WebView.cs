@@ -59,8 +59,9 @@ public class WebView : WebWindowNetCore.WebView
                     if (e.LoadEvent == WebKitLoadEvent.WEBKIT_LOAD_COMMITTED)
                         webView.RunJavascript(
                         """ 
-                            const devTools = document.getElementById('devTools')
-                            devTools.onclick = () => alert(JSON.stringify({action: 1}))
+                            function webViewShowDevTools() {
+                                alert(JSON.stringify({action: 1}))
+                            }
 
                             const bounds = JSON.parse(localStorage.getItem('window-bounds') || '{}')
                             const isMaximized = localStorage.getItem('isMaximized')

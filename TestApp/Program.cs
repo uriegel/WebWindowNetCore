@@ -3,8 +3,8 @@
     .InitialBounds(600, 800)
     .Title("WebView Test")
     .ResourceIcon("icon")
-    //.SaveBounds()
-    .DebugUrl("https://www.google.de")
+    .SaveBounds()
+    //.DebugUrl("https://www.google.de")
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")

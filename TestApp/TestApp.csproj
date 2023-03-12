@@ -35,6 +35,9 @@
     <EmbeddedResource Include="../webroot/css/styles.css">
       <LogicalName>webroot/css/styles.css</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/scripts/script.js">
+      <LogicalName>webroot/scripts/script.js</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./icon.png">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
