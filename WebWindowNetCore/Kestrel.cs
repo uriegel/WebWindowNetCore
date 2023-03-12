@@ -32,10 +32,12 @@ static class Kestrel
             .When(!string.IsNullOrEmpty(settings.CorsOrigin), app =>
                 app.WithCors(builder =>
                     builder
-                        .WithOrigins("http://localhost:3000")
+                        .WithOrigins(settings.CorsOrigin!)
                         .AllowAnyHeader()
                         .AllowAnyMethod()))
             .WithRouting()
+            .With(settings.RequestDelegates)
+
             .When(!string.IsNullOrEmpty(settings.WebrootUrl), app =>
                 app.WithMapSubPath(settings.WebrootUrl!, async (context, subPath) =>
                 {
@@ -46,3 +48,13 @@ static class Kestrel
     }
 }
 
+static class Ext
+{
+    public static WebApplication With(this WebApplication webApp, IEnumerable<Func<WebApplication, WebApplication>> handlers)
+    {
+        var result = webApp;
+        foreach (var handler in handlers)
+            result = handler(result);
+        return result;
+    }
+}

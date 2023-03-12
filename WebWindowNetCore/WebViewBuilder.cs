@@ -46,12 +46,12 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO Cors
+// TODO Cors?
 // TODO RestApi
-// TODO Sse
 // TODO showDevtools only when debug is set
 // TODO showDevtools in linux
 // TODO showDevtools in windows
+// TODO Sse: remove "With" new AspDotNetExtrension
 // TODO fetch for post api
 // TODO inject d.ts
 // TODO DebugUrl in platform dependant projects

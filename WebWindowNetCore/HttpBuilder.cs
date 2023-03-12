@@ -1,5 +1,6 @@
 using AspNetExtensions;
 using LinqTools;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using WebWindowNetCore.Data;
 
@@ -24,19 +25,25 @@ public class HttpBuilder
 
     public HttpBuilder UseSse<T>(string path, SseEventSource<T> sseEventSource)
         => this.SideEffect(n => 
-            Data.SseDelegate = (HttpContext context) => new Sse<T>(sseEventSource.Subject).Start(context));
+                Data.RequestDelegates = Data.RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource.Subject).Start(context)))
+                            .ToArray());
 
     public HttpBuilder UseSse<T>(string path, IObservable<T> sseEventSource)
         => this.SideEffect(n => 
-            Data.SseDelegate = (HttpContext context) => new Sse<T>(sseEventSource).Start(context));
+                Data.RequestDelegates = Data.RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource).Start(context)))
+                            .ToArray());
 
-    public HttpBuilder UseJsonPost<T, TResult>(string path, Func<T, Task<TResult>> onJson)
-        => this.SideEffect(n => 
-            Data.JsonPostDelegate = async (HttpContext context) =>  
-                {
-                    var param = await context.Request.ReadFromJsonAsync<T>();
-                    await context.Response.WriteAsJsonAsync<TResult>(await onJson(param!));
-                });
+    // public HttpBuilder UseJsonPost<T, TResult>(string path, Func<T, Task<TResult>> onJson)
+    //     => this.SideEffect(n => 
+    //         Data.JsonPostDelegate = async (HttpContext context) =>  
+    //             {
+    //                 var param = await context.Request.ReadFromJsonAsync<T>();
+    //                 await context.Response.WriteAsJsonAsync<TResult>(await onJson(param!));
+    //             });
 
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
 
