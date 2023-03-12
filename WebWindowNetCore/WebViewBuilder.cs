@@ -46,8 +46,6 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO bool FullscreenEnabled = false,
-// TODO Linux icon
 // TODO Cors?
-// TODO inject d.ts
+// TODO Linux icon
 // TODO File Drag and Drop (Windows)
