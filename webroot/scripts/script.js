@@ -15,5 +15,12 @@ btn1.onclick = async () => {
     console.log("cmd1", res)
 }
 
+btn2.onclick = async () => {
+    var res = await webViewRequest("cmd2", {
+        name: "Text",
+        number: 123
+    })
+    console.log("cmd2", res)
+}
 
 
