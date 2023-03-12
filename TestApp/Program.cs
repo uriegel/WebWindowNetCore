@@ -29,7 +29,10 @@ void StartEvents(Action<Event> onChanged)
                 Thread.Sleep(5000);
                 onChanged(new($"Ein Event {counter++}"));
            }
-        }).Start();   
+        })
+        {
+            IsBackground = true
+        }.Start();   
 }
 
 record Event(string Content);

@@ -48,13 +48,3 @@ static class Kestrel
     }
 }
 
-static class Ext
-{
-    public static WebApplication With(this WebApplication webApp, IEnumerable<Func<WebApplication, WebApplication>> handlers)
-    {
-        var result = webApp;
-        foreach (var handler in handlers)
-            result = handler(result);
-        return result;
-    }
-}

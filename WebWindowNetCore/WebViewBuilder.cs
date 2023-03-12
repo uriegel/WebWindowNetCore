@@ -48,11 +48,11 @@ public abstract class WebViewBuilder
 
 // TODO Cors?
 // TODO RestApi
-// TODO showDevtools only when debug is set
-// TODO showDevtools in linux
-// TODO showDevtools in windows
-// TODO Sse: remove "With" new AspDotNetExtrension
 // TODO fetch for post api
+// TODO showDevtools in linux
+// TODO debugUrl in linux
+// TODO showDevtools in windows
+// TODO debugUrl in windows
 // TODO inject d.ts
 // TODO DebugUrl in platform dependant projects
 // TODO Linux icon
