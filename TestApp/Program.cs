@@ -10,6 +10,7 @@ WebView
     .ResourceIcon("icon")
     .SaveBounds()
     //.DebugUrl("https://www.google.de")
+    .DebugUrl("http://localhost:19999/cinema")
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
