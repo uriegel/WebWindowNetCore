@@ -1,7 +1,7 @@
 
 using WebWindowNetCore.Data;
 
-public class WebViewBuilder : WebWindowNetCore.WebViewBuilder
+public class WebViewBuilder : WebWindowNetCore.Base.WebViewBuilder
 {
     public override WebView Build() => new WebView(this);
 

@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
 	<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>4.0.0</Version>
-	<FileVersion>4.0.0.0</FileVersion>
-	<AssemblyVersion>4.0.0.0</AssemblyVersion>
+	<Version>4.2.0</Version>
+	<FileVersion>4.2.0.0</FileVersion>
+	<AssemblyVersion>4.2.0.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
 	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -18,15 +19,6 @@
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>		  
 	<NoWarn>CS1591</NoWarn>      
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(IsWindows)'=='true'">
-	<TargetFramework>net6.0-windows</TargetFramework>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-</PropertyGroup>
-<PropertyGroup Condition="'$(IsLinux)'=='true'">
-	<targetFramework>net6.0</targetFramework>
-  	<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
 </PropertyGroup>
 
 <PropertyGroup>
