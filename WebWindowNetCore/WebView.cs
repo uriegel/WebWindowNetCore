@@ -1,6 +1,6 @@
 using AspNetExtensions;
 
-namespace WebWindowNetCore;
+namespace WebWindowNetCore.Base;
 
 public abstract class WebView
 {

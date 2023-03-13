@@ -1,7 +1,7 @@
 using LinqTools;
 using WebWindowNetCore.Data;
 
-namespace WebWindowNetCore;
+namespace WebWindowNetCore.Base;
 
 public abstract class WebViewBuilder
 {
