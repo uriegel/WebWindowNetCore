@@ -46,7 +46,7 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO Description and Version 1.0.0
+// TODO Devtools when not saveBounds
 // TODO Cors?
 // TODO Linux icon
 // TODO File Drag and Drop (Windows)
