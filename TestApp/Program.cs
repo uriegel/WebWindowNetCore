@@ -1,4 +1,5 @@
 ﻿using LinqTools;
+using AspNetExtensions;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
@@ -13,8 +14,9 @@ WebView
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
-        .UseJsonPost<Cmd1Param, Cmd1Result>("request/cmd1", JsonRequest1)
-        .UseJsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)
+        //.MapGet("requests/icon", context => context.SendStream()))
+        .JsonPost<Cmd1Param, Cmd1Result>("request/cmd1", JsonRequest1)
+        .JsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)
         .UseSse("sse/test", sseEventSource)
         .Build())
 #if DEBUG            

@@ -37,7 +37,7 @@ public class HttpBuilder
                         app.WithMapGet(path, (HttpContext context) => new Sse<T>(sseEventSource).Start(context)))
                             .ToArray());
 
-    public HttpBuilder UseJsonPost<T, TResult>(string path, Func<T, Task<TResult>> onRequest)
+    public HttpBuilder JsonPost<T, TResult>(string path, Func<T, Task<TResult>> onRequest)
         => this.SideEffect(n => 
                 Data.RequestDelegates = Data.RequestDelegates.Append(
                     (WebApplication app) =>
@@ -46,6 +46,20 @@ public class HttpBuilder
                                 var param = await context.Request.ReadFromJsonAsync<T>();
                                 await context.Response.WriteAsJsonAsync<TResult>(await onRequest(param!));
                             }))
+                            .ToArray());
+
+    public HttpBuilder MapGet(string pattern, RequestDelegate requestDelegate)
+        => this.SideEffect(n => 
+                Data.RequestDelegates = Data.RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapGet(pattern, requestDelegate))
+                            .ToArray());
+
+    public HttpBuilder MapGet(string pattern, Delegate handler)
+        => this.SideEffect(n => 
+                Data.RequestDelegates = Data.RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithMapGet(pattern, handler))
                             .ToArray());
 
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
