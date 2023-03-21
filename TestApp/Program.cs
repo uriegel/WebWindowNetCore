@@ -13,7 +13,7 @@ WebView
     //.DebugUrl("https://www.google.de")
     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
-        .ResourceWebroot("webroot", "/web")
+        .ResourceWebroot("webroot", "/webroot")
         //.MapGet("requests/icon", context => context.SendStream()))
         .JsonPost<Cmd1Param, Cmd1Result>("request/cmd1", JsonRequest1)
         .JsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)

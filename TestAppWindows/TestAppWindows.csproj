@@ -9,6 +9,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>Preview</LangVersion>
   	<SelfContained>false</SelfContained>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	  <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile> 
   </PropertyGroup>
 

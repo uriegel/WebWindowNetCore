@@ -42,7 +42,15 @@ static class Kestrel
                 app.WithMapSubPath(settings.WebrootUrl!, async (context, subPath) =>
                 {
                     await context.Response.StartAsync();
-                    await Resources.Get("webroot/" + subPath)!.CopyToAsync(context.Response.Body);
+                    var stream = Resources.Get(settings.ResourceWebroot + '/' + subPath);
+                    if (stream != null)
+                        await stream.CopyToAsync(context.Response.Body);
+                    else 
+                    {
+                        // TODO return proper 404
+                        Console.Error.WriteLine($"Error getting resource file: {subPath}");
+                        throw new FileNotFoundException();
+                    }
                 }))
             .StartAsync(); 
     }
