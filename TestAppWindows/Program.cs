@@ -1,4 +1,6 @@
-﻿using WebWindowNetCore;
+﻿using AspNetExtensions;
+using LinqTools;
+using WebWindowNetCore;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
@@ -9,11 +11,18 @@ WebView
     .Title("WebView Test")
     .ResourceIcon("icon")
     .SaveBounds()
-    //.DebugUrl("https://www.google.de")
-    //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
+    .DebugUrl("http://localhost:3000")
+    .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
         .UseSse("sse/test", sseEventSource)
+
+        .MapGet("video", context => 
+            context
+                .SideEffect(c => Console.WriteLine("Range request"))
+                .SideEffect(c => c.Response.ContentType = "Hafenrundfahrt.mp4".GetMimeType())
+            .StreamRangeFile(@"C:\Users\uwe\Documents\Hafenrundfahrt.mp4"))
+
         .Build())
 #if DEBUG            
     .DebuggingEnabled()
