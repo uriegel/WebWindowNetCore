@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>Preview</LangVersion>
+  	<SelfContained>false</SelfContained>
+	  <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile> 
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../webroot/index.html">
+      <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/css/styles.css">
+      <LogicalName>webroot/css/styles.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/scripts/script.js">
+      <LogicalName>webroot/scripts/script.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./icon.ico">
+      <LogicalName>icon</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClrWinApi" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1587.40" />
+  </ItemGroup>
+
+</Project>
