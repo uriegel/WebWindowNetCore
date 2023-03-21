@@ -20,7 +20,6 @@ WebView
         .MapGet("video", context => 
             context
                 .SideEffect(c => Console.WriteLine("Range request"))
-                .SideEffect(c => c.Response.ContentType = "Hafenrundfahrt.mp4".GetMimeType())
             .StreamRangeFile(@"C:\Users\uwe\Documents\Hafenrundfahrt.mp4"))
 
         .Build())
