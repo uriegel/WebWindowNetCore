@@ -41,7 +41,7 @@ public class WebWindowForm : Form
         //this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         
         if (settings?.ResourceIcon != null)
-            this.Icon = new System.Drawing.Icon(Resources.Get(settings.ResourceIcon));
+            this.Icon = new System.Drawing.Icon(Resources.Get(settings.ResourceIcon)!);
 
         this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
         this.WindowState = FormWindowState.Minimized;
