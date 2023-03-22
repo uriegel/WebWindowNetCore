@@ -7,8 +7,8 @@ public abstract class WebViewBuilder
 {
     public WebViewBuilder InitialBounds(int width, int height)
         => this
-                .SideEffect(n => Data.Width = width)
-                .SideEffect(n => Data.Height = height);
+            .SideEffect(n => Data.Width = width)
+            .SideEffect(n => Data.Height = height);
 
     public WebViewBuilder Title(string title)
         => this.SideEffect(n => Data.Title = title);
@@ -26,6 +26,14 @@ public abstract class WebViewBuilder
     /// <returns></returns>
     public WebViewBuilder DebugUrl(string url)
         => this.SideEffect(n => Data.DebugUrl = url);
+
+    /// <summary>
+    /// Add a query string to the Url (or DebugUrl, or HttpBuilder.ResourceWebroot)
+    /// </summary>
+    /// <param name="query">A query string such as '?theme=adwaita&amp;platform=linux' which is added to the Url</param>
+    /// <returns></returns>
+    public WebViewBuilder QueryString(string query)
+        => this.SideEffect(n => Data.Query = query);
 
     public WebViewBuilder SaveBounds()
         => this.SideEffect(n => Data.SaveBounds = true);
@@ -46,7 +54,4 @@ public abstract class WebViewBuilder
     protected WebViewSettings Data { get; } = new();
 }
 
-// TODO Devtools when not saveBounds
-// TODO Cors?
-// TODO Linux icon
 // TODO File Drag and Drop (Windows)
