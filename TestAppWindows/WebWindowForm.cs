@@ -1,3 +1,5 @@
+#if Windows
+
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
@@ -149,3 +151,5 @@ public class WebWindowForm : Form
     WebView2 webView;
     bool initialized;
 }
+
+#endif

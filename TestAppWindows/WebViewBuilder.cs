@@ -1,3 +1,5 @@
+#if Windows
+
 using System.Reflection;
 using CsTools.Extensions;
 using WebWindowNetCore.Data;
@@ -44,3 +46,5 @@ public class WebViewBuilder : WebWindowNetCore.Base.WebViewBuilder
         }
     }
 }
+
+#endif

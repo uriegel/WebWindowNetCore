@@ -124,7 +124,7 @@ public class WebView : WebWindowNetCore.Base.WebView
                     case Action.Show:
                         if (action.Width.HasValue && action.Height.HasValue)
                             window.Resize(action.Width.Value, action.Height.Value);                            
-                        if (action.IsMaximized.GetOrDefault(false))
+                        if (action.IsMaximized ?? false)
                            window.Maximize();
                         window.ShowAll();   
                         break;

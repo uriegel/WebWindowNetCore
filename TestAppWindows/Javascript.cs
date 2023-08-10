@@ -1,3 +1,5 @@
+#if Windows
+
 using System.Runtime.InteropServices;
 
 namespace WebWindowNetCore;
@@ -32,3 +34,5 @@ public class Callback
 
     WebWindowForm parent;
 }
+
+#endif

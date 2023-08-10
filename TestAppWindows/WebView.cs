@@ -1,3 +1,5 @@
+#if Windows
+
 using WebWindowNetCore.Data;
 using static ClrWinApi.Api;
 
@@ -36,3 +38,5 @@ public class WebView : WebWindowNetCore.Base.WebView
     string appDataPath;
     WebViewSettings? settings;
 }
+
+#endif

@@ -1,4 +1,8 @@
-﻿using AspNetExtensions;
+﻿System.Console.WriteLine("no action");
+
+#if Windows
+
+using AspNetExtensions;
 using LinqTools;
 using WebWindowNetCore;
 
@@ -23,9 +27,9 @@ WebView
             .StreamRangeFile(@"C:\Users\uwe\Documents\Hafenrundfahrt.mp4"))
 
         .Build())
-#if DEBUG            
+#if DEBUG
     .DebuggingEnabled()
-#endif            
+#endif
     .Build()
     .Run("de.uriegel.Commander");    
 
@@ -114,3 +118,5 @@ partial class Overlay
 
     #endregion
 }*/
+
+#endif
