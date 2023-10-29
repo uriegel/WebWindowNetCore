@@ -47,6 +47,9 @@ public abstract class WebViewBuilder
     public WebViewBuilder ConfigureHttp(Func<HttpBuilder, HttpSettings> builder)
         => this.SideEffect(n => Data.HttpSettings = builder(new HttpBuilder()));
 
+    public WebViewBuilder WithoutNativeTitlebar()
+        => this.SideEffect(n => Data.WithoutNativeTitlebar = true);
+
     public abstract WebView Build();
     
     protected WebViewBuilder() { }
