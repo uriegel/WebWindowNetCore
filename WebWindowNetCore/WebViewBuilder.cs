@@ -50,6 +50,9 @@ public abstract class WebViewBuilder
     public WebViewBuilder WithoutNativeTitlebar()
         => this.SideEffect(n => Data.WithoutNativeTitlebar = true);
 
+    public WebViewBuilder OnWindowStateChanged(Action<WebWindowState> action)
+        => this.SideEffect(n => Data.OnWindowStateChanged = action);        
+
     public abstract WebView Build();
     
     protected WebViewBuilder() { }
