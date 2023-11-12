@@ -53,7 +53,7 @@ public abstract class WebViewBuilder
     public WebViewBuilder OnWindowStateChanged(Action<WebWindowState> action)
         => this.SideEffect(n => Data.OnWindowStateChanged = action);        
 
-    public WebViewBuilder OnFilesDrop(Action<string, string[]> onFilesDrop)
+    public WebViewBuilder OnFilesDrop(Action<string, bool, string[]> onFilesDrop)
         => this.SideEffect(n => Data.OnFilesDrop = onFilesDrop);        
 
     public abstract WebView Build();
