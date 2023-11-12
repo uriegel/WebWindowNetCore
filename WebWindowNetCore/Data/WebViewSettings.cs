@@ -14,5 +14,7 @@ public class WebViewSettings
     public string? ResourceIcon { get; internal set; }
     public bool WithoutNativeTitlebar { get; internal set; }
     public Action<WebWindowState>? OnWindowStateChanged { get; internal set; }
-    public Action<string[]>? OnFilesDrop { get; internal set; }
+    public Action<FilesDrop>? OnFilesDrop { get; internal set; }
 }
+
+public record FilesDrop(string Id, string? Paths);
