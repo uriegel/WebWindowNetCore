@@ -35,6 +35,14 @@ public abstract class WebViewBuilder
     public WebViewBuilder QueryString(string query)
         => this.SideEffect(n => Data.Query = query);
 
+    /// <summary>
+    /// Add a query string to the Url (or DebugUrl, or HttpBuilder.ResourceWebroot)
+    /// </summary>
+    /// <param name="getQuery">A function returning a query string such as '?theme=adwaita&amp;platform=linux' which is added to the Url</param>
+    /// <returns></returns>
+    public WebViewBuilder QueryString(Func<string> getQuery)
+        => this.SideEffect(n => Data.GetQuery = getQuery);
+
     public WebViewBuilder SaveBounds()
         => this.SideEffect(n => Data.SaveBounds = true);
 
@@ -55,6 +63,9 @@ public abstract class WebViewBuilder
 
     public WebViewBuilder OnFilesDrop(Action<string, bool, string[]> onFilesDrop)
         => this.SideEffect(n => Data.OnFilesDrop = onFilesDrop);        
+
+    public WebViewBuilder OnStarted(Action onStarted)
+        => this.SideEffect(n => Data.OnStarted = onStarted);        
 
     public abstract WebView Build();
     
