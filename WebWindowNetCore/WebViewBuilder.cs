@@ -67,6 +67,9 @@ public abstract class WebViewBuilder
     public WebViewBuilder OnStarted(Action onStarted)
         => this.SideEffect(n => Data.OnStarted = onStarted);        
 
+    public WebViewBuilder DefaultContextMenuEnabled(bool enabled)
+        => this.SideEffect(n => Data.DefaultContextMenuEnabled = enabled);        
+
     public abstract WebView Build();
     
     protected WebViewBuilder() { }

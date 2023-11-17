@@ -17,5 +17,6 @@ public class WebViewSettings
     public Action<WebWindowState>? OnWindowStateChanged { get; internal set; }
     public Action<string, bool, string[]>? OnFilesDrop { get; internal set; }
     public Action? OnStarted { get; internal set; }
+    public bool DefaultContextMenuEnabled { get; internal set; }
 }
 
