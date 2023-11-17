@@ -7,7 +7,6 @@ public class WebViewSettings
     public string Title { get; internal set; } = "";
     public string? Url { get; internal set; }
     public string? Query { get; internal set; }
-    public Func<string>? GetQuery { get; internal set; }
     public string? DebugUrl { get; internal set; }
     public bool SaveBounds { get; internal set; }
     public HttpSettings? HttpSettings { get; internal set; }
