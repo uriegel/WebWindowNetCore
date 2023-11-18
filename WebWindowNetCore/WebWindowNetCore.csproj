@@ -6,9 +6,9 @@
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>6.9.2</Version>
-	<FileVersion>6.9.2.0</FileVersion>
-	<AssemblyVersion>6.9.2.0</AssemblyVersion>
+	<Version>7.0.0-alpha</Version>
+	<FileVersion>7.0.0.0</FileVersion>
+	<AssemblyVersion>7.0.0.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
 	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>

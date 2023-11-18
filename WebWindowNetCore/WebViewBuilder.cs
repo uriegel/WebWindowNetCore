@@ -5,6 +5,9 @@ namespace WebWindowNetCore.Base;
 
 public abstract class WebViewBuilder
 {
+    public WebViewBuilder SetAppId(string id)
+        => this.SideEffect(n => Data.AppId = id);
+
     public WebViewBuilder InitialBounds(int width, int height)
         => this
             .SideEffect(n => Data.Width = width)
@@ -76,5 +79,3 @@ public abstract class WebViewBuilder
 
     protected WebViewSettings Data { get; } = new();
 }
-
-// TODO File Drag and Drop (Windows)

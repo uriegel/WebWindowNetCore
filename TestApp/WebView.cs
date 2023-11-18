@@ -1,144 +1,111 @@
 using GtkDotNet;
 using WebWindowNetCore.Data;
 using System.Text.Json;
+
 using LinqTools;
-using WebWindowNetCore;
+using System.Runtime.InteropServices;
+
+using static AspNetExtensions.Core;
 
 enum Action
 {
     DevTools = 1,
-    Show,
 }
 
 record ScriptAction(Action Action, int? Width, int? Height, bool? IsMaximized);
 
 public class WebView : WebWindowNetCore.Base.WebView
 {
-    public static WebViewBuilder Create()
-        => new WebViewBuilder();
+    public static WebViewBuilder Create() => new();
 
-    public override int Run(string gtkId = "de.uriegel.WebViewNetCore")
-        => new Application(gtkId)
-            .Run(app =>
-            {
-            app.EnableSynchronizationContext();
+    public override int Run()
+        => Application.Run(settings.AppId, app =>
+            Application
+                .NewWindow(app)
+                    .SideEffect(_ => Application.EnableSynchronizationContext())
+                    .SideEffect(w => w.SetTitle(settings.Title))
+                    .SideEffectIf(settings.ResourceIcon != null,
+                        w => Window.SetIconFromDotNetResource(w, settings.ResourceIcon))
+                    .SideEffectChoose(settings.SaveBounds,
+                        w =>
+                        {
+                            var bounds = Bounds.Retrieve(settings.AppId!, new Bounds(null, null, settings.Width, settings.Height, null));
+                            w.SetDefaultSize(bounds.Width ?? 800, bounds.Height ?? 600);
+                            if (bounds.IsMaximized == true)
+                                w.Maximize();
+                        },
+                        w => w.SetDefaultSize(settings.Width, settings.Height))
+                    .SideEffect(w => w.SetChild(
+                        WebKit
+                            .New()
+                            .SideEffect(wk =>
+                                wk
+                                    .GetSettings()
+                                    .SideEffectIf(settings.DevTools == true,
+                                        s => s.SetBool("enable-developer-extras", true)))
+                            .SideEffectIf(settings.DefaultContextMenuEnabled != true,
+                                wk => wk.SignalConnect<BoolFunc>("context-menu", () => true))
+                            .SideEffect(wk => wk.LoadUri(WebViewSettings.GetUri(settings)))
+                            .SideEffect(wk => Gtk.SignalConnect<TwoIntPtr>(wk, "script-dialog", (_, d) =>
+                            {
+                                var msg = WebKit.ScriptDialogGetMessage(d);
+                                var text = Marshal.PtrToStringUTF8(msg);
+                                Console.WriteLine(text);
+                                var action = JsonSerializer.Deserialize<ScriptAction>(text ?? "", JsonWebDefaults);
 
-            GtkDotNet.Timer? timer = null;
-            saveBounds = settings?.SaveBounds == true;
-
-            var window = new Window();
-            var webView = new GtkDotNet.WebView();
-            window.Add(webView);
-            webView.Settings.EnableDeveloperExtras = true;
-            if (settings?.Url != null)
-                webView.LoadUri(settings?.Url);
-            if (settings?.DevTools == true)
-                webView.Settings.EnableDeveloperExtras = true;
-            if (settings?.HttpSettings?.WebrootUrl != null)
-            {
-#if DEBUG
-                var uri = string.IsNullOrEmpty(settings?.DebugUrl)
-                    ? $"http://localhost:{settings?.HttpSettings?.Port ?? 80}{settings?.HttpSettings?.WebrootUrl}/{settings?.HttpSettings?.DefaultHtml}"
-                    : settings?.DebugUrl;
-#else
-                var uri = $"http://localhost:{settings?.HttpSettings?.Port ?? 80}{settings?.HttpSettings?.WebrootUrl}/{settings?.HttpSettings?.DefaultHtml}";
-#endif
-                webView.LoadUri(uri);
-            }
-            app.AddWindow(window);
-            window.SetTitle(settings?.Title);
-            window.SetSizeRequest(200, 200);
-            window.SetDefaultSize(settings!.Width, settings!.Height);
-            if (!saveBounds)
-                window.ShowAll();
-            else
-            {
-                var w = settings?.Width;
-                var h = settings?.Height;
-                var showDevTools = settings?.DevTools == true;
-                var withFetch = (settings?.HttpSettings?.RequestDelegates?.Length ?? 0) > 0;
-                webView.LoadChanged += (s, e) =>
-                {
-                    if (e.LoadEvent == WebKitLoadEvent.WEBKIT_LOAD_COMMITTED)
-                    {
-                        webView.RunJavascript(
-                        """ 
-                            const bounds = JSON.parse(localStorage.getItem('window-bounds') || '{}')
-                            const isMaximized = localStorage.getItem('isMaximized')
-                            if (bounds.width && bounds.height)
-                                alert(JSON.stringify({action: 2, width: bounds.width, height: bounds.height, isMaximized: isMaximized == 'true'}))
-                            else
-                                alert(JSON.stringify({action: 2}))
-                        """);
-                        if (showDevTools == true)
-                            webView.RunJavascript(
-                            """ 
-                                function webViewShowDevTools() {
-                                    alert(JSON.stringify({action: 1}))
+                                switch (action?.Action)
+                                {
+                                    case Action.DevTools:
+                                        WebKit.InspectorShow(WebKit.GetInspector(wk));
+                                        break;
                                 }
-                            """);
-                        if (withFetch)
-                            webView.RunJavascript(
-                            """ 
-                                async function webViewRequest(method, input) {
+                            }))
+                            .SideEffect(wk => Gtk.SignalConnect<TwoIntPtr>(wk, "load-changed", (_, e) =>
+                            {
+                                if ((WebKitLoadEvent)e == WebKitLoadEvent.WEBKIT_LOAD_COMMITTED)
+                                {
+                                    if (settings.DevTools == true)
+                                        WebKit.RunJavascript(wk,
+                                            """ 
+                                                function webViewShowDevTools() {
+                                                    alert(JSON.stringify({action: 1}))
+                                                }
+                                            """);
+                                    if ((settings.HttpSettings?.RequestDelegates?.Length ?? 0) > 0)
+                                        WebKit.RunJavascript(wk,
+                                            """ 
+                                                async function webViewRequest(method, input) {
+                                                    const msg = {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify(input)
+                                                    }
 
-                                    const msg = {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(input)
-                                    }
-
-                                    const response = await fetch(`/request/${method}`, msg) 
-                                    return await response.json() 
+                                                    const response = await fetch(`/request/${method}`, msg) 
+                                                    return await response.json() 
+                                                }
+                                            """);
+                                    settings.OnStarted?.Invoke();
                                 }
-                            """);
-                    }
-                };
-
-                window.Configure += (s, e) =>
-                {
-                    timer?.Dispose();
-                    timer = new(() => 
-                    {
-                        if (!window.IsMaximized())
-                            webView.RunJavascript(
-                                $$"""
-                                    localStorage.setItem('window-bounds', JSON.stringify({width: {{e.Width}}, height: {{e.Height}}}))
-                                    localStorage.setItem('isMaximized', false)
-                                """);
-                        else
-                            webView.RunJavascript($"localStorage.setItem('isMaximized', true)");
-                    }, TimeSpan.FromMilliseconds(400), Timeout.InfiniteTimeSpan);
-                };
-            }
-
-            webView.ScriptDialog += (s, e) =>
-            {
-                Console.WriteLine(e.Message);
-                var action = JsonSerializer.Deserialize<ScriptAction>(e.Message, JsonDefault.Value);
-                switch (action?.Action)
-                {
-                    case Action.DevTools:
-                        webView.Inspector.Show();
-                        break;
-                    case Action.Show:
-                        if (action.Width.HasValue && action.Height.HasValue)
-                            window.Resize(action.Width.Value, action.Height.Value);                            
-                        if (action.IsMaximized ?? false)
-                           window.Maximize();
-                        window.ShowAll();   
-                        break;
-                }
-            };
-
-            settings = null;
-        });
+                            }))
+                    ))
+                .SideEffectIf(settings.SaveBounds == true,
+                    w => w.SideEffect(da => da.SignalConnectAfter<CloseDelegate>("close-request", (_, __) =>
+                        false.SideEffect(_ =>
+                            (Bounds.Retrieve(settings.AppId, new Bounds(null, null, settings.Width, settings.Height, null))
+                                with { IsMaximized = w.IsMaximized(), Width = w.GetWidth(), Height = w.GetHeight() })
+                                    .Save(settings.AppId))
+                    )))
+                .SideEffect(w => w.Show())
+            );
 
     internal WebView(WebViewBuilder builder)
         => settings = builder.Data;
 
-    WebViewSettings? settings;
+    delegate bool CloseDelegate(IntPtr z1, IntPtr z2);
 
-    bool saveBounds;
+    delegate bool BoolFunc();
+
+    readonly WebViewSettings settings;
 }
 

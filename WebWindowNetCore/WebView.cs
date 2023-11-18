@@ -5,7 +5,7 @@ namespace WebWindowNetCore.Base;
 public abstract class WebView
 {
     public static SseEventSource<T> CreateEventSource<T>()
-        => new SseEventSource<T>();
+        => new();
         
-    public abstract int Run(string gtkId = "");
+    public abstract int Run();
 }

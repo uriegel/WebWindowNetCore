@@ -1,11 +1,11 @@
 ﻿using LinqTools;
-using AspNetExtensions;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
 
 WebView
     .Create()
+    .SetAppId("de.uriegel.test")
     .InitialBounds(600, 800)
     .Title("WebView Test")
     .ResourceIcon("icon")
@@ -23,7 +23,7 @@ WebView
     .DebuggingEnabled()
 #endif            
     .Build()
-    .Run("de.uriegel.Commander");    
+    .Run();    
 
 void StartEvents(Action<Event> onChanged)   
 {
