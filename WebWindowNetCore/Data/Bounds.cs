@@ -8,7 +8,7 @@ public record Bounds(int? X, int? Y, int? Width, int? Height, bool? IsMaximized)
 {
     public static Bounds Retrieve(string id, Bounds? defaultValue = null)
         => GetBoundsPath(id)
-            .ReadAllTextFromFilePath1()
+            .ReadAllTextFromFilePath()
             ?.Deserialize<Bounds>(JsonWebDefaults)
             ?? defaultValue 
             ?? new(null, null, null, null, null);
