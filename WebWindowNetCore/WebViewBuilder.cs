@@ -5,6 +5,18 @@ namespace WebWindowNetCore.Base;
 
 public abstract class WebViewBuilder
 {
+    public T DownCast<T>()
+        where T : WebViewBuilder
+        => (this as T)!;
+
+    /// <summary>
+    /// Callback onScriptAction is called via javascript function webViewScriptAction(id: number)
+    /// </summary>
+    /// <param name="onScriptAction"></param>
+    /// <returns></returns>
+    public WebViewBuilder OnScriptAction(Action<int> onScriptAction)
+        => this.SideEffect(n => Data.OnScriptAction = onScriptAction);
+
     public WebViewBuilder SetAppId(string id)
         => this.SideEffect(n => Data.AppId = id);
 
