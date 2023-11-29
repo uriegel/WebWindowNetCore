@@ -14,7 +14,7 @@ public abstract class WebViewBuilder
     /// </summary>
     /// <param name="onScriptAction"></param>
     /// <returns></returns>
-    public WebViewBuilder OnScriptAction(Action<int> onScriptAction)
+    public WebViewBuilder OnScriptAction(Action<int, string?> onScriptAction)
         => this.SideEffect(n => Data.OnScriptAction = onScriptAction);
 
     public WebViewBuilder SetAppId(string id)
