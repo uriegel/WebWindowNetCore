@@ -20,7 +20,7 @@ public class WebViewSettings
     public Action<WebWindowState>? OnWindowStateChanged { get; internal set; }
     public Action<string, bool, string[]>? OnFilesDrop { get; internal set; }
     public Action? OnStarted { get; internal set; }
-    public Action<int>? OnScriptAction { get; internal set; }
+    public Action<int, string?>? OnScriptAction { get; internal set; }
     public bool DefaultContextMenuEnabled { get; internal set; }
 
     public static string GetUri(WebViewSettings settings)
