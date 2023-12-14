@@ -1,4 +1,4 @@
-using LinqTools;
+using CsTools.Extensions;
 using WebWindowNetCore.Data;
 
 namespace WebWindowNetCore.Base;
