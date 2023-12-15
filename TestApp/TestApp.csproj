@@ -14,7 +14,7 @@
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup> 
 

@@ -1,26 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
-    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
-    <UseWindowsForms>true</UseWindowsForms>
     <TargetFramework>net8.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>Preview</LangVersion>
   	<SelfContained>false</SelfContained>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
 	  <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile> 
+
+	  <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+	  <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
+  <ItemGroup>
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
@@ -35,11 +28,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
+  <ItemGroup>
     <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(IsWindows)'=='true'">
     <PackageReference Include="ClrWinApi" Version="2.0.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1587.40" />
   </ItemGroup>

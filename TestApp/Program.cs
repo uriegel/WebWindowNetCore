@@ -1,5 +1,4 @@
 ﻿using CsTools.Extensions;
-using LinqTools;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);

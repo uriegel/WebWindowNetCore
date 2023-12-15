@@ -1,10 +1,5 @@
-﻿System.Console.WriteLine("no action");
-
-#if Windows
-
-using AspNetExtensions;
-using LinqTools;
-using WebWindowNetCore;
+﻿using AspNetExtensions;
+using WebWindowNetCore.Base;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
@@ -15,11 +10,12 @@ WebView
     .Title("WebView Test")
     .ResourceIcon("icon")
     .SaveBounds()
-    .DebugUrl("http://localhost:3000")
+    .DebugUrl("http://127.0.0.1:20000")
     .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
         .UseSse("sse/test", sseEventSource)
+        .UseReverseProxy("127.0.0.1", "", "http://localhost:5137")
 
         .MapGet("video", context => 
             context
@@ -119,4 +115,3 @@ partial class Overlay
     #endregion
 }*/
 
-#endif

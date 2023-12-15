@@ -62,6 +62,15 @@ public class HttpBuilder
                         app.WithMapGet(pattern, handler))
                             .ToArray());
 
+    public HttpBuilder UseReverseProxy(string host, string pattern, string reverseUrl)
+        => this.SideEffect(n => 
+                Data.RequestDelegates = Data.RequestDelegates.Append(
+                    (WebApplication app) =>
+                        app.WithHost(host)
+                            .WithReverseProxy(pattern, reverseUrl)
+                            .GetApp())
+                            .ToArray());
+
     public HttpSettings Build() => Data.SideEffect(Kestrel.Start);
 
     internal HttpSettings Data { get; } = new();
