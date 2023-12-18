@@ -5,6 +5,7 @@ var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
 
 WebView
+
     .Create()
     .InitialBounds(800, 600)
     .Title("WebView Test")
