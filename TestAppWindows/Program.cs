@@ -1,11 +1,11 @@
-﻿using AspNetExtensions;
-using WebWindowNetCore.Base;
+﻿#if Windows
+
+using AspNetExtensions;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
 
 WebView
-
     .Create()
     .InitialBounds(800, 600)
     .Title("WebView Test")
@@ -116,3 +116,7 @@ partial class Overlay
     #endregion
 }*/
 
+#else
+
+Console.WriteLine("Windows required");
+#endif
