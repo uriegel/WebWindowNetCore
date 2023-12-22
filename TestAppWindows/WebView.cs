@@ -18,7 +18,7 @@ public class WebView : WebWindowNetCore.Base.WebView
     public static WebViewBuilder Create()
         => new WebViewBuilder();
 
-    public override int Run(string gtkId = "")
+    public override int Run()
     {
         var webForm = new WebWindowForm(settings, appDataPath);
         webForm.Show();

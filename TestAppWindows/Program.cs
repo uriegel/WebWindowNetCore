@@ -1,6 +1,8 @@
 ﻿#if Windows
 
 using AspNetExtensions;
+using CsTools.Extensions;
+using WebWindowNetCore;
 
 var sseEventSource = WebView.CreateEventSource<Event>();
 StartEvents(sseEventSource.Send);
@@ -11,8 +13,8 @@ WebView
     .Title("WebView Test")
     .ResourceIcon("icon")
     .SaveBounds()
-    .DebugUrl("http://127.0.0.1:20000")
-    .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
+    //.DebugUrl("http://127.0.0.1:20000")
+    //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .ConfigureHttp(http => http
         .ResourceWebroot("webroot", "/web")
         .UseSse("sse/test", sseEventSource)
@@ -28,7 +30,7 @@ WebView
     .DebuggingEnabled()
 #endif
     .Build()
-    .Run("de.uriegel.Commander");    
+    .Run();    
 
 void StartEvents(Action<Event> onChanged)   
 {
