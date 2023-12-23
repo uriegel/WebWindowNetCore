@@ -76,7 +76,7 @@ public class HttpBuilder
                             }))
                             .ToArray());
 
-    public HttpBuilder JsonPost<T, TResult, TE>(string path, Func<AsyncResult<TResult, TE>> onRequest)
+    public HttpBuilder JsonPost<TResult, TE>(string path, Func<AsyncResult<TResult, TE>> onRequest)
             where TResult : notnull
             where TE : RequestError
         => this.SideEffect(n =>
