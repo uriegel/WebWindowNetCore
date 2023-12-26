@@ -47,7 +47,7 @@ public class HttpBuilder
                         app.WithMapPost(path, async (HttpContext context) => 
                             {
                                 var param = await context.Request.ReadFromJsonAsync<T>();
-                                await context.Response.WriteAsJsonAsync<TResult>(await onRequest(param!));
+                                await context.Response.WriteAsJsonAsync(await onRequest(param!));
                             }))
                             .ToArray());
 
