@@ -120,5 +120,5 @@ partial class Overlay
 
 #else
 
-Console.WriteLine("Windows required");
+System.Console.WriteLine("Windows required");
 #endif
