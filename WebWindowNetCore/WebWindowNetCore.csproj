@@ -6,9 +6,9 @@
 	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>9.4.0</Version>
-	<FileVersion>9.4.0.0</FileVersion>
-	<AssemblyVersion>9.4.0.0</AssemblyVersion>
+	<Version>9.4.1</Version>
+	<FileVersion>9.4.1.0</FileVersion>
+	<AssemblyVersion>9.4.1.0</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
 	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -34,7 +34,7 @@
 </ItemGroup>
 
 <ItemGroup>
-  <PackageReference Include="AspNetExtensions" Version="5.3.0" />
+  <PackageReference Include="AspNetExtensions" Version="5.3.1" />
   </ItemGroup>
 
 </Project>
