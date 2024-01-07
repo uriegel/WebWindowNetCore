@@ -82,6 +82,9 @@ public abstract class WebViewBuilder
     public WebViewBuilder OnStarted(Action onStarted)
         => this.SideEffect(n => Data.OnStarted = onStarted);        
 
+    public WebViewBuilder OnClosing(Func<bool> canClose)
+        => this.SideEffect(n => Data.CanClose = canClose);        
+
     public WebViewBuilder DefaultContextMenuEnabled()
         => this.SideEffect(n => Data.DefaultContextMenuEnabled = true);        
 
