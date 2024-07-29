@@ -4,6 +4,11 @@ A Webview Application for Windows and Linux similar to Electron. It uses a funct
 * you can call via javascript fetch from the web app (json input and output)
 * The C# app can send SSE events to the web app
 
+## Prerequisites for Linux
+
+```
+sudo apt install libgtk-4-dev
+` 
 
 WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
 
