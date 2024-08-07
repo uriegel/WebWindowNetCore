@@ -18,7 +18,7 @@ type WebView() =
     // let mutable resourceIcon: Option<string> = None
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
-    // let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
+    let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
     // let mutable canClose: Option<unit->bool> = None
     // let mutable onScriptAction: Option<int->string->unit> = None
@@ -39,6 +39,12 @@ type WebView() =
     member this.Url(u) =
         url <- Some u                                
         this
+    member this.OnFilesDrop(action: string->bool->string[]->unit) = 
+        onFilesDrop <- Some action
+        this
+    member this.OnFilesDrop(action: System.Action<string, bool, string[]>) = 
+        onFilesDrop <- Some (fun s b sa -> action.Invoke(s, b, sa))
+        this
 
 #if Linux
     member this.Run() =
@@ -56,3 +62,12 @@ type WebView() =
                     |> ignore)
             .Run(0, 0)
 #endif
+
+// TODO
+    // public static string GetUri(WebViewSettings settings)
+    //     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)
+    //         ? settings.DebugUrl
+    //         : settings.Url != null
+    //         ? settings.Url
+    //         : $"http://localhost:{settings.HttpSettings?.Port ?? 80}{settings.HttpSettings?.WebrootUrl}/{settings.HttpSettings?.DefaultHtml}")
+    //             + (settings.Query ?? settings.GetQuery?.Invoke());

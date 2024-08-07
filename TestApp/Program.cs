@@ -2,7 +2,7 @@
 
 new WebView()
     .AppId("de.uriegel.test")
-     .Width(1200)
+    .Width(1200)
     .Title("Das ist der Titel")
     .Url("https://google.de")
     .Run();

@@ -10,3 +10,5 @@ Linux/WebWindow/bin
 Linux/WebWindow/obj
 TestAppWindows/bin/
 TestAppWindows/obj/
+TestAppFSharp/bin
+TestAppFSharp/obj

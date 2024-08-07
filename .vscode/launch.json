@@ -24,6 +24,16 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
+        }, {
+            "name": ".NET Core Launch F# (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppFSharp/bin/Debug/net8.0/linux-x64/TestAppFSharp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
         }
     ]
 }
