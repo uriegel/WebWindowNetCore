@@ -13,6 +13,16 @@ public static class Test
 {
     public static int Run()
         => WebWindowNetCore.Base.Test.Run();
+
+#if Windows
+    public static string RunWindows()
+        => "Ist Windows";
+#endif
+
+#if Linux
+    public static string RunLinux()
+        => "Ist Linux";
+#endif        
 }
 
 // record ScriptAction(Action Action, int? Width, int? Height, bool? IsMaximized);
