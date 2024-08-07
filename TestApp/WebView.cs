@@ -7,19 +7,15 @@
 //     DevTools = 1,
 // }
 
-namespace WebWindowNetCore2;
+namespace WebWindowNetCore;
 
 public static class Test
 {
-    public static int Run()
-        => WebWindowNetCore.Base.Test.Run();
-
 #if Windows
     public static string RunWindows()
         => "Ist Windows";
-#endif
 
-#if Linux
+#else
     public static string RunLinux()
         => "Ist Linux";
 #endif        

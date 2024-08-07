@@ -30,6 +30,10 @@
     <DefineConstants>Windows</DefineConstants>
 </PropertyGroup>
 
+<PropertyGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
+    <DefineConstants>Linux</DefineConstants>
+</PropertyGroup>
+
 <ItemGroup>
 	<None Include="..\README.md" Pack="true" PackagePath="\" />
 	<None Include="..\LICENSE">

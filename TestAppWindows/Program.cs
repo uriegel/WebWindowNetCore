@@ -1,6 +1,11 @@
 ﻿
 using WebWindowNetCore.Base;
+
+var test = WebWindowNetCore.Test2.RunWindows();
+
 Test.Run();
+
+
 // #if Windows
 
 // using AspNetExtensions;
