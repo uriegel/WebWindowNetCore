@@ -43,8 +43,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Gtk4DotNet" Version="5.0.0" />
-  </ItemGroup>  
-
 </Project>

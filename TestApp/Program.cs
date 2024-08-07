@@ -1,55 +1,57 @@
 ﻿using CsTools.Extensions;
 
-var sseEventSource = WebView.CreateEventSource<Event>();
-StartEvents(sseEventSource.Send);
+WebWindowNetCore.Base.Test.Run();
 
-WebView
-    .Create()
-    .SetAppId("de.uriegel.test")
-    .InitialBounds(600, 800)
-    .Title("WebView Test")
-    .ResourceIcon("icon")
-    .SaveBounds()
-    //.DebugUrl("https://www.google.de")
-    //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
-    .ConfigureHttp(http => http
-        .ResourceWebroot("webroot", "/webroot")
-        //.MapGet("requests/icon", context => context.SendStream()))
-        .JsonPost<Cmd1Param, Cmd1Result>("request/cmd1", JsonRequest1)
-        .JsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)
-        .UseSse("sse/test", sseEventSource)
-        .Build())
-#if DEBUG            
-    .DebuggingEnabled()
-#endif            
-    .Build()
-    .Run();    
+// var sseEventSource = WebView.CreateEventSource<Event>();
+// StartEvents(sseEventSource.Send);
 
-void StartEvents(Action<Event> onChanged)   
-{
-    var counter = 0;
-    new Thread(_ =>
-        {
-            while (true)
-            {
-                Thread.Sleep(5000);
-                onChanged(new($"Ein Event {counter++}"));
-           }
-        })
-        {
-            IsBackground = true
-        }.Start();   
-}
+// WebView
+//     .Create()
+//     .SetAppId("de.uriegel.test")
+//     .InitialBounds(600, 800)
+//     .Title("WebView Test")
+//     .ResourceIcon("icon")
+//     .SaveBounds()
+//     //.DebugUrl("https://www.google.de")
+//     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
+//     .ConfigureHttp(http => http
+//         .ResourceWebroot("webroot", "/webroot")
+//         //.MapGet("requests/icon", context => context.SendStream()))
+//         .JsonPost<Cmd1Param, Cmd1Result>("request/cmd1", JsonRequest1)
+//         .JsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)
+//         .UseSse("sse/test", sseEventSource)
+//         .Build())
+// #if DEBUG            
+//     .DebuggingEnabled()
+// #endif            
+//     .Build()
+//     .Run();    
 
-Task<Cmd1Result> JsonRequest1(Cmd1Param param)
-    => new Cmd1Result("Result", 3).ToAsync(); 
+// void StartEvents(Action<Event> onChanged)   
+// {
+//     var counter = 0;
+//     new Thread(_ =>
+//         {
+//             while (true)
+//             {
+//                 Thread.Sleep(5000);
+//                 onChanged(new($"Ein Event {counter++}"));
+//            }
+//         })
+//         {
+//             IsBackground = true
+//         }.Start();   
+// }
 
-Task<Cmd2Result> JsonRequest2(Cmd2Param param)
-    => new Cmd2Result("Result 2", 32).ToAsync(); 
+// Task<Cmd1Result> JsonRequest1(Cmd1Param param)
+//     => new Cmd1Result("Result", 3).ToAsync(); 
 
-record Event(string Content);
+// Task<Cmd2Result> JsonRequest2(Cmd2Param param)
+//     => new Cmd2Result("Result 2", 32).ToAsync(); 
 
-record Cmd1Param(string Text, int Id);
-record Cmd1Result(string Result, int Id);
-record Cmd2Param(string Name, int Number);
-record Cmd2Result(string Name, int Number);
+// record Event(string Content);
+
+// record Cmd1Param(string Text, int Id);
+// record Cmd1Result(string Result, int Id);
+// record Cmd2Param(string Name, int Number);
+// record Cmd2Result(string Name, int Number);

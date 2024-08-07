@@ -1,14 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-	<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
-	<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+	<RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+<PropertyGroup>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>9.6.7</Version>
-	<FileVersion>9.6.7.0</FileVersion>
-	<AssemblyVersion>9.6.7.0</AssemblyVersion>
+	<Version>10.0.0-beta-1</Version>
+	<FileVersion>10.0.0.1</FileVersion>
+	<AssemblyVersion>10.0.0.1</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
 	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -31,6 +33,15 @@
 		<Pack>True</Pack>
 		<PackagePath></PackagePath>
 	</None>
+</ItemGroup>
+
+<ItemGroup Condition="'$(TargetIdentifier)' == 'net8.0-windows'">
+    <PackageReference Include="WebWindowNetCore.Windows" Version="6.0.0-beta-2" />
+</ItemGroup> 
+
+
+<ItemGroup Condition="'$(TargetIdentifier)' != 'net8.0-windows'">
+    <PackageReference Include="WebWindowNetCore.Linux" Version="7.0.0-beta-2" />
 </ItemGroup>
 
 <ItemGroup>

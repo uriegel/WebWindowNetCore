@@ -1,11 +1,16 @@
 using AspNetExtensions;
 
-namespace WebWindowNetCore.Base;
+namespace WebWindowNetCore;
 
-public abstract class WebView
+public class Test2
 {
-    public static SseEventSource<T> CreateEventSource<T>()
-        => new();
-        
-    public abstract int Run();
+    
 }
+
+// public abstract class WebView
+// {
+//     public static SseEventSource<T> CreateEventSource<T>()
+//         => new();
+
+//     public abstract int Run();
+// }
