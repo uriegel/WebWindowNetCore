@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>10.0.0-beta-4</Version>
+    <FileVersion>10.0.0.4</FileVersion>
+    <AssemblyVersion>10.0.0.4</AssemblyVersion>
+    <Authors>Uwe Riegel</Authors>
+    <Company>Uwe Riegel</Company>
+    <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
+    <PackageLicenseUrl>
+    </PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <DefineConstants>Windows</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
+    <DefineConstants>Linux</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Settings.fs" />
+    <Compile Include="WebWindowState.fs" />
+    <Compile Include="WebView.fs" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
+    <PackageReference Include="Gtk4DotNet" Version="6.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AspNetExtensions" Version="7.3.1" />
+  </ItemGroup>
+</Project>

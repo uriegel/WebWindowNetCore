@@ -1,7 +1,11 @@
-﻿using CsTools.Extensions;
-using WebWindowNetCore;
+﻿using WebWindowNetCore;
 
-WebWindowNetCore.Base.Test.Run();
+new WebView()
+    .AppId("de.uriegel.test")
+     .Width(1200)
+    .Title("Das ist der Titel")
+    .Url("https://google.de")
+    .Run();
 
 // var sseEventSource = WebView.CreateEventSource<Event>();
 // StartEvents(sseEventSource.Send);

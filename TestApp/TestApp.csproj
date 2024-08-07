@@ -25,7 +25,7 @@
   </PropertyGroup> 
 
   <ItemGroup>
-    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
+    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

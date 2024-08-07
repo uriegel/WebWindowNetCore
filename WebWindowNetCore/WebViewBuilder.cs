@@ -1,7 +1,6 @@
 using CsTools.Extensions;
 using WebWindowNetCore.Data;
 
-namespace WebWindowNetCore.Base;
 
 // public abstract class WebViewBuilder
 // {

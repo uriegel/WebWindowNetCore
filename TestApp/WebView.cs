@@ -7,19 +7,8 @@
 //     DevTools = 1,
 // }
 
-namespace WebWindowNetCore;
 
-public static class Test
-{
-#if Windows
-    public static string RunWindows()
-        => "Ist Windows";
 
-#else
-    public static string RunLinux()
-        => "Ist Linux";
-#endif        
-}
 
 // record ScriptAction(Action Action, int? Width, int? Height, bool? IsMaximized);
 

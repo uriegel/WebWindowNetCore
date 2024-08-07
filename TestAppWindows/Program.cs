@@ -1,9 +1,6 @@
-﻿
-using WebWindowNetCore.Base;
+﻿using System;
 
-var test = WebWindowNetCore.Test2.RunWindows();
-
-Test.Run();
+Console.WriteLine("Hallo");
 
 
 // #if Windows

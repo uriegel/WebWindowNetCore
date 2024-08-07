@@ -1,5 +1,3 @@
-using AspNetExtensions;
-
 namespace WebWindowNetCore;
 
 public class Test2

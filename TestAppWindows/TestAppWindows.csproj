@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-		<IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX> 
-		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>  
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
+    <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
+    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -14,20 +12,18 @@
     <DefineConstants>Windows</DefineConstants>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-  	<SelfContained>false</SelfContained>
-	  <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile> 
-
-	  <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
-	  <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+    <ApplicationUseCompatibleTextRendering>false</ApplicationUseCompatibleTextRendering>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-  </PropertyGroup> 
-
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="WebView.fs" />
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
@@ -41,9 +37,7 @@
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
+    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.fsproj" />
   </ItemGroup>
-
 </Project>

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{715594F9-DF40-40AC-8B55-22EE062EF700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindowNetCore", "WebWindowNetCore\WebWindowNetCore.csproj", "{E7FFE92B-0541-4260-A6FE-055C10C7D965}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindowNetCore", "WebWindowNetCore\WebWindowNetCore.fsproj", "{E7FFE92B-0541-4260-A6FE-055C10C7D965}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppWindows", "TestAppWindows\TestAppWindows.csproj", "{CB6210D6-378E-4780-AD15-1B32E6983E24}"
 EndProject
