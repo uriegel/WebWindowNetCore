@@ -2,15 +2,14 @@
 
 <PropertyGroup>
     <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-	<RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
 <PropertyGroup>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
-	<Version>10.0.0-beta-1</Version>
-	<FileVersion>10.0.0.1</FileVersion>
-	<AssemblyVersion>10.0.0.1</AssemblyVersion>
+	<Version>10.0.0-beta-2</Version>
+	<FileVersion>10.0.0.2</FileVersion>
+	<AssemblyVersion>10.0.0.2</AssemblyVersion>
 	<Authors>Uwe Riegel</Authors>
 	<Company>Uwe Riegel</Company>		
 	<Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -35,12 +34,12 @@
 	</None>
 </ItemGroup>
 
-<ItemGroup Condition="'$(TargetIdentifier)' == 'net8.0-windows'">
+<ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="WebWindowNetCore.Windows" Version="6.0.0-beta-2" />
 </ItemGroup> 
 
 
-<ItemGroup Condition="'$(TargetIdentifier)' != 'net8.0-windows'">
+<ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
     <PackageReference Include="WebWindowNetCore.Linux" Version="7.0.0-beta-2" />
 </ItemGroup>
 
