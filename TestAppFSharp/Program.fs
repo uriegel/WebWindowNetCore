@@ -2,7 +2,7 @@
 
 WebView()
     .AppId("de.uriegel.test")
-    .Width(1200)
+    .InitialBounds(1200, 800)
     .Title("F# WebView")
     .Url("https://google.de")
     .Run()

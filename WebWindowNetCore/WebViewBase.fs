@@ -1,4 +1,5 @@
 namespace WebWindowNetCore
+open System.Diagnostics
 
 [<AbstractClass>]
 type WebViewBase() = 
@@ -9,7 +10,7 @@ type WebViewBase() =
     let mutable url: Option<string> = None
     // let mutable query: Option<string> = None
     // let mutable getQuery: Option<unit->string> = None
-    // let mutable debugUrl: Option<string> = None
+    let mutable debugUrl: Option<string> = None
     // let mutable saveBounds = false
     // let mutable devTools = false
     // let mutable resourceIcon: Option<string> = None
@@ -25,21 +26,39 @@ type WebViewBase() =
     member internal this.TitleValue = title
     member internal this.WidthValue = width
     member internal this.HeightValue = height
+    member internal this.UrlValue = url
+    member internal this.DebugUrlValue = debugUrl
+
+    member internal this.GetUrl () = 
+        if Debugger.IsAttached then
+            this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
+        else
+            this.UrlValue |> Option.defaultValue ""
+        // TODO (settings.Query ?? settings.GetQuery?.Invoke());
 
     member this.AppId(id) =
         appId <- id
         this
-    member this.Width(w) =
-        width <- w        
-        this
-    member this.Height(h) =
-        height <- h                
+    member this.InitialBounds(w, h) =
+        width <- w
+        height<- h
         this
     member this.Title(t) =
         title <- t                        
         this
     member this.Url(u) =
         url <- Some u                                
+        this
+    /// <summary>
+    /// This url is set to the webview only in debug mode, if HttpBuilder.ResourceWebroot is normally used. 
+    /// It is used for React, Vue,... which have their
+    /// own web server at debug time, like http://localhost:3000 . If set, it has precedence over 
+    /// HttpBuilder.ResourceWebroot
+    /// </summary>
+    /// <param name="url"></param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
+    member this.DebugUrl(url) =
+        debugUrl <- Some url                                
         this
     member this.OnFilesDrop(action: string->bool->string[]->unit) = 
         onFilesDrop <- Some action

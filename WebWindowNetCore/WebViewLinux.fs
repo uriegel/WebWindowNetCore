@@ -15,7 +15,7 @@ type WebView() =
                     .DefaultSize(this.WidthValue, this.HeightValue)
                     .Child(WebKit.New()
                         //.Ref())
-                        .LoadUri("https://google.de"))
+                        .LoadUri(this.GetUrl ()))
                     .Show()
                     |> ignore)
             .Run(0, 0)

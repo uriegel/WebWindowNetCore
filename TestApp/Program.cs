@@ -2,23 +2,17 @@
 
 new WebView()
     .AppId("de.uriegel.test")
-    .Width(1200)
+    .InitialBounds(1200, 800)
     .Title("Das ist der Titel")
-    .Url("https://google.de")
+    //.DebugUrl("https://www.google.de")
+    .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .Run();
 
 // var sseEventSource = WebView.CreateEventSource<Event>();
 // StartEvents(sseEventSource.Send);
 
-// WebView
-//     .Create()
-//     .SetAppId("de.uriegel.test")
-//     .InitialBounds(600, 800)
-//     .Title("WebView Test")
 //     .ResourceIcon("icon")
 //     .SaveBounds()
-//     //.DebugUrl("https://www.google.de")
-//     //.Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
 //     .ConfigureHttp(http => http
 //         .ResourceWebroot("webroot", "/webroot")
 //         //.MapGet("requests/icon", context => context.SendStream()))
@@ -29,8 +23,6 @@ new WebView()
 // #if DEBUG            
 //     .DebuggingEnabled()
 // #endif            
-//     .Build()
-//     .Run();    
 
 // void StartEvents(Action<Event> onChanged)   
 // {

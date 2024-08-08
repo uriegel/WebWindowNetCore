@@ -16,39 +16,6 @@ using WebWindowNetCore.Data;
 //     public WebViewBuilder OnScriptAction(Action<int, string?> onScriptAction)
 //         => this.SideEffect(n => Data.OnScriptAction = onScriptAction);
 
-//     public WebViewBuilder SetAppId(string id)
-//         => this.SideEffect(n => Data.AppId = id);
-
-//     public WebViewBuilder InitialBounds(int width, int height)
-//         => this
-//             .SideEffect(n => Data.Width = width)
-//             .SideEffect(n => Data.Height = height);
-
-//     public WebViewBuilder Title(string title)
-//         => this.SideEffect(n => Data.Title = title);
-
-//     public WebViewBuilder Url(string url)
-//         => this.SideEffect(n => Data.Url = url);
-
-//     /// <summary>
-//     /// This url is set to the webview only in debug mode, if HttpBuilder.ResourceWebroot is normally used. 
-//     /// It is used for React, Vue,... which have their
-//     /// own web server at debug time, like http://localhost:3000 . If set, it has precedence over 
-//     /// HttpBuilder.ResourceWebroot
-//     /// </summary>
-//     /// <param name="url"></param>
-//     /// <returns></returns>
-//     public WebViewBuilder DebugUrl(string url)
-//         => this.SideEffect(n => Data.DebugUrl = url);
-
-//     /// <summary>
-//     /// Add a query string to the Url (or DebugUrl, or HttpBuilder.ResourceWebroot)
-//     /// </summary>
-//     /// <param name="query">A query string such as '?theme=adwaita&amp;platform=linux' which is added to the Url</param>
-//     /// <returns></returns>
-//     public WebViewBuilder QueryString(string query)
-//         => this.SideEffect(n => Data.Query = query);
-
 //     /// <summary>
 //     /// Add a query string to the Url (or DebugUrl, or HttpBuilder.ResourceWebroot)
 //     /// </summary>
