@@ -5,7 +5,7 @@ open System.Drawing
 open System.Windows.Forms
 open Microsoft.Web.WebView2.Core
 open Microsoft.Web.WebView2.WinForms
-open System.Threading
+open FSharpTools
 
 type WebViewForm(appDataPath: string, settings: WebViewBase) = 
     inherit Form()
@@ -31,15 +31,12 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) =
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         base.ResumeLayout false
 
-        let startInContext (sync: SynchronizationContext) work = 
-            sync.Send((fun _ -> Async.StartImmediate(work)), null)
-
         async {
             let! enf = CoreWebView2Environment.CreateAsync(null, appDataPath, null) |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
             webView.Source <- Uri (settings.GetUrl ())
         } 
-        |> startInContext SynchronizationContext.Current
+        |> Async.StartWithCurrentContext 
 
 
 #endif    
