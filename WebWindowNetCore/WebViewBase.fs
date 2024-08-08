@@ -1,10 +1,7 @@
 namespace WebWindowNetCore
 
-#if Linux
-open GtkDotNet
-#endif
-
-type WebView() = 
+[<AbstractClass>]
+type WebViewBase() = 
     let mutable appId = "de.uriegel.webwindownetcore"
     let mutable width = 800
     let mutable height = 600
@@ -23,6 +20,11 @@ type WebView() =
     // let mutable canClose: Option<unit->bool> = None
     // let mutable onScriptAction: Option<int->string->unit> = None
     // let mutable defaultContextMenuEnabled = false
+
+    member internal this.AppIdValue = appId
+    member internal this.TitleValue = title
+    member internal this.WidthValue = width
+    member internal this.HeightValue = height
 
     member this.AppId(id) =
         appId <- id
@@ -46,22 +48,7 @@ type WebView() =
         onFilesDrop <- Some (fun s b sa -> action.Invoke(s, b, sa))
         this
 
-#if Linux
-    member this.Run() =
-        Application
-            .NewAdwaita(appId)
-            .OnActivate(fun app ->
-                Application
-                    .NewWindow(app) 
-                    .Title(title)
-                    .DefaultSize(width, height)
-                    .Child(WebKit.New()
-                        //.Ref())
-                        .LoadUri("https://google.de"))
-                    .Show()
-                    |> ignore)
-            .Run(0, 0)
-#endif
+    abstract member Run: unit->int
 
 // TODO
     // public static string GetUri(WebViewSettings settings)

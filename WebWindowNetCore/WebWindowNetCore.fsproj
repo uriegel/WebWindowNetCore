@@ -4,6 +4,11 @@
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>  
+
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -34,7 +39,9 @@
   <ItemGroup>
     <Compile Include="Settings.fs" />
     <Compile Include="WebWindowState.fs" />
-    <Compile Include="WebView.fs" />
+    <Compile Include="WebViewBase.fs" />
+    <Compile Include="WebViewWindows.fs" />
+    <Compile Include="WebViewLinux.fs" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE">
       <Pack>True</Pack>
