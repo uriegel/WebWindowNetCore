@@ -50,6 +50,9 @@
       </PackagePath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharpTools" Version="10.0.7" />
+  </ItemGroup>    
   <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
     <PackageReference Include="ClrWinApi" Version="2.4.0" />
