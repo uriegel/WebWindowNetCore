@@ -43,7 +43,7 @@ type WebView() =
         let appDataPath = FileInfo(loader).DirectoryName
         Api.LoadLibrary loader |> ignore
 
-        let webForm = new WebViewForm(appDataPath)
+        let webForm = new WebViewForm(appDataPath, this)
         Application.Run(webForm) 
         0
 

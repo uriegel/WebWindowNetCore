@@ -7,7 +7,7 @@ open Microsoft.Web.WebView2.Core
 open Microsoft.Web.WebView2.WinForms
 open System.Threading
 
-type WebViewForm(appDataPath: string) = 
+type WebViewForm(appDataPath: string, settings: WebViewBase) = 
     inherit Form()
 
     let webView = new WebView2()
@@ -24,8 +24,8 @@ type WebViewForm(appDataPath: string) =
         base.AutoScaleDimensions <- SizeF(8F, 20F)
         base.AutoScaleMode <- AutoScaleMode.Font
 
-        base.Text <- "Hallo"
-        base.Size <- Size (800, 600)
+        base.Text <- settings.TitleValue
+        base.Size <- Size (settings.WidthValue, settings.HeightValue)
         base.Controls.Add webView
 
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
@@ -37,7 +37,7 @@ type WebViewForm(appDataPath: string) =
         async {
             let! enf = CoreWebView2Environment.CreateAsync(null, appDataPath, null) |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
-            webView.Source <- Uri ("https://google.de")
+            webView.Source <- Uri (settings.GetUrl ())
         } 
         |> startInContext SynchronizationContext.Current
 

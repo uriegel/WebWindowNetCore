@@ -1,5 +1,18 @@
 # WebWindowNetCore
 
+## Notes for Developers
+
+### Developing for Windows
+In the project file ```WebWindowNetCoe.fsproj``` replace the following line
+
+```<TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>```
+
+with 
+
+```<TargetFrameworks>net8.0-windows</TargetFrameworks>```
+
+Don't forget to replace it to the original value before publishing a new nuget version
+
 ## new
 
 * WebWindowNetCore.Window and .Linux to this project
@@ -15,7 +28,7 @@ A Webview Application for Windows and Linux similar to Electron. It uses a funct
 ## Prerequisites for Linux
 
 ```
-sudo apt install libgtk-4-dev
+sudo apt install libgtk-4-dev !!!No!!!
 ` 
 
 WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
