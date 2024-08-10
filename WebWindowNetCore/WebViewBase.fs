@@ -13,7 +13,7 @@ type WebViewBase() =
     // let mutable getQuery: Option<unit->string> = None
     let mutable debugUrl: Option<string> = None
     let mutable saveBounds = false
-    // let mutable devTools = false
+    let mutable devTools = false
     let mutable resourceIcon: Option<string> = None
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
@@ -21,7 +21,7 @@ type WebViewBase() =
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
     // let mutable onScriptAction: Option<int->string->unit> = None
-    // let mutable defaultContextMenuEnabled = false
+    let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
@@ -32,6 +32,8 @@ type WebViewBase() =
     member internal this.SaveBoundsValue = saveBounds
     member internal this.CanCloseValue = canClose
     member internal this.ResourceIconValue = resourceIcon
+    member internal this.DevToolsValue = devTools
+    member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -76,11 +78,27 @@ type WebViewBase() =
     member this.CanClose(canCloseFunc: Func<bool>) = 
         canClose <- Some canCloseFunc.Invoke
         this
+    /// Does not work for Linux
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
         this
+    member this.DevTools() =
+        devTools <- true
+        this
+    member this.DefaultContextMenuDisabled() =
+        defaultContextMenuDisabled <- true
+        this
     abstract member Run: unit->int
 
+type Action =
+    | DevTools = 1
+
+type ScriptAction = {
+    Action: Action
+    Width: int option 
+    Height: int option
+    IsMaximized: bool
+}
 // TODO
     // public static string GetUri(WebViewSettings settings)
     //     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)

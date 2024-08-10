@@ -4,6 +4,7 @@ open GtkDotNet
 open GtkDotNet.Extensions
 open GtkDotNet.SafeHandles
 open Option
+open FSharpTools
 
 type WebView() = 
     inherit WebViewBase()
@@ -21,6 +22,12 @@ type WebView() =
                         (fun (w: WindowHandle) -> w.DefaultSize(this.WidthValue, this.HeightValue) |> ignore))
                     .Child(WebKit.New()
                         //.Ref())
+                        .If(this.DevToolsValue,
+                            (fun webview -> webview.GetSettings().EnableDeveloperExtras <- true))
+                        .If(this.DefaultContextMenuDisabledValue,
+                            (fun webview -> webview.DisableContextMenu() |> ignore))
+                        .OnAlert(this.onJavascript)
+                        .OnLoadChanged(this.onWebViewLoad)
                         .LoadUri(this.GetUrl ()))
                     .With(fun w -> 
                         this.CanCloseValue |> iter (fun canClose -> w.OnClose(fun _ -> canClose()) |> ignore))
@@ -48,4 +55,18 @@ type WebView() =
         w.OnClose(canClose) 
         |> ignore
 
+    member this.onJavascript (webView: WebViewHandle) (msg: string) =
+        let action = TextJson.deserialize<ScriptAction> msg 
+        match action.Action with
+        | Action.DevTools -> webView.GetInspector().Show()
+        |_ ->()
+
+    member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
+        if load = WebViewLoad.Committed then   
+            if this.DevToolsValue then
+                webView.RunJavascript(@"
+                    function webViewShowDevTools() {
+                        alert(JSON.stringify({action: 1}))
+                    }                    
+                ")
 #endif

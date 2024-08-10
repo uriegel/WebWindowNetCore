@@ -6,6 +6,10 @@ new WebView()
     .Title("Das ist der Titel")
     .ResourceIcon("icon")
     .SaveBounds()
+    //.DefaultContextMenuDisabled()
+#if DEBUG    
+    .DevTools()
+#endif
     //.DebugUrl("https://www.google.de")
     .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
     .CanClose(() => false)
@@ -14,7 +18,6 @@ new WebView()
 // var sseEventSource = WebView.CreateEventSource<Event>();
 // StartEvents(sseEventSource.Send);
 
-//     .ResourceIcon("icon")
 //     .ConfigureHttp(http => http
 //         .ResourceWebroot("webroot", "/webroot")
 //         //.MapGet("requests/icon", context => context.SendStream()))
