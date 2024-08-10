@@ -14,7 +14,7 @@ type WebViewBase() =
     let mutable debugUrl: Option<string> = None
     let mutable saveBounds = false
     // let mutable devTools = false
-    // let mutable resourceIcon: Option<string> = None
+    let mutable resourceIcon: Option<string> = None
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
@@ -31,6 +31,7 @@ type WebViewBase() =
     member internal this.DebugUrlValue = debugUrl
     member internal this.SaveBoundsValue = saveBounds
     member internal this.CanCloseValue = canClose
+    member internal this.ResourceIconValue = resourceIcon
     
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -74,6 +75,9 @@ type WebViewBase() =
         this
     member this.CanClose(canCloseFunc: Func<bool>) = 
         canClose <- Some canCloseFunc.Invoke
+        this
+    member this.ResourceIcon(iconName: string) =
+        resourceIcon <- Some iconName
         this
     abstract member Run: unit->int
 
