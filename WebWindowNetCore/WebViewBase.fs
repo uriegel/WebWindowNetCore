@@ -1,4 +1,5 @@
 namespace WebWindowNetCore
+open System
 open System.Diagnostics
 
 [<AbstractClass>]
@@ -11,14 +12,14 @@ type WebViewBase() =
     // let mutable query: Option<string> = None
     // let mutable getQuery: Option<unit->string> = None
     let mutable debugUrl: Option<string> = None
-    // let mutable saveBounds = false
+    let mutable saveBounds = false
     // let mutable devTools = false
     // let mutable resourceIcon: Option<string> = None
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
-    // let mutable canClose: Option<unit->bool> = None
+    let mutable canClose: Option<unit->bool> = None
     // let mutable onScriptAction: Option<int->string->unit> = None
     // let mutable defaultContextMenuEnabled = false
 
@@ -28,7 +29,9 @@ type WebViewBase() =
     member internal this.HeightValue = height
     member internal this.UrlValue = url
     member internal this.DebugUrlValue = debugUrl
-
+    member internal this.SaveBoundsValue = saveBounds
+    member internal this.CanCloseValue = canClose
+    
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
             this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
@@ -66,7 +69,12 @@ type WebViewBase() =
     member this.OnFilesDrop(action: System.Action<string, bool, string[]>) = 
         onFilesDrop <- Some (fun s b sa -> action.Invoke(s, b, sa))
         this
-
+    member this.SaveBounds() =
+        saveBounds <- true
+        this
+    member this.CanClose(canCloseFunc: Func<bool>) = 
+        canClose <- Some canCloseFunc.Invoke
+        this
     abstract member Run: unit->int
 
 // TODO

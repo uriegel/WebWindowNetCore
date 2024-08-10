@@ -4,15 +4,16 @@ new WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
     .Title("Das ist der Titel")
+    .SaveBounds()
     //.DebugUrl("https://www.google.de")
     .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
+    .CanClose(() => false)
     .Run();
 
 // var sseEventSource = WebView.CreateEventSource<Event>();
 // StartEvents(sseEventSource.Send);
 
 //     .ResourceIcon("icon")
-//     .SaveBounds()
 //     .ConfigureHttp(http => http
 //         .ResourceWebroot("webroot", "/webroot")
 //         //.MapGet("requests/icon", context => context.SendStream()))

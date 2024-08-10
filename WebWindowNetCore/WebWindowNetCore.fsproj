@@ -4,11 +4,9 @@
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
-
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -40,6 +38,7 @@
     <Compile Include="WebWindowState.fs" />
     <Compile Include="WebViewBase.fs" />
     <Compile Include="WebViewForm.fs" />
+    <Compile Include="Bounds.fs" />
     <Compile Include="WebViewWindows.fs" />
     <Compile Include="WebViewLinux.fs" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
@@ -50,13 +49,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharpTools" Version="10.0.8" />
-  </ItemGroup>    
+    <PackageReference Include="FSharpTools" Version="10.1.1" />
+  </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
     <PackageReference Include="ClrWinApi" Version="2.4.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
-    <PackageReference Include="Gtk4DotNet" Version="6.1.0" />
+    <PackageReference Include="Gtk4DotNet" Version="6.1.2" />
   </ItemGroup>
 </Project>

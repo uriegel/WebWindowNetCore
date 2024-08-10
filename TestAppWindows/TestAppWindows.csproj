@@ -23,7 +23,6 @@
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="WebView.fs" />
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>

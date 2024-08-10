@@ -1,13 +1,14 @@
 namespace WebWindowNetCore
 #if Windows
-open System.Diagnostics
-open System.Windows.Forms
-open System.Threading
 open System
+open System.Diagnostics
+open System.IO
 open System.Reflection
+open System.Threading
+open System.Windows.Forms
 
 open FSharpTools
-open System.IO
+open FSharpTools.Functional
 open ClrWinApi
 
 type WebView() = 
@@ -17,7 +18,7 @@ type WebView() =
         let targetFileName = 
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
             |> Directory.attachSubPath (sprintf "de.uriegel.WebWindowNetCore\%s" <|Process.GetCurrentProcess().ProcessName)
-            |> Directory.ensureExists
+            |> sideEffectIf Directory.Exists Directory.CreateDirectory
             |> Directory.attachSubPath "WebView2Loader.dll"
         try 
             use targetFile = File.Create targetFileName
