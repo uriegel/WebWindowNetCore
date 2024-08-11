@@ -6,13 +6,13 @@ new WebView()
     .Title("Das ist der Titel")
     .ResourceIcon("icon")
     .SaveBounds()
-    //.DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
 #endif
     //.DebugUrl("https://www.google.de")
     .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
-    .CanClose(() => false)
+    .CanClose(() => true)
     .Run();
 
 // var sseEventSource = WebView.CreateEventSource<Event>();

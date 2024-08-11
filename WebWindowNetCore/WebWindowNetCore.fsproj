@@ -38,6 +38,7 @@
     <Compile Include="WebWindowState.fs" />
     <Compile Include="WebViewBase.fs" />
     <Compile Include="Bounds.fs" />
+    <Compile Include="TaskbarWindow.fs" />
     <Compile Include="WebViewForm.fs" />
     <Compile Include="WebViewWindows.fs" />
     <Compile Include="WebViewLinux.fs" />
@@ -49,7 +50,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharpTools" Version="10.1.1" />
+    <PackageReference Include="FSharpTools" Version="10.2.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />

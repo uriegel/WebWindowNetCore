@@ -2,10 +2,12 @@ namespace WebWindowNetCore
 #if Windows
 open System
 open System.Drawing
+open System.Runtime.InteropServices
 open System.Windows.Forms
 open Microsoft.Web.WebView2.Core
 open Microsoft.Web.WebView2.WinForms
 open FSharpTools
+open System.ComponentModel
 
 type WebViewForm(appDataPath: string, settings: WebViewBase) as this = 
     inherit Form()
@@ -14,6 +16,9 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     
     do 
         (webView :> ComponentModel.ISupportInitialize).BeginInit()
+        this.SuspendLayout();
+        webView.AllowExternalDrop <- true
+        webView.CreationProperties <- null
         webView.DefaultBackgroundColor <- Color.White
         webView.Location <- Point (0, 0)
         webView.Margin <- Padding 0
@@ -21,8 +26,15 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         webView.TabIndex <- 0
         webView.ZoomFactor <- 1
 
-        base.AutoScaleDimensions <- SizeF(8F, 20F)
-        base.AutoScaleMode <- AutoScaleMode.Font
+        //OnFormCreation.Invoke(this);
+
+        settings.ResourceIconValue 
+        |> Option.iter (fun i -> 
+                                Resources.get i
+                                |>Option.iter (fun s -> this.Icon <- new Icon (s)))
+
+        this.AutoScaleDimensions <- SizeF(8F, 20F)
+        this.AutoScaleMode <- AutoScaleMode.Font
 
         let bounds = Bounds.retrieve settings.AppIdValue
         if bounds.X.IsSome && bounds.Y.IsSome then
@@ -35,18 +47,44 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
 
         this.Load.Add(this.onLoad)
 
-        base.Text <- settings.TitleValue
-        base.Controls.Add webView
+        this.Text <- settings.TitleValue
+        this.Controls.Add webView
 
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
-        base.ResumeLayout false
+        this.ResumeLayout false
 
         async {
             let! enf = CoreWebView2Environment.CreateAsync(null, appDataPath, null) |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
+            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
+            webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled <- false
+            webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled <- true
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled <- settings.DefaultContextMenuDisabledValue = false
+            webView.CoreWebView2.WindowCloseRequested.Add(fun _ -> this.Close())
+            webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
+
             webView.Source <- Uri (settings.GetUrl ())
+            let! r = webView.ExecuteScriptAsync(@"
+                        const callback = chrome.webview.hostObjects.Callback
+                    ") 
+                        |> Async.AwaitTask
+
+            if settings.DevToolsValue then
+                let! r = webView.ExecuteScriptAsync(@"
+                            function webViewShowDevTools() {
+                                callback.ShowDevtools()
+                            }
+                        ") 
+                            |> Async.AwaitTask
+                ()
         } 
         |> Async.StartWithCurrentContext 
+
+    member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
+    member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
+    member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
+    member this.ShowDevtools () = webView.CoreWebView2.OpenDevToolsWindow()
+    member this.GetWindowState() = (int)this.WindowState
 
     member this.onLoad (_: EventArgs) =
         let bounds = Bounds.retrieve settings.AppIdValue
@@ -67,8 +105,40 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 Height = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Size.Height else Some this.Size.Height
                 IsMaximized = this.WindowState = FormWindowState.Maximized }
             |> Bounds.save settings.AppIdValue
+
+    member this.onFullscreen _ =
+        if webView.CoreWebView2.ContainsFullScreenElement then
+            this.TopMost <- true
+            this.FormBorderStyle <- FormBorderStyle.None
+            this.WindowState <- FormWindowState.Maximized
+            Taskbar.hide ()
+        else
+            this.TopMost <- false
+            this.WindowState <- FormWindowState.Normal
+            this.FormBorderStyle <- FormBorderStyle.Sizable
+            Taskbar.show ()
+
+    override this.OnClosing(e: CancelEventArgs) = 
+        base.OnClosing(e)
+        settings.CanCloseValue
+        |> Option.iter (fun cc -> e.Cancel <- cc() = false)
         
-#endif    
+and [<ComVisible(true)>] Callback(parent: WebViewForm) =
+
+    member this.ShowDevtools() = parent.ShowDevtools()
+    member this.MaximizeWindow() = parent.MaximizeWindow()
+    member this.MinimizeWindow() = parent.MinimizeWindow()
+    member this.RestoreWindow() = parent.RestoreWindow()
+    member this.GetWindowState() = parent.GetWindowState()
+    
+    // public Task DragStart(string fileList)
+    //     => JsonSerializer.Deserialize<FileListType>(fileList, JsonWebDefaults)
+    //         .Map(flt =>
+    //             parent.DragStart(flt!.Path, flt!.FileList));
+
+    // member this.ScriptAction(id: int, msg: string) = parent.ScriptAction(id, msg)
+#endif
+
 
     
 

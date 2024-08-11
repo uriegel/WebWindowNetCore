@@ -99,7 +99,13 @@ type ScriptAction = {
     Height: int option
     IsMaximized: bool
 }
-// TODO
+// TODO For Windows and Linux
+// TODO 1. Custom scheme, web site
+// TODO 2. Call HTTP request from custom scheme
+// TODO 3. Range from custom scheme
+// TODO 4. Pictures view, video view, pdf view from custom scheme
+// TODO 5. Test react site, call picturs, videos pdf from custom scheme
+
     // public static string GetUri(WebViewSettings settings)
     //     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)
     //         ? settings.DebugUrl
