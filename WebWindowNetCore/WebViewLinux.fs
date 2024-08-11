@@ -30,7 +30,7 @@ type WebView() =
                         .OnLoadChanged(this.onWebViewLoad)
                         .LoadUri(this.GetUrl ()))
                     .With(fun w -> 
-                        this.CanCloseValue |> iter (fun canClose -> w.OnClose(fun _ -> canClose()) |> ignore))
+                        this.CanCloseValue |> iter (fun canClose -> w.OnClose(fun _ -> canClose() = false) |> ignore))
                     .If(this.SaveBoundsValue, 
                         this.saveBounds)
                     .Show()
