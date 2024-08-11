@@ -22,6 +22,7 @@ type WebView() =
                         (fun (w: WindowHandle) -> w.DefaultSize(this.WidthValue, this.HeightValue) |> ignore))
                     .Child(WebKit.New()
                         //.Ref())
+                        .If(this.ResourceSchemeValue, this.enableResourceScheme)
                         .If(this.DevToolsValue,
                             (fun webview -> webview.GetSettings().EnableDeveloperExtras <- true))
                         .If(this.DefaultContextMenuDisabledValue,
@@ -69,4 +70,42 @@ type WebView() =
                         alert(JSON.stringify({action: 1}))
                     }                    
                 ")
+    member this.enableResourceScheme (webView: WebViewHandle) =
+        let onRequest request (_: nativeint) =
+            let serveResourceStream (uri: string) (stream: System.IO.Stream) = 
+                let getContentType (uri: string) = 
+                    if uri.EndsWith ".html" then
+                        "text/html"
+                    else if uri.EndsWith ".css" then
+                        "text/css"
+                    else if uri.EndsWith ".js" then
+                        "application/javascript"
+                    else
+                        "text/text"
+                let bytes = Array.zeroCreate (int stream.Length)
+                stream.Read (bytes, 0, bytes.Length) |> ignore
+                use gbytes = GBytes.New(bytes)
+                use gstream = MemoryInputStream.New(gbytes)
+                WebKitUriSchemeRequest.Finish(request, gstream, bytes.Length, getContentType uri) 
+                
+                
+                
+                
+                
+                |> ignore
+
+
+
+
+                ()
+            let uri = 
+                WebKitUriSchemeRequest.GetUri(request)
+                |> String.substring 6
+            uri 
+            |> Resources.get 
+            |> Option.iter (serveResourceStream uri)
+
+        let context = WebKitWebContext.GetDefault()
+        context.RegisterUriScheme("res", onRequest)
+        |> ignore
 #endif

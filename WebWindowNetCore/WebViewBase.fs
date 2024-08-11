@@ -15,6 +15,7 @@ type WebViewBase() =
     let mutable saveBounds = false
     let mutable devTools = false
     let mutable resourceIcon: Option<string> = None
+    let mutable resourceScheme = false
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
@@ -32,6 +33,7 @@ type WebViewBase() =
     member internal this.SaveBoundsValue = saveBounds
     member internal this.CanCloseValue = canClose
     member internal this.ResourceIconValue = resourceIcon
+    member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     
@@ -81,6 +83,9 @@ type WebViewBase() =
     /// Does not work for Linux
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
+        this
+    member this.ResourceScheme() =
+        resourceScheme <- true
         this
     member this.DevTools() =
         devTools <- true

@@ -3,15 +3,16 @@
 new WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
-    .Title("Das ist der Titel")
+    .Title("Web Window Net Core 👍")
     .ResourceIcon("icon")
+    .ResourceScheme()
     .SaveBounds()
     .DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
 #endif
     //.DebugUrl("https://www.google.de")
-    .Url($"file://{Directory.GetCurrentDirectory()}/webroot/index.html")
+    .Url("res://webroot/index.html")
     .CanClose(() => true)
     .Run();
 
