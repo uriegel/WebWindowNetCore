@@ -116,16 +116,12 @@ module ContentType =
         else
             "text/text"
 
-// TODO For Windows and Linux
-// TODO 2. Call HTTP request from custom scheme
-// TODO 3. Range from custom scheme 
-// TODO 4. Pictures view, video view, pdf view from custom scheme
-// TODO 5. Test react site, call picturs, videos pdf from custom scheme
-
-    // public static string GetUri(WebViewSettings settings)
-    //     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)
-    //         ? settings.DebugUrl
-    //         : settings.Url != null
-    //         ? settings.Url
-    //         : $"http://localhost:{settings.HttpSettings?.Port ?? 80}{settings.HttpSettings?.WebrootUrl}/{settings.HttpSettings?.DefaultHtml}")
-    //             + (settings.Query ?? settings.GetQuery?.Invoke());
+// TODO client/server interface in WebViewNetCore, async on both sides
+// TODO
+// public static string GetUri(WebViewSettings settings)
+//     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)
+//         ? settings.DebugUrl
+//         : settings.Url != null
+//         ? settings.Url
+//         : $"http://localhost:{settings.HttpSettings?.Port ?? 80}{settings.HttpSettings?.WebrootUrl}/{settings.HttpSettings?.DefaultHtml}")
+//             + (settings.Query ?? settings.GetQuery?.Invoke());
