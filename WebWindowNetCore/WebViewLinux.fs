@@ -73,20 +73,11 @@ type WebView() =
     member this.enableResourceScheme (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
             let serveResourceStream (uri: string) (stream: System.IO.Stream) = 
-                let getContentType (uri: string) = 
-                    if uri.EndsWith ".html" then
-                        "text/html"
-                    else if uri.EndsWith ".css" then
-                        "text/css"
-                    else if uri.EndsWith ".js" then
-                        "application/javascript"
-                    else
-                        "text/text"
                 let bytes = Array.zeroCreate (int stream.Length)
                 stream.Read (bytes, 0, bytes.Length) |> ignore
                 use gbytes = GBytes.New(bytes)
                 use gstream = MemoryInputStream.New(gbytes)
-                request.Finish( gstream, bytes.Length, getContentType uri) 
+                request.Finish( gstream, bytes.Length, ContentType.get uri) 
             let uri = 
                 request.GetUri()
                 |> String.substring 6

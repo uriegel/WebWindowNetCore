@@ -104,10 +104,21 @@ type ScriptAction = {
     Height: int option
     IsMaximized: bool
 }
+
+module ContentType = 
+    let get (uri: string) = 
+        if uri.EndsWith ".html" then
+            "text/html"
+        else if uri.EndsWith ".css" then
+            "text/css"
+        else if uri.EndsWith ".js" then
+            "application/javascript"
+        else
+            "text/text"
+
 // TODO For Windows and Linux
-// TODO 1. Custom scheme, web site
 // TODO 2. Call HTTP request from custom scheme
-// TODO 3. Range from custom scheme
+// TODO 3. Range from custom scheme 
 // TODO 4. Pictures view, video view, pdf view from custom scheme
 // TODO 5. Test react site, call picturs, videos pdf from custom scheme
 

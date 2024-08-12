@@ -13,7 +13,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     inherit Form()
 
     let webView = new WebView2()
-    
+
     do 
         (webView :> ComponentModel.ISupportInitialize).BeginInit()
         this.SuspendLayout();
@@ -54,9 +54,18 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         this.ResumeLayout false
 
         async {
-            let! enf = CoreWebView2Environment.CreateAsync(null, appDataPath, null) |> Async.AwaitTask
+            let! enf = CoreWebView2Environment.CreateAsync(
+                        null, 
+                        appDataPath, 
+                        CoreWebView2EnvironmentOptions(
+                            customSchemeRegistrations = ResizeArray<CoreWebView2CustomSchemeRegistration> [ 
+                                CoreWebView2CustomSchemeRegistration("res") 
+                            ] ))
+                        |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
+            webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
             webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
+            webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled <- false
             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled <- true
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled <- settings.DefaultContextMenuDisabledValue = false
@@ -79,6 +88,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 ()
         } 
         |> Async.StartWithCurrentContext 
+
+    member this.WebView = webView
 
     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
@@ -117,6 +128,22 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             this.WindowState <- FormWindowState.Normal
             this.FormBorderStyle <- FormBorderStyle.Sizable
             Taskbar.show ()
+
+    member this.serveRes e = 
+        let serveResourceStream (url: string) (stream: System.IO.Stream) = 
+            try
+                e.Response <- this.WebView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200, "OK", sprintf "Content-Type: %s" (ContentType.get url))
+            with
+            | _ ->  e.Response <- this.WebView.CoreWebView2.Environment.CreateWebResourceResponse(null, 404, "Not Found", "")
+
+        let uri = 
+            Uri.UnescapeDataString(e.Request.Uri)
+            |> String.substring 6
+
+        uri
+        |> Resources.get 
+        |> Option.iter (serveResourceStream uri)
+        ()
 
     override this.OnClosing(e: CancelEventArgs) = 
         base.OnClosing(e)
