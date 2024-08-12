@@ -38,6 +38,9 @@
     <EmbeddedResource Include="../webroot/scripts/script.js">
       <LogicalName>webroot/scripts/script.js</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/images/image.jpg">
+      <LogicalName>webroot/images/image.jpg</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./icon.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>

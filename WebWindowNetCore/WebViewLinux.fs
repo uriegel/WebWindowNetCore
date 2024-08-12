@@ -71,7 +71,7 @@ type WebView() =
                     }                    
                 ")
     member this.enableResourceScheme (webView: WebViewHandle) =
-        let onRequest request (_: nativeint) =
+        let onRequest (request: WebkitUriSchemeRequestHandle) =
             let serveResourceStream (uri: string) (stream: System.IO.Stream) = 
                 let getContentType (uri: string) = 
                     if uri.EndsWith ".html" then
@@ -86,24 +86,13 @@ type WebView() =
                 stream.Read (bytes, 0, bytes.Length) |> ignore
                 use gbytes = GBytes.New(bytes)
                 use gstream = MemoryInputStream.New(gbytes)
-                WebKitUriSchemeRequest.Finish(request, gstream, bytes.Length, getContentType uri) 
-                
-                
-                
-                
-                
-                |> ignore
-
-
-
-
-                ()
+                request.Finish( gstream, bytes.Length, getContentType uri) 
             let uri = 
-                WebKitUriSchemeRequest.GetUri(request)
+                request.GetUri()
                 |> String.substring 6
             uri 
             |> Resources.get 
-            |> Option.iter (serveResourceStream uri)
+            |> iter (serveResourceStream uri)
 
         let context = WebKitWebContext.GetDefault()
         context.RegisterUriScheme("res", onRequest)
