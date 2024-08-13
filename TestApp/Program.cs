@@ -16,9 +16,6 @@ new WebView()
     .CanClose(() => true)
     .Run();
 
-// var sseEventSource = WebView.CreateEventSource<Event>();
-// StartEvents(sseEventSource.Send);
-
 //     .ConfigureHttp(http => http
 //         .ResourceWebroot("webroot", "/webroot")
 //         //.MapGet("requests/icon", context => context.SendStream()))
@@ -26,25 +23,7 @@ new WebView()
 //         .JsonPost<Cmd2Param, Cmd2Result>("request/cmd2", JsonRequest2)
 //         .UseSse("sse/test", sseEventSource)
 //         .Build())
-// #if DEBUG            
-//     .DebuggingEnabled()
-// #endif            
 
-// void StartEvents(Action<Event> onChanged)   
-// {
-//     var counter = 0;
-//     new Thread(_ =>
-//         {
-//             while (true)
-//             {
-//                 Thread.Sleep(5000);
-//                 onChanged(new($"Ein Event {counter++}"));
-//            }
-//         })
-//         {
-//             IsBackground = true
-//         }.Start();   
-// }
 
 // Task<Cmd1Result> JsonRequest1(Cmd1Param param)
 //     => new Cmd1Result("Result", 3).ToAsync(); 

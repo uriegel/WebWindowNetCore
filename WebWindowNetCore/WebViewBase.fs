@@ -1,6 +1,7 @@
 namespace WebWindowNetCore
 open System
 open System.Diagnostics
+open System.Threading.Tasks
 
 [<AbstractClass>]
 type WebViewBase() = 
@@ -21,7 +22,7 @@ type WebViewBase() =
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
-    // let mutable onScriptAction: Option<int->string->unit> = None
+    let mutable onRequest: Option<string->Task<string>> = None
     let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
@@ -36,6 +37,7 @@ type WebViewBase() =
     member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
+    member internal this.OnRequestValue = onRequest
     
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -93,6 +95,9 @@ type WebViewBase() =
     member this.DefaultContextMenuDisabled() =
         defaultContextMenuDisabled <- true
         this
+    member this.OnRequest(request: Func<string, Task<string>>) =  
+        onRequest <- Some request.Invoke
+        this
     abstract member Run: unit->int
 
 type Action =
@@ -103,6 +108,7 @@ type ScriptAction = {
     Width: int option 
     Height: int option
     IsMaximized: bool
+
 }
 
 module ContentType = 
@@ -116,12 +122,3 @@ module ContentType =
         else
             "text/text"
 
-// TODO client/server interface in WebViewNetCore, async on both sides
-// TODO
-// public static string GetUri(WebViewSettings settings)
-//     => (Debugger.IsAttached && !string.IsNullOrEmpty(settings.DebugUrl)
-//         ? settings.DebugUrl
-//         : settings.Url != null
-//         ? settings.Url
-//         : $"http://localhost:{settings.HttpSettings?.Port ?? 80}{settings.HttpSettings?.WebrootUrl}/{settings.HttpSettings?.DefaultHtml}")
-//             + (settings.Query ?? settings.GetQuery?.Invoke());

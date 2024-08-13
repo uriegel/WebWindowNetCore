@@ -5,10 +5,10 @@ const btn1 = document.getElementById("button")
 const btn2 = document.getElementById("button2")
 const btnDevTools = document.getElementById("buttonDevTools")
 
-btnDevTools.onclick = () => webViewShowDevTools()
+btnDevTools.onclick = () => WebView.showDevTools()
 
 btn1.onclick = async () => {
-    var res = await webViewRequest("cmd1", {
+    var res = await WebView.request("cmd1", {
         text: "Text",
         id: 123
     })

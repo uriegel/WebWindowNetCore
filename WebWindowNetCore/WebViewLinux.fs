@@ -5,6 +5,7 @@ open GtkDotNet.Extensions
 open GtkDotNet.SafeHandles
 open Option
 open FSharpTools
+open System.Text
 
 type WebView() = 
     inherit WebViewBase()
@@ -23,11 +24,11 @@ type WebView() =
                     .Child(WebKit.New()
                         //.Ref())
                         .If(this.ResourceSchemeValue, this.enableResourceScheme)
+                        .With(fun w -> this.enableWebViewHost w)
                         .If(this.DevToolsValue,
                             (fun webview -> webview.GetSettings().EnableDeveloperExtras <- true))
                         .If(this.DefaultContextMenuDisabledValue,
                             (fun webview -> webview.DisableContextMenu() |> ignore))
-                        .OnAlert(this.onJavascript)
                         .OnLoadChanged(this.onWebViewLoad)
                         .LoadUri(this.GetUrl ()))
                     .With(fun w -> 
@@ -56,20 +57,31 @@ type WebView() =
         w.OnClose(canClose) 
         |> ignore
 
-    member this.onJavascript (webView: WebViewHandle) (msg: string) =
-        let action = TextJson.deserialize<ScriptAction> msg 
-        match action.Action with
-        | Action.DevTools -> webView.GetInspector().Show()
-        |_ ->()
-
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
-            if this.DevToolsValue then
-                webView.RunJavascript(@"
-                    function webViewShowDevTools() {
-                        alert(JSON.stringify({action: 1}))
-                    }                    
-                ")
+            webView.RunJavascript(@"
+                var WebView = (() => {
+                    const showDevTools = () => fetch('req://showDevTools')
+                    
+                    const request = (method, data) => new Promise(res => {
+                        (async () => {
+                            const res = await fetch(`req://${method}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data)
+                            })
+                            const text = await res.text()
+                            console.log('reqId', text)
+                        })()
+                    })
+
+                    return {
+                        showDevTools,
+                        request
+                    }
+                })()
+            ")
+
     member this.enableResourceScheme (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
             let serveResourceStream (uri: string) (stream: System.IO.Stream) = 
@@ -88,4 +100,36 @@ type WebView() =
         let context = WebKitWebContext.GetDefault()
         context.RegisterUriScheme("res", onRequest)
         |> ignore
+
+    member this.enableWebViewHost (webView: WebViewHandle) =
+        let onRequest (request: WebkitUriSchemeRequestHandle) =
+            let uri = request.GetUri ()
+            if uri = "req://showDevTools" then
+                webView.GetInspector().Show()
+            else
+                let reqId = RequestId.get ()
+                use stream = request.GetHttpBody ()
+                let bytes = Encoding.UTF8.GetBytes(sprintf "%d" reqId)
+                use gbytes = GBytes.New bytes 
+                use gstream = MemoryInputStream.New gbytes
+
+                use response = WebKitUriSchemeResponse.New (gstream, bytes.Length)
+                let responseHeaders = SoupMessageHeaders.New SoupMessageHeaderType.Response
+                responseHeaders.Set([
+                    MessageHeader("Access-Control-Allow-Origin", "*")
+                    MessageHeader("Content-Type", "text/plain")
+                    MessageHeader("Content-Length", sprintf "%d" bytes.Length)
+                ]) |> ignore
+                response
+                    .HttpHeaders(responseHeaders)
+                    .Status(200, "OK") |> ignore
+                request.Finish response
+                // let test = Json.JsonSerializer.Deserialize<Test>(stream, defaults)
+                // let t = test
+                ()
+
+        let context = WebKitWebContext.GetDefault()
+        context.RegisterUriScheme("req", onRequest)
+        |> ignore
+
 #endif
