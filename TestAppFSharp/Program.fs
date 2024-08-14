@@ -20,6 +20,9 @@ let onRequest (method: string) (input: Stream) =
             | _ -> task { return obj() }
     }
 
+// TODO: asynchronous XmlHttpRequest in Windows
+// TODO: asynchronous XmlHttpRequest in Linux
+
 WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
