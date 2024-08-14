@@ -9,6 +9,22 @@ open System.Text
 
 type WebView() = 
     inherit WebViewBase()
+
+    let sendResponse (request: WebkitUriSchemeRequestHandle) (text: string) =
+        let bytes = Encoding.UTF8.GetBytes text
+        use gbytes = GBytes.New bytes 
+        use gstream = MemoryInputStream.New gbytes
+        use response = WebKitUriSchemeResponse.New (gstream, bytes.Length)
+        let responseHeaders = SoupMessageHeaders.New SoupMessageHeaderType.Response
+        responseHeaders.Set([
+            MessageHeader("Access-Control-Allow-Origin", "*")
+            MessageHeader("Content-Type", "text/plain")
+            MessageHeader("Content-Length", sprintf "%d" bytes.Length)
+        ]) |> ignore
+        response
+            .HttpHeaders(responseHeaders)
+            .Status(200, "OK") |> ignore
+        request.Finish response
     
     override this.Run() =
         Application
@@ -103,30 +119,21 @@ type WebView() =
 
     member this.enableWebViewHost (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
-            let uri = request.GetUri ()
-            if uri = "req://showDevTools" then
+            match request.GetUri (), this.OnRequestValue with
+            | "req://showDevTools", _ ->  
                 webView.GetInspector().Show()
-            else
+                sendResponse request "OK"
+            | uri, Some onRequest ->
                 let reqId = RequestId.get ()
                 use stream = request.GetHttpBody ()
-                let bytes = Encoding.UTF8.GetBytes(sprintf "%d" reqId)
-                use gbytes = GBytes.New bytes 
-                use gstream = MemoryInputStream.New gbytes
-
-                use response = WebKitUriSchemeResponse.New (gstream, bytes.Length)
-                let responseHeaders = SoupMessageHeaders.New SoupMessageHeaderType.Response
-                responseHeaders.Set([
-                    MessageHeader("Access-Control-Allow-Origin", "*")
-                    MessageHeader("Content-Type", "text/plain")
-                    MessageHeader("Content-Length", sprintf "%d" bytes.Length)
-                ]) |> ignore
-                response
-                    .HttpHeaders(responseHeaders)
-                    .Status(200, "OK") |> ignore
-                request.Finish response
-                // let test = Json.JsonSerializer.Deserialize<Test>(stream, defaults)
-                // let t = test
+                sendResponse request (sprintf "%d" reqId)
+                task {
+                    let! obj = onRequest (uri |> String.substring 6) stream
+                    let affe = obj
+                    ()
+                } |> ignore  
                 ()
+            | _, None -> sendResponse request "OK"
 
         let context = WebKitWebContext.GetDefault()
         context.RegisterUriScheme("req", onRequest)

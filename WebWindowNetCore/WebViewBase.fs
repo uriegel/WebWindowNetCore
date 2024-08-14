@@ -2,6 +2,7 @@ namespace WebWindowNetCore
 open System
 open System.Diagnostics
 open System.Threading.Tasks
+open System.IO
 
 [<AbstractClass>]
 type WebViewBase() = 
@@ -22,7 +23,7 @@ type WebViewBase() =
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
-    let mutable onRequest: Option<string->Task<string>> = None
+    let mutable onRequest: Option<string->Stream->Task<obj>> = None
     let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
@@ -44,7 +45,6 @@ type WebViewBase() =
             this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
         else
             this.UrlValue |> Option.defaultValue ""
-        // TODO (settings.Query ?? settings.GetQuery?.Invoke());
 
     member this.AppId(id) =
         appId <- id
@@ -95,8 +95,8 @@ type WebViewBase() =
     member this.DefaultContextMenuDisabled() =
         defaultContextMenuDisabled <- true
         this
-    member this.OnRequest(request: Func<string, Task<string>>) =  
-        onRequest <- Some request.Invoke
+    member this.OnRequest(request: Func<string, Stream, Task<obj>>) =  
+        onRequest <- Some (fun s sr -> request.Invoke(s, sr))
         this
     abstract member Run: unit->int
 
@@ -122,3 +122,12 @@ module ContentType =
         else
             "text/text"
 
+module Requests =
+    let AsTask<'a> (tsk: Task<'a>) =
+        task {
+            let! t = tsk
+            return t :> obj
+        }
+
+    let GetInput<'a> (input: Stream) =
+        System.Text.Json.JsonSerializer.Deserialize<'a>(input)
