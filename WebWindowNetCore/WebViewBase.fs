@@ -100,17 +100,6 @@ type WebViewBase() =
         this
     abstract member Run: unit->int
 
-type Action =
-    | DevTools = 1
-
-type ScriptAction = {
-    Action: Action
-    Width: int option 
-    Height: int option
-    IsMaximized: bool
-
-}
-
 module ContentType = 
     let get (uri: string) = 
         if uri.EndsWith ".html" then
