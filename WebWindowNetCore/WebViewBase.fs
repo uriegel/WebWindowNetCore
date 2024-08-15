@@ -171,10 +171,12 @@ module Requests =
             })()
         """ devTools port
 
+// TODO Drag n Drop Linux ?
+// TODO Drag n Drop Windows
 // TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded
 // TODO Custom Taskbar Windows
 // TODO Custom Taskbar Linux
-// TODO Drag n Drop Windows
-// TODO Drag n Drop Linux ?
-// TODO Windows clent is shrinking with every new start
+// TODO Windows client is shrinking with every new start
 // TODO CORS cache
+// TODO requests url: /requests/{method}
+// TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
