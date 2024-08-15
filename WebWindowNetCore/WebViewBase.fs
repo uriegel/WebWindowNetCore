@@ -6,6 +6,13 @@ open System.Threading.Tasks
 open System.IO
 open Microsoft.AspNetCore.Http
 
+type RequestFun = unit->HttpFunc->HttpContext->Task<option<HttpContext>>
+
+type internal Request = {
+    Method: string
+    Request: RequestFun
+}
+
 [<AbstractClass>]
 type WebViewBase() = 
     let mutable appId = "de.uriegel.webwindownetcore"
@@ -25,7 +32,7 @@ type WebViewBase() =
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
-    let mutable requests: (unit->HttpFunc->HttpContext->Task<option<HttpContext>>) list = []
+    let mutable requests: Request list = []
     let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
@@ -106,7 +113,7 @@ type WebViewBase() =
                 return! json result next ctx
             }
 
-        requests <- requests |> List.append [req] 
+        requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
     abstract member Run: unit->int
 

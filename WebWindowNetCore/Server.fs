@@ -32,8 +32,8 @@ module Server =
             builder.WithOrigins([|"*"|]).AllowAnyHeader().AllowAnyMethod () |> ignore
             ()
 
-        let warble (request: unit->HttpFunc->HttpContext->Task<option<HttpContext>>) =
-            route  "/test" >=> warbler (fun _ -> request ())
+        let warble (request: Request) =
+            route  ("/" + request.Method) >=> warbler (fun _ -> request.Request ())
 
         let configureRoutes (app : IApplicationBuilder) = 
             let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
