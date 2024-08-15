@@ -31,7 +31,7 @@ WebView()
     .Url(sprintf "file://%s/webroot/index.html" (Directory.GetCurrentDirectory ()))
     .SaveBounds()
     .DefaultContextMenuDisabled()
-    .OnRequest(onRequest)
+    //.AddRequest(onRequest)
 #if DEBUG    
     .DevTools()
 #endif

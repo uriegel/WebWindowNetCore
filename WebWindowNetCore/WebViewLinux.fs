@@ -53,7 +53,8 @@ type WebView() =
                         this.saveBounds)
                     .Show()
                     |> ignore)
-            .With(fun _ -> Server.start ())
+             // TODO optional
+            .With(fun _ -> Server.start this)
             .Run(0, 0)
 
     member this.retrieveBounds (w: WindowHandle) =
@@ -119,25 +120,27 @@ type WebView() =
         |> ignore
 
     member this.enableWebViewHost (webView: WebViewHandle) =
-        let onRequest (request: WebkitUriSchemeRequestHandle) =
-            match request.GetUri (), this.OnRequestValue with
-            | "req://showDevTools", _ ->  
-                webView.GetInspector().Show()
-                sendResponse request "OK"
-            | uri, Some onRequest ->
-                let reqId = RequestId.get ()
-                use stream = request.GetHttpBody ()
-                sendResponse request (sprintf "%d" reqId)
-                task {
-                    let! obj = onRequest (uri |> String.substring 6) stream
-                    let affe = obj
-                    ()
-                } |> ignore  
-                ()
-            | _, None -> sendResponse request "OK"
+        // TODO show devtools
+        // let onRequest (request: WebkitUriSchemeRequestHandle) =
+        //     match request.GetUri (), this.OnRequestValue with
+        //     | "req://showDevTools", _ ->  
+        //         webView.GetInspector().Show()
+        //         sendResponse request "OK"
+        //     | uri, Some onRequest ->
+        //         let reqId = RequestId.get ()
+        //         use stream = request.GetHttpBody ()
+        //         sendResponse request (sprintf "%d" reqId)
+        //         task {
+        //             let! obj = onRequest (uri |> String.substring 6) stream
+        //             let affe = obj
+        //             ()
+        //         } |> ignore  
+        //         ()
+        //     | _, None -> sendResponse request "OK"
 
-        let context = WebKitWebContext.GetDefault()
-        context.RegisterUriScheme("req", onRequest)
-        |> ignore
+        // let context = WebKitWebContext.GetDefault()
+        // context.RegisterUriScheme("req", onRequest)
+        //|> ignore
+        ()
 
 #endif

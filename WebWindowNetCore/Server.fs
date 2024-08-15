@@ -12,81 +12,69 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Cors.Infrastructure
 
 module Server =
-
-    type Input = {
-        Text: string
-        Id: int
-    }
-    type Registered = {
-        Registered: bool
-    }
-
-    let configureServices (services : IServiceCollection) = 
-        let jsonOptions = JsonSerializerOptions()
-        jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
-        jsonOptions.Encoder <- JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
-        services
-            .AddSingleton(jsonOptions) 
-            .AddResponseCompression()
-            .AddGiraffe()
-            .AddCors()
-        |> ignore
-
-    let login (input: Input) = 
-        printfn "Registered superfit user: %s" "3456"
-        { Registered = true }
-
-    let SuperfitLogin () = 
-        fun (next : HttpFunc) (ctx : HttpContext) ->
-            task {
-                let! input = ctx.BindJsonAsync<Input> ()
-                let result = login input
-                return! json result next ctx
-            }
-
-    let useCors (builder: CorsPolicyBuilder) = 
-        // TODO Cors origin
-        builder.WithOrigins([|"*"|]).AllowAnyHeader().AllowAnyMethod () |> ignore
-        ()
-
-    let testtest = 
-        route  "/test"    >=> warbler (fun _ -> SuperfitLogin ())
-
-    let configureRoutes (app : IApplicationBuilder) = 
-        let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
-            match ctx.Request.Host.Host with
-            | value when value = host -> next ctx
-            | _                       -> skipPipeline
-
-        let routes =
-            choose [
-                host "localhost"                          >=>
-                    choose [  
-                        testtest
-                    ]
-            ]
-        
-        app
-            .UseResponseCompression()
-            .UseCors(useCors)
-            .UseGiraffe routes      
-    
-    let configureKestrel (options: KestrelServerOptions) = 
-
-        // TODO configure port
-        let httpPort  () = 20000
-        
-        options.ListenAnyIP(httpPort ())
-
-    let webHostBuilder (webHostBuilder: IWebHostBuilder) = 
-        webHostBuilder
-            .ConfigureKestrel(configureKestrel)
-            .Configure(configureRoutes)
-            .ConfigureServices(configureServices)
+    open System.Threading.Tasks
+    open Microsoft.Extensions.Logging
+    let start (webView: WebViewBase) =
+        let configureServices (services : IServiceCollection) = 
+            let jsonOptions = JsonSerializerOptions()
+            jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
+            jsonOptions.Encoder <- JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
+            services
+                .AddSingleton(jsonOptions) 
+                .AddResponseCompression()
+                .AddGiraffe()
+                .AddCors()
             |> ignore
 
-    let start () =
+        let useCors (builder: CorsPolicyBuilder) = 
+            // TODO Cors origin
+            builder.WithOrigins([|"*"|]).AllowAnyHeader().AllowAnyMethod () |> ignore
+            ()
+
+        let warble (request: unit->HttpFunc->HttpContext->Task<option<HttpContext>>) =
+            route  "/test" >=> warbler (fun _ -> request ())
+
+        let configureRoutes (app : IApplicationBuilder) = 
+            let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
+                match ctx.Request.Host.Host with
+                | value when value = host -> next ctx
+                | _                       -> skipPipeline
+
+            let routes = choose [ host "localhost" >=> choose (webView.Requests |> List.map warble) ]
+            
+            app
+                .UseResponseCompression()
+                .UseCors(useCors)
+                .UseGiraffe routes      
+
+        let configureKestrel (options: KestrelServerOptions) = 
+
+            // TODO configure port
+            let httpPort  () = 20000
+            
+            options.ListenAnyIP(httpPort ())
+
+        let configureLogging (builder : ILoggingBuilder) =
+            // Set a logging filter (optional)
+            let filter l = l.Equals LogLevel.Warning
+
+            // Configure the logging factory
+            builder.AddFilter(filter) // Optional filter
+                .AddConsole()      // Set up the Console logger
+                .AddDebug()        // Set up the Debug logger
+
+                // Add additional loggers if wanted...
+            |> ignore            
+
+        let webHostBuilder (webHostBuilder: IWebHostBuilder) = 
+            webHostBuilder
+                .ConfigureKestrel(configureKestrel)
+                .Configure(configureRoutes)
+                .ConfigureServices(configureServices)
+                .ConfigureLogging(configureLogging)
+                |> ignore
+
         Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webHostBuilder)
             .Build()

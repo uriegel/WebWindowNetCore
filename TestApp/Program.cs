@@ -1,15 +1,13 @@
 ﻿using WebWindowNetCore;
-using static WebWindowNetCore.Requests;
 
-static async Task<object> OnRequest(string method, Stream input)
-    => method switch
-    {
-        "cmd1" => await GetContact(GetInput<Input>(input)),
-        _ => new object()
-    };
+static Task<Contact> GetContact(Input text)
+{
+    Console.WriteLine("SChrott");
+    return Task.FromResult(new Contact("Uwe Riegel", 9865));
+}    
 
-static Task<Contact> GetContact(Input? text)
-    => Task.FromResult(new Contact("Uwe Riegel", 9865));
+static Task<Contact2> GetContact2(Input2 text)
+    => Task.FromResult(new Contact2("Uwe Riegel", "9865"));
 
 new WebView()
     .AppId("de.uriegel.test")
@@ -18,8 +16,9 @@ new WebView()
     .ResourceIcon("icon")
     .ResourceScheme()
     .SaveBounds()
-    .DefaultContextMenuDisabled()
-    .OnRequest(OnRequest)
+    //.DefaultContextMenuDisabled()
+    .AddRequest<Input, Contact>("test", GetContact)
+    .AddRequest<Input2, Contact2>("test2", GetContact2)
 #if DEBUG    
     .DevTools()
 #endif
@@ -28,5 +27,7 @@ new WebView()
     .CanClose(() => true)
     .Run();
 
-record Input(string text, int id);
+record Input(string Text, int Id);
 record Contact(string Name, int Id);
+record Input2(string Text, int Id, int Nr);
+record Contact2(string Name, string Id);

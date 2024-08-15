@@ -1,8 +1,10 @@
 namespace WebWindowNetCore
+open Giraffe
 open System
 open System.Diagnostics
 open System.Threading.Tasks
 open System.IO
+open Microsoft.AspNetCore.Http
 
 [<AbstractClass>]
 type WebViewBase() = 
@@ -23,7 +25,7 @@ type WebViewBase() =
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
-    let mutable onRequest: Option<string->Stream->Task<obj>> = None
+    let mutable requests: (unit->HttpFunc->HttpContext->Task<option<HttpContext>>) list = []
     let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
@@ -38,7 +40,7 @@ type WebViewBase() =
     member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
-    member internal this.OnRequestValue = onRequest
+    member internal this.Requests = requests
     
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -95,8 +97,16 @@ type WebViewBase() =
     member this.DefaultContextMenuDisabled() =
         defaultContextMenuDisabled <- true
         this
-    member this.OnRequest(request: Func<string, Stream, Task<obj>>) =  
-        onRequest <- Some (fun s sr -> request.Invoke(s, sr))
+    member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
+
+        let req () (next : HttpFunc) (ctx : HttpContext) = 
+            task {
+                let! input = ctx.BindJsonAsync<'input> ()
+                let result = request.Invoke input
+                return! json result next ctx
+            }
+
+        requests <- requests |> List.append [req] 
         this
     abstract member Run: unit->int
 
