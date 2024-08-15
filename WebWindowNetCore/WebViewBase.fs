@@ -147,9 +147,9 @@ module Requests =
 
         let devTools = 
             if windows then
-                "const showDevTools = () => fetch('req://showDevTools')"
-            else
                 "const showDevTools = () => callback.ShowDevtools()"
+            else
+                "const showDevTools = () => fetch('req://showDevTools')"
             
         sprintf """
             var WebView = (() => {
@@ -171,7 +171,6 @@ module Requests =
             })()
         """ devTools port
 
-// TODO Drag n Drop Linux ?
 // TODO Drag n Drop Windows
 // TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded
 // TODO Custom Taskbar Windows
