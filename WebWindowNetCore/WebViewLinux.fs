@@ -82,7 +82,7 @@ type WebView() =
                     
                     const request = (method, data) => new Promise(res => {
                         (async () => {
-                            const res = await fetch(`req://${method}`, {
+                            const res = await fetch(`http://localhost:20000/test`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(data)

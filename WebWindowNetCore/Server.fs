@@ -8,12 +8,14 @@ open System.Text.Encodings.Web
 open System.Text.Json.Serialization
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Hosting
+open Microsoft.AspNetCore.Cors.Infrastructure
 
 module Server =
-    open Microsoft.Extensions.Hosting
 
     type Input = {
-        Name: string
+        Text: string
+        Id: int
     }
     type Registered = {
         Registered: bool
@@ -28,6 +30,7 @@ module Server =
             .AddSingleton(jsonOptions) 
             .AddResponseCompression()
             .AddGiraffe()
+            .AddCors()
         |> ignore
 
     let login (input: Input) = 
@@ -42,6 +45,14 @@ module Server =
                 return! json result next ctx
             }
 
+    let useCors (builder: CorsPolicyBuilder) = 
+        // TODO Cors origin
+        builder.WithOrigins([|"*"|]).AllowAnyHeader().AllowAnyMethod () |> ignore
+        ()
+
+    let testtest = 
+        route  "/test"    >=> warbler (fun _ -> SuperfitLogin ())
+
     let configureRoutes (app : IApplicationBuilder) = 
         let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
             match ctx.Request.Host.Host with
@@ -52,16 +63,18 @@ module Server =
             choose [
                 host "localhost"                          >=>
                     choose [  
-                        route  "/superfit/login"    >=> warbler (fun _ -> SuperfitLogin ())
+                        testtest
                     ]
             ]
         
         app
             .UseResponseCompression()
+            .UseCors(useCors)
             .UseGiraffe routes      
     
     let configureKestrel (options: KestrelServerOptions) = 
 
+        // TODO configure port
         let httpPort  () = 20000
         
         options.ListenAnyIP(httpPort ())
