@@ -109,7 +109,7 @@ type WebViewBase() =
         let req () (next : HttpFunc) (ctx : HttpContext) = 
             task {
                 let! input = ctx.BindJsonAsync<'input> ()
-                let result = request.Invoke input
+                let! result = request.Invoke input
                 return! json result next ctx
             }
 

@@ -77,21 +77,19 @@ type WebView() =
 
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
+            // TODO optional! transfer to WebViewBase
             webView.RunJavascript(@"
                 var WebView = (() => {
                     const showDevTools = () => fetch('req://showDevTools')
                     
-                    const request = (method, data) => new Promise(res => {
-                        (async () => {
-                            const res = await fetch(`http://localhost:20000/test`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(data)
-                            })
-                            const text = await res.text()
-                            console.log('reqId', text)
-                        })()
-                    })
+                    const request = async (method, data) => {
+                        const res = await fetch(`http://localhost:20000/${method}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        })
+                        return await res.json()
+                    }
 
                     return {
                         showDevTools,

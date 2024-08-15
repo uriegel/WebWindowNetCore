@@ -1,13 +1,10 @@
 ﻿using WebWindowNetCore;
 
 static Task<Contact> GetContact(Input text)
-{
-    Console.WriteLine("SChrott");
-    return Task.FromResult(new Contact("Uwe Riegel", 9865));
-}    
+    => Task.FromResult(new Contact("Uwe Riegel", 9865));
 
 static Task<Contact2> GetContact2(Input2 text)
-    => Task.FromResult(new Contact2("Uwe Riegel", "9865"));
+    => Task.FromResult(new Contact2("Uwe Riegel", "0177622111"));
 
 new WebView()
     .AppId("de.uriegel.test")
@@ -16,9 +13,9 @@ new WebView()
     .ResourceIcon("icon")
     .ResourceScheme()
     .SaveBounds()
-    //.DefaultContextMenuDisabled()
-    .AddRequest<Input, Contact>("test", GetContact)
-    .AddRequest<Input2, Contact2>("test2", GetContact2)
+    .DefaultContextMenuDisabled()
+    .AddRequest<Input, Contact>("cmd1", GetContact)
+    .AddRequest<Input2, Contact2>("cmd2", GetContact2)
 #if DEBUG    
     .DevTools()
 #endif
@@ -29,5 +26,5 @@ new WebView()
 
 record Input(string Text, int Id);
 record Contact(string Name, int Id);
-record Input2(string Text, int Id, int Nr);
-record Contact2(string Name, string Id);
+record Input2(string EMail, int Count, int Nr);
+record Contact2(string DisplayName, string Phone);
