@@ -53,6 +53,7 @@ type WebView() =
                         this.saveBounds)
                     .Show()
                     |> ignore)
+            .With(fun _ -> Server.start ())
             .Run(0, 0)
 
     member this.retrieveBounds (w: WindowHandle) =

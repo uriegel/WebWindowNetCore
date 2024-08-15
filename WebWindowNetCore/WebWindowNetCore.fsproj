@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="WebWindowState.fs" />
+    <Compile Include="Server.fs" />
     <Compile Include="WebViewBase.fs" />
     <Compile Include="RequestId.fs" />
     <Compile Include="Bounds.fs" />
@@ -52,6 +53,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpTools" Version="10.2.1" />
+    <PackageReference Include="Giraffe" Version="7.0.0" />
+    <PackageReference Include="GiraffeTools" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
