@@ -1,19 +1,18 @@
 namespace WebWindowNetCore
 open Giraffe
-open Microsoft.AspNetCore.Builder
-open Microsoft.AspNetCore.Hosting
-open Microsoft.Extensions.DependencyInjection
 open System.Text.Json
 open System.Text.Encodings.Web
 open System.Text.Json.Serialization
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
+open Microsoft.Extensions.DependencyInjection
 open Microsoft.AspNetCore.Server.Kestrel.Core
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Cors.Infrastructure
+open Microsoft.Extensions.Logging
 
 module Server =
-    open System.Threading.Tasks
-    open Microsoft.Extensions.Logging
     let start (webView: WebViewBase) =
         let configureServices (services : IServiceCollection) = 
             let jsonOptions = JsonSerializerOptions()
@@ -49,11 +48,7 @@ module Server =
                 .UseGiraffe routes      
 
         let configureKestrel (options: KestrelServerOptions) = 
-
-            // TODO configure port
-            let httpPort  () = 20000
-            
-            options.ListenAnyIP(httpPort ())
+            options.ListenAnyIP(webView.RequestPortValue)
 
         let configureLogging (builder : ILoggingBuilder) =
             // Set a logging filter (optional)

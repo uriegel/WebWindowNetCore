@@ -33,6 +33,7 @@ type WebViewBase() =
     // let mutable onStarted: Option<unit->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
+    let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
 
     member internal this.AppIdValue = appId
@@ -48,6 +49,7 @@ type WebViewBase() =
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
+    member internal this.RequestPortValue = requestPort
     
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -104,6 +106,9 @@ type WebViewBase() =
     member this.DefaultContextMenuDisabled() =
         defaultContextMenuDisabled <- true
         this
+    member this.RequestPort(port) =
+        requestPort <- port
+        this
     member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
 
         let req () (next : HttpFunc) (ctx : HttpContext) = 
@@ -137,3 +142,33 @@ module Requests =
 
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
+
+    let getScript port =
+        sprintf """
+            var WebView = (() => {
+                const showDevTools = () => fetch('req://showDevTools')
+                
+                const request = async (method, data) => {
+                    const res = await fetch(`http://localhost:%d/${method}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    })
+                    return await res.json()
+                }
+
+                return {
+                    showDevTools,
+                    request
+                }
+            })()
+        """ port
+
+// TODO Windows Version Requests
+// TODO Windows Version WebTools
+// TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded
+// TODO Custom Taskbar Windows
+// TODO Custom Taskbar Linux
+// TODO Drag n Drop Windows
+// TODO Drag n Drop Linux ?
+// TODO Windows clent is shrinking with ervery new start
