@@ -53,6 +53,9 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         this.ResumeLayout false
 
+        if settings.Requests |> List.length > 0 then
+            Server.start settings
+
         async {
             let! enf = CoreWebView2Environment.CreateAsync(
                         null, 
@@ -73,19 +76,15 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
 
             webView.Source <- Uri (settings.GetUrl ())
-            let! r = webView.ExecuteScriptAsync(@"
-                        const callback = chrome.webview.hostObjects.Callback
-                    ") 
-                        |> Async.AwaitTask
+            webView.ExecuteScriptAsync(@"
+                const callback = chrome.webview.hostObjects.Callback
+            ") 
+                |> Async.AwaitTask
+                |> ignore
 
-            if settings.DevToolsValue then
-                let! r = webView.ExecuteScriptAsync(@"
-                            function webViewShowDevTools() {
-                                callback.ShowDevtools()
-                            }
-                        ") 
-                            |> Async.AwaitTask
-                ()
+            webView.ExecuteScriptAsync(Requests.getScript settings.RequestPortValue false) 
+                |> Async.AwaitTask
+                |> ignore
         } 
         |> Async.StartWithCurrentContext 
 
@@ -94,7 +93,9 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
-    member this.ShowDevtools () = webView.CoreWebView2.OpenDevToolsWindow()
+    member this.ShowDevtools () = 
+        if settings.DevToolsValue then
+            webView.CoreWebView2.OpenDevToolsWindow()
     member this.GetWindowState() = (int)this.WindowState
 
     member this.onLoad (_: EventArgs) =

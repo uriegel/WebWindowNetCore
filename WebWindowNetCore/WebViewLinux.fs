@@ -76,7 +76,7 @@ type WebView() =
 
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
-            webView.RunJavascript(Requests.getScript this.RequestPortValue)
+            webView.RunJavascript(Requests.getScript this.RequestPortValue false)
 
     member this.enableResourceScheme (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =

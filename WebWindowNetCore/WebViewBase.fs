@@ -143,10 +143,17 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-    let getScript port =
+    let getScript port windows =
+
+        let devTools = 
+            if windows then
+                "const showDevTools = () => fetch('req://showDevTools')"
+            else
+                "const showDevTools = () => callback.ShowDevtools()"
+            
         sprintf """
             var WebView = (() => {
-                const showDevTools = () => fetch('req://showDevTools')
+                %s
                 
                 const request = async (method, data) => {
                     const res = await fetch(`http://localhost:%d/${method}`, {
@@ -162,13 +169,12 @@ module Requests =
                     request
                 }
             })()
-        """ port
+        """ devTools port
 
-// TODO Windows Version Requests
-// TODO Windows Version WebTools
 // TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded
 // TODO Custom Taskbar Windows
 // TODO Custom Taskbar Linux
 // TODO Drag n Drop Windows
 // TODO Drag n Drop Linux ?
-// TODO Windows clent is shrinking with ervery new start
+// TODO Windows clent is shrinking with every new start
+// TODO CORS cache
