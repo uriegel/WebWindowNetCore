@@ -6,6 +6,7 @@ open GtkDotNet.SafeHandles
 open Option
 open FSharpTools
 open System.Text
+open System.Text.Json
 
 type WebView() = 
     inherit WebViewBase()
@@ -76,7 +77,14 @@ type WebView() =
 
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
+            let call a = 
+                JsonSerializer.Serialize(a, TextJson.Default)
+                |> sprintf "callWebView(%s)"
+                |> webView.RunJavascript
+            let runJavascript = webView.RunJavascript
+
             webView.RunJavascript(Requests.getScript this.RequestPortValue false)
+            this.OnStartedValue |> iter (fun f -> f (WebViewAccess (call, runJavascript)))
 
     member this.enableResourceScheme (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
@@ -109,5 +117,4 @@ type WebView() =
         context.RegisterUriScheme("req", onRequest)
         |> ignore
         ()
-
 #endif

@@ -22,9 +22,11 @@ new WebView()
     //.DebugUrl("https://www.google.de")
     .Url("res://webroot/index.html")
     .CanClose(() => true)
+    .OnStarted(action => action.ExecuteJavascript ("console.log('app started now ')"))
     .Run();
 
 record Input(string Text, int Id);
 record Contact(string Name, int Id);
 record Input2(string EMail, int Count, int Nr);
 record Contact2(string DisplayName, string Phone);
+record Started(string Name);

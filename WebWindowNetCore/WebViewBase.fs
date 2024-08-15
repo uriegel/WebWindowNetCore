@@ -30,7 +30,7 @@ type WebViewBase() =
     // let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
-    // let mutable onStarted: Option<unit->unit> = None
+    let mutable onStarted: Option<WebViewAccess->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
     let mutable requestPort = 2222
@@ -44,6 +44,7 @@ type WebViewBase() =
     member internal this.DebugUrlValue = debugUrl
     member internal this.SaveBoundsValue = saveBounds
     member internal this.CanCloseValue = canClose
+    member internal this.OnStartedValue = onStarted
     member internal this.ResourceIconValue = resourceIcon
     member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
@@ -93,6 +94,9 @@ type WebViewBase() =
     member this.CanClose(canCloseFunc: Func<bool>) = 
         canClose <- Some canCloseFunc.Invoke
         this
+    member this.OnStarted(onStartedFunc: Action<WebViewAccess>) = 
+        onStarted <- Some onStartedFunc.Invoke
+        this
     /// Does not work for Linux
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
@@ -120,7 +124,12 @@ type WebViewBase() =
 
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
+
     abstract member Run: unit->int
+
+and WebViewAccess(call: Action<obj>, executeJavascript: Action<string>) = 
+    member this.ExecuteJavascript = executeJavascript
+    member this.Call = call
 
 module ContentType = 
     let get (uri: string) = 
@@ -164,9 +173,14 @@ module Requests =
                     return await res.json()
                 }
 
+                const registerEvents = evt => {
+                    
+                }
+
                 return {
                     showDevTools,
-                    request
+                    request,
+                    registerEvents
                 }
             })()
         """ devTools port
@@ -179,3 +193,4 @@ module Requests =
 // TODO CORS cache
 // TODO requests url: /requests/{method}
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
+// TODO Theme change detection
