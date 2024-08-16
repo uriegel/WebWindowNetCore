@@ -32,7 +32,7 @@ module Server =
             ()
 
         let warble (request: Request) =
-            route  ("/" + request.Method) >=> warbler (fun _ -> request.Request ())
+            route  ("/requests/" + request.Method) >=> warbler (fun _ -> request.Request ())
 
         let configureRoutes (app : IApplicationBuilder) = 
             let host (host: string) (next: HttpFunc) (ctx: HttpContext) =

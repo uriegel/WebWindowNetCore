@@ -28,6 +28,10 @@
     <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.fsproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IsWindows)'=='true'">
+    <PackageReference Include="CsTools" Version="7.18.0" />
+  </ItemGroup> 
+
   <ItemGroup>
     <EmbeddedResource Include="../webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
@@ -44,6 +48,6 @@
     <EmbeddedResource Include="./icon.ico">
       <LogicalName>icon</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-
+  </ItemGroup> 
+  
 </Project>

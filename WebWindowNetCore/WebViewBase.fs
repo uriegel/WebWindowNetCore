@@ -177,7 +177,7 @@ module Requests =
                 %s
                 %s
                 const request = async (method, data) => {
-                    const res = await fetch(`http://localhost:%d/${method}`, {
+                    const res = await fetch(`http://localhost:%d/requests/${method}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(data)
@@ -198,12 +198,11 @@ module Requests =
             })()
         """ devTools onEventsCreated port
 
+// TODO Adapt TestAppLinux
 // TODO Drag n Drop Windows
-// TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded
 // TODO Custom Taskbar Windows
 // TODO Custom Taskbar Linux
 // TODO Windows client is shrinking with every new start
 // TODO CORS cache
-// TODO requests url: /requests/{method}
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection

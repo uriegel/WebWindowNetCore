@@ -87,18 +87,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
-            let call a = 
-                JsonSerializer.Serialize(a, TextJson.Default)
-                |> sprintf "callWebView(%s)"
-                |> webView.ExecuteScriptAsync
-                |> Async.AwaitTask
-                |> ignore
-
-            let runJavascript str = 
-                webView.ExecuteScriptAsync str
-                |> Async.AwaitTask
-                |> ignore
-        settings.OnStartedValue |> Option.iter (fun f -> f (WebViewAccess (call, runJavascript)))
+            settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
         } 
         |> Async.StartWithCurrentContext 
 
@@ -110,6 +99,9 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     member this.ShowDevtools () = 
         if settings.DevToolsValue then
             webView.CoreWebView2.OpenDevToolsWindow()
+    member this.OnEvents(id: string) = 
+        settings.OnEventSinkValue
+        |> Option.iter (fun action -> action(id, (this.createWebViewAccess ())))
     member this.GetWindowState() = (int)this.WindowState
 
     member this.onLoad (_: EventArgs) =
@@ -160,6 +152,21 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         |> Option.iter (serveResourceStream uri)
         ()
 
+    member this.createWebViewAccess () =
+        let runJavascript str = 
+            this.Invoke(fun () ->
+                webView.ExecuteScriptAsync str
+                |> Async.AwaitTask
+                |> ignore)
+        let onEvent (id) (a: obj) = 
+            this.Invoke(fun () ->
+                sprintf "webViewEventSinks.get('%s')(%s)" id (JsonSerializer.Serialize(a, TextJson.Default))
+                |> webView.ExecuteScriptAsync 
+                |> Async.AwaitTask
+                |> ignore)
+        WebViewAccess (runJavascript, onEvent)
+
+
     override this.OnClosing(e: CancelEventArgs) = 
         base.OnClosing(e)
         settings.CanCloseValue
@@ -168,6 +175,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
 and [<ComVisible(true)>] Callback(parent: WebViewForm) =
 
     member this.ShowDevtools() = parent.ShowDevtools()
+    member this.OnEvents(id: string) = parent.OnEvents(id)
     member this.MaximizeWindow() = parent.MaximizeWindow()
     member this.MinimizeWindow() = parent.MinimizeWindow()
     member this.RestoreWindow() = parent.RestoreWindow()
