@@ -203,8 +203,6 @@ module Requests =
             } catch { }
         """ devTools onEventsCreated port
 
-// TODO FSharp test: file:// access WebView not before onLoaded event
-// TODO Adapt TestAppLinux
 // TODO Drag n Drop Windows
 // TODO Custom Taskbar Windows
 // TODO Custom Taskbar Linux
