@@ -7,6 +7,7 @@ open Option
 open FSharpTools
 open System.Text
 open System.Text.Json
+open FSharpTools.String
 
 type WebView() = 
     inherit WebViewBase()
@@ -77,14 +78,9 @@ type WebView() =
 
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
-            let call a = 
-                JsonSerializer.Serialize(a, TextJson.Default)
-                |> sprintf "callWebView(%s)"
-                |> webView.RunJavascript
-            let runJavascript = webView.RunJavascript
 
             webView.RunJavascript(Requests.getScript this.RequestPortValue false)
-            this.OnStartedValue |> iter (fun f -> f (WebViewAccess (call, runJavascript)))
+            this.OnStartedValue |> iter (fun f -> f (this.createWebViewAccess(webView)))
 
     member this.enableResourceScheme (webView: WebViewHandle) =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
@@ -109,12 +105,23 @@ type WebView() =
         let onRequest (request: WebkitUriSchemeRequestHandle) =
             match request.GetUri () with
             | "req://showDevTools" ->  
-                    webView.GetInspector().Show()
-                    sendResponse request "OK"
+                webView.GetInspector().Show()
+                sendResponse request "OK"
+            |id when id.StartsWith "req://onEvents/" ->  
+                this.OnEventSinkValue
+                |> Option.iter (fun action -> action(id |> substring 15, (this.createWebViewAccess webView)))
+                sendResponse request "OK"
             | _ -> sendResponse request "OK"
 
         let context = WebKitWebContext.GetDefault()
         context.RegisterUriScheme("req", onRequest)
         |> ignore
         ()
+
+    member this.createWebViewAccess (webView: WebViewHandle) =
+        let runJavascript = webView.RunJavascript
+        let onEvent (id) (a: obj) = 
+            sprintf "webViewEventSinks.get('%s')(%s)" id (JsonSerializer.Serialize(a, TextJson.Default))
+            |> webView.RunJavascript
+        WebViewAccess (runJavascript, onEvent)
 #endif

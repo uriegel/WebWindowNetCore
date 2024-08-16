@@ -31,11 +31,11 @@ type WebViewBase() =
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     let mutable onStarted: Option<WebViewAccess->unit> = None
+    let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
-
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
     member internal this.WidthValue = width
@@ -45,13 +45,14 @@ type WebViewBase() =
     member internal this.SaveBoundsValue = saveBounds
     member internal this.CanCloseValue = canClose
     member internal this.OnStartedValue = onStarted
+    member internal this.OnEventSinkValue = onEventSink
     member internal this.ResourceIconValue = resourceIcon
     member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
     member internal this.RequestPortValue = requestPort
-    
+
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
             this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
@@ -97,6 +98,9 @@ type WebViewBase() =
     member this.OnStarted(onStartedFunc: Action<WebViewAccess>) = 
         onStarted <- Some onStartedFunc.Invoke
         this
+    member this.OnEventSink(onCreated: Action<string, WebViewAccess>) = 
+        onEventSink <- Some onCreated.Invoke
+        this
     /// Does not work for Linux
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
@@ -127,9 +131,9 @@ type WebViewBase() =
 
     abstract member Run: unit->int
 
-and WebViewAccess(call: Action<obj>, executeJavascript: Action<string>) = 
+and WebViewAccess(executeJavascript: Action<string>, sendEvent: Action<string, obj>) = 
     member this.ExecuteJavascript = executeJavascript
-    member this.Call = call
+    member this.SendEvent = sendEvent
 
 module ContentType = 
     let get (uri: string) = 
@@ -160,10 +164,18 @@ module Requests =
             else
                 "const showDevTools = () => fetch('req://showDevTools')"
             
+        let onEventsCreated = 
+            if windows then
+                "const onEventsCreated = id => callback.OnEvents(id)"
+            else
+                "const onEventsCreated = id => fetch(`req://onEvents/${id}`)"
+
         sprintf """
+            var webViewEventSinks = new Map()
+
             var WebView = (() => {
                 %s
-                
+                %s
                 const request = async (method, data) => {
                     const res = await fetch(`http://localhost:%d/${method}`, {
                         method: 'POST',
@@ -173,8 +185,9 @@ module Requests =
                     return await res.json()
                 }
 
-                const registerEvents = evt => {
-                    
+                const registerEvents = (id, evt) => {
+                    webViewEventSinks.set(id, evt)
+                    onEventsCreated(id)
                 }
 
                 return {
@@ -183,7 +196,7 @@ module Requests =
                     registerEvents
                 }
             })()
-        """ devTools port
+        """ devTools onEventsCreated port
 
 // TODO Drag n Drop Windows
 // TODO Javascript events from server, perhaps  b e f o r e  javascripts are loaded

@@ -6,6 +6,9 @@ const btnDevTools = document.getElementById("buttonDevTools")
 
 btnDevTools.onclick = WebView.showDevTools
 
+WebView.registerEvents("fast", console.log)
+WebView.registerEvents("slow", console.log)
+
 btn1.onclick = async () => {
     var res = await WebView.request("cmd1", {
         text: "Text",
