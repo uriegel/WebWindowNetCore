@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (Windows)",
+            "name": ".NET Core (Windows)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -15,7 +15,7 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
-            "name": ".NET Core Launch (Linux)",
+            "name": ".NET Core (Linux)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -25,7 +25,27 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
-            "name": ".NET Core Launch F# (Windows)",
+            "name": ".NET Core Native (Windows)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppNative/bin/Debug/net8.0-windows/win-x64/TestAppNative.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
+            "name": ".NET Core Native (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppNative/bin/Debug/net8.0/linux-x64/TestAppNative.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
+            "name": ".NET Launch F# (Windows)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -35,7 +55,7 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
-            "name": ".NET Core Launch F# (Linux)",
+            "name": ".NET Core F# (Linux)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",

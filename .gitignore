@@ -12,3 +12,5 @@ TestAppWindows/bin/
 TestAppWindows/obj/
 TestAppFSharp/bin
 TestAppFSharp/obj
+TestAppNative/bin
+TestAppNative/obj
