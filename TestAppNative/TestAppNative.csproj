@@ -16,6 +16,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <DefineConstants>Windows</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsLinux)'=='true'">
+    <DefineConstants>Linux</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <TargetFramework>net8.0-windows</TargetFramework>

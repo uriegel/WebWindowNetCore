@@ -135,8 +135,8 @@ type WebViewBase() =
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
 #if Linux
-    member this.TitleBar(titleBarCreate: ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle> ->WidgetHandle) =
-        titleBar <- Some titleBarCreate
+    member this.TitleBar(titleBarCreate: Func<ApplicationHandle, WindowHandle, ObjectRef<WebViewHandle>, WidgetHandle>) =
+        titleBar <- Some (fun a w wv -> titleBarCreate.Invoke(a, w, wv))
         this
 #endif
     abstract member Run: unit->int
@@ -214,8 +214,6 @@ module Requests =
             } catch { }
         """ devTools onEventsCreated port
 
-// TODO In a special Client if Windows #if Linux:
-// TODO Custom Taskbar Linux
 // TODO Custom Taskbar Windows
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
