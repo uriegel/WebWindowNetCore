@@ -3,9 +3,10 @@ open Giraffe
 open System
 open System.Diagnostics
 open System.Threading.Tasks
-open System.IO
 open Microsoft.AspNetCore.Http
-
+#if Linux
+open GtkDotNet.SafeHandles
+#endif
 type RequestFun = unit->HttpFunc->HttpContext->Task<option<HttpContext>>
 
 type internal Request = {
@@ -36,6 +37,9 @@ type WebViewBase() =
     let mutable requests: Request list = []
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
+#if Linux
+    let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
+#endif    
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
     member internal this.WidthValue = width
@@ -52,7 +56,9 @@ type WebViewBase() =
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
     member internal this.RequestPortValue = requestPort
-
+#if Linux
+    member internal this.TitleBarValue = titleBar    
+#endif
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
             this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
@@ -128,7 +134,11 @@ type WebViewBase() =
 
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
-
+#if Linux
+    member this.TitleBar(titleBarCreate: ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle> ->WidgetHandle) =
+        titleBar <- Some titleBarCreate
+        this
+#endif
     abstract member Run: unit->int
 
 and WebViewAccess(executeJavascript: Action<string>, sendEvent: Action<string, obj>) = 
@@ -147,6 +157,7 @@ module ContentType =
             "text/text"
 
 module Requests =
+    open System.IO
     let AsTask<'a> (tsk: Task<'a>) =
         task {
             let! t = tsk
@@ -203,9 +214,10 @@ module Requests =
             } catch { }
         """ devTools onEventsCreated port
 
-// TODO Drag n Drop Windows
-// TODO Custom Taskbar Windows
+// TODO In a special Client if Windows #if Linux:
 // TODO Custom Taskbar Linux
+// TODO Custom Taskbar Windows
+// TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
 // TODO CORS cache
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)

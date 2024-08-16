@@ -29,6 +29,8 @@ type WebView() =
         request.Finish response
     
     override this.Run() =
+        let webViewRef = ObjectRef<WebViewHandle>() 
+
         Application
             .NewAdwaita(this.AppIdValue)
             .OnActivate(fun app ->
@@ -40,7 +42,7 @@ type WebView() =
                         this.retrieveBounds,
                         (fun (w: WindowHandle) -> w.DefaultSize(this.WidthValue, this.HeightValue) |> ignore))
                     .Child(WebKit.New()
-                        //.Ref())
+                        .Ref(webViewRef)
                         .If(this.ResourceSchemeValue, this.enableResourceScheme)
                         .With(fun w -> this.enableWebViewHost w)
                         .If(this.DevToolsValue,
@@ -53,6 +55,9 @@ type WebView() =
                         this.CanCloseValue |> iter (fun canClose -> w.OnClose(fun _ -> canClose() = false) |> ignore))
                     .If(this.SaveBoundsValue, 
                         this.saveBounds)
+                    .With(fun w -> 
+                                    this.TitleBarValue
+                                    |> iter (fun func -> func app w webViewRef |> w.Titlebar |> ignore))
                     .Show()
                     |> ignore)
             .If(this.Requests |> List.length > 0, fun _ -> Server.start this)
