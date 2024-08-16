@@ -8,6 +8,7 @@ open Microsoft.Web.WebView2.Core
 open Microsoft.Web.WebView2.WinForms
 open FSharpTools
 open System.ComponentModel
+open System.Text.Json
 
 type WebViewForm(appDataPath: string, settings: WebViewBase) as this = 
     inherit Form()
@@ -85,6 +86,19 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             webView.ExecuteScriptAsync(Requests.getScript settings.RequestPortValue true) 
                 |> Async.AwaitTask
                 |> ignore
+
+            let call a = 
+                JsonSerializer.Serialize(a, TextJson.Default)
+                |> sprintf "callWebView(%s)"
+                |> webView.ExecuteScriptAsync
+                |> Async.AwaitTask
+                |> ignore
+
+            let runJavascript str = 
+                webView.ExecuteScriptAsync str
+                |> Async.AwaitTask
+                |> ignore
+        settings.OnStartedValue |> Option.iter (fun f -> f (WebViewAccess (call, runJavascript)))
         } 
         |> Async.StartWithCurrentContext 
 
