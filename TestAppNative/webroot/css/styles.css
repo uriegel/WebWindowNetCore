@@ -1,0 +1,24 @@
+body {
+    height: 100vh;
+    box-sizing: border-box;
+    margin: 0px;
+    border-width: 1px;
+    border-color: yellow;
+    border-style: solid;
+    background-color: rgb(150, 11, 11);
+}
+
+h1 {
+    -webkit-app-region: drag;
+}
+
+.dropZone {
+    width: 100px;
+    height: 60px;
+    margin-bottom: 5px;
+    background-color: aqua;
+}
+
+.blurry {
+    opacity:0.4;
+}
