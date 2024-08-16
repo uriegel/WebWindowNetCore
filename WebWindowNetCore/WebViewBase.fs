@@ -7,6 +7,9 @@ open Microsoft.AspNetCore.Http
 #if Linux
 open GtkDotNet.SafeHandles
 #endif
+#if Windows
+open System.Windows.Forms
+#endif
 type RequestFun = unit->HttpFunc->HttpContext->Task<option<HttpContext>>
 
 type internal Request = {
@@ -40,6 +43,9 @@ type WebViewBase() =
 #if Linux
     let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
 #endif    
+#if Windows
+    let mutable onFormCreating: Option<Form->unit> = None
+#endif
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
     member internal this.WidthValue = width
@@ -59,6 +65,9 @@ type WebViewBase() =
 #if Linux
     member internal this.TitleBarValue = titleBar    
 #endif
+#if Windows
+    member internal this.OnFormCreatingValue = onFormCreating
+#endif    
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
             this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
@@ -137,6 +146,11 @@ type WebViewBase() =
 #if Linux
     member this.TitleBar(titleBarCreate: Func<ApplicationHandle, WindowHandle, ObjectRef<WebViewHandle>, WidgetHandle>) =
         titleBar <- Some (fun a w wv -> titleBarCreate.Invoke(a, w, wv))
+        this
+#endif
+#if Windows
+    member this.OnFormCreating(formCreateFunc: Action<Form>) =
+        onFormCreating <- Some formCreateFunc.Invoke
         this
 #endif
     abstract member Run: unit->int

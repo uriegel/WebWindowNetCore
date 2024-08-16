@@ -27,7 +27,10 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         webView.TabIndex <- 0
         webView.ZoomFactor <- 1
 
-        //OnFormCreation.Invoke(this);
+#if Windows
+        settings.OnFormCreatingValue
+        |> Option.iter (fun f -> f(this))
+#endif
 
         settings.ResourceIconValue 
         |> Option.iter (fun i -> 
