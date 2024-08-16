@@ -214,6 +214,7 @@ module Requests =
             } catch { }
         """ devTools onEventsCreated port
 
+// TODO publish WebWindowNetCore beta and test native app
 // TODO Custom Taskbar Windows
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start

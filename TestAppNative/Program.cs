@@ -5,7 +5,7 @@ using GtkDotNet;
 new WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
-    .Title("Web Window Net Core 👍")
+    .Title("Web Window Net Core Native Extensions👍")
     .ResourceIcon("icon")
     .ResourceScheme()
     .SaveBounds()
