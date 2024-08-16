@@ -4,10 +4,21 @@ const btn1 = document.getElementById("button")
 const btn2 = document.getElementById("button2")
 const btnDevTools = document.getElementById("buttonDevTools")
 
-btnDevTools.onclick = WebView.showDevTools
+btnDevTools.onclick = () => WebView.showDevTools()
 
-WebView.registerEvents("fast", console.log)
-WebView.registerEvents("slow", console.log)
+const initialize = () => {
+    WebView.registerEvents("fast", console.log)
+    WebView.registerEvents("slow", console.log)
+}
+
+try {
+    if (WebView)
+        initialize()
+} catch {  }
+
+function onWebViewLoaded() {
+    initialize()
+}
 
 btn1.onclick = async () => {
     var res = await WebView.request("cmd1", {
