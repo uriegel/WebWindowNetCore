@@ -37,7 +37,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="WebWindowState.fs" />
-    <Compile Include="WebViewAccess.fs" />
     <Compile Include="WebViewBase.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="RequestId.fs" />

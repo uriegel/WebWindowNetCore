@@ -18,6 +18,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     [<Literal>]
     let WM_NCCALCSIZE = 0x83
 
+    let mutable isMaximized = false
+
     let calcSizeNoTitlebar (m: byref<Message>) =
         if m.WParam <> 0 then    
             let nccsp = NcCalcSizeParams.FromIntPtr(m.LParam)
@@ -67,11 +69,16 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             this.Location <- Point(bounds.X |> Option.defaultValue 0, bounds.Y |> Option.defaultValue 0)
         this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
         this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
+        if this.WindowState = FormWindowState.Maximized then
+            isMaximized <- true
 
         if settings.SaveBoundsValue then
             this.FormClosing.Add(this.onClosing)
 
         this.Load.Add(this.onLoad)
+
+        if settings.WithoutNativeTitlebarValue then
+            this.Resize.Add(this.onResize)
 
         this.Text <- settings.TitleValue
         this.Controls.Add webView
@@ -113,6 +120,10 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
+            webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if this.WindowState = FormWindowState.Maximized then "true" else "false") 
+            |> Async.AwaitTask
+            |> ignore        
+
             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
         } 
         |> Async.StartWithCurrentContext 
@@ -149,6 +160,11 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 Height = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Size.Height else Some this.Size.Height
                 IsMaximized = this.WindowState = FormWindowState.Maximized }
             |> Bounds.save settings.AppIdValue
+
+    member this.onResize (e: EventArgs) =
+        if this.WindowState = FormWindowState.Maximized <> isMaximized then
+            isMaximized <- this.WindowState = FormWindowState.Maximized
+            this.setMaximized isMaximized
 
     member this.onFullscreen _ =
         if webView.CoreWebView2.ContainsFullScreenElement then
@@ -194,6 +210,11 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             with 
             | _ -> ()
         WebViewAccess (runJavascript, onEvent)
+
+    member this.setMaximized maximized = 
+        webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if maximized then "true" else "false") 
+        |> Async.AwaitTask
+        |> ignore        
 
     override this.OnClosing(e: CancelEventArgs) = 
         base.OnClosing(e)

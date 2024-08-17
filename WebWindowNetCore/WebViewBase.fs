@@ -204,6 +204,16 @@ module Requests =
         let noTitlebarScript = 
             if noNativeTitlbar then 
                 sprintf """
+                    function WEBVIEWsetMaximized(m) { 
+                        const maximize = document.getElementById('$MAXIMIZE$')
+                        if (maximize)
+                            maximize.hidden = m
+
+                        const restore = document.getElementById('$RESTORE$')
+                        if (restore)
+                            restore.hidden = !m
+                    }
+
                     (() => {
                         const title = document.getElementById('$TITLE$')
                         if (title)
@@ -212,15 +222,16 @@ module Requests =
                         if (close)
                             close.onclick = () => window.close()
                         const maximize = document.getElementById('$MAXIMIZE$')
-                        if (maximize)
+                        if (maximize) 
                             maximize.onclick = () => callback.MaximizeWindow()
                         const minimize = document.getElementById('$MINIMIZE$')
                         if (minimize)
                             minimize.onclick = () => callback.MinimizeWindow()
                         const restore = document.getElementById('$RESTORE$')
-                        if (restore)
+                        if (restore) {
                             restore.onclick = () => callback.RestoreWindow()
-                           
+                            restore.hidden = true
+                        }
                     })()
                 """ title
             else
@@ -262,7 +273,6 @@ module Requests =
         """ noTitlebarScript devTools onEventsCreated port
 
 // TODO Special (minimal) README.md for nuget with reference to the original readme on Github
-// TODO Window toggling restore/maximize in Custom Taskbar Windows
 // TODO Window Hamburger menu
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
