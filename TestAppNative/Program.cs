@@ -18,6 +18,7 @@ new WebView()
     .TitleBar(Titlebar.Create)
 #elif Windows
     .OnFormCreating(WindowsExtensions.FormCreation)
+    .OnHamburger(WindowsExtensions.OnHamburger)
 #endif
     .Run();
 

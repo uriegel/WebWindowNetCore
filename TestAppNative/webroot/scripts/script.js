@@ -1,7 +1,6 @@
 const btnDevTools = document.getElementById("buttonDevTools")
 const dropZone = document.getElementById("dropZone")
 const dragZone = document.getElementById("dragZone")
-const btnHamburger = document.getElementById("buttonHamburger")
 
 const onDragStart = async evt => { 
     dragZone.classList.add("blurry")
@@ -12,11 +11,6 @@ const onDragStart = async evt => {
 }
 
 btnDevTools.onclick = () => WebView.showDevTools()
-
-btnHamburger.onclick = () => webViewScriptAction(99, JSON.stringify({
-    ratioLeft: btnHamburger.offsetLeft / document.body.offsetWidth,
-    rationTop: (btnHamburger.offsetTop + btnHamburger.offsetHeight) / document.body.offsetHeight
-}))
 
 dragZone.ondragstart = onDragStart    
 

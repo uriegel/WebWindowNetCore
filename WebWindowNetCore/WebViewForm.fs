@@ -214,6 +214,10 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         |> Async.AwaitTask
         |> ignore        
 
+    member this.OnHamburger(ratioLeft: float, ratioTop: float) =
+        settings.OnHamburgerValue
+        |> Option.iter (fun f -> f ratioLeft ratioTop)
+
     override this.OnClosing(e: CancelEventArgs) = 
         base.OnClosing(e)
         settings.CanCloseValue
@@ -234,8 +238,7 @@ and [<ComVisible(true)>] Callback(parent: WebViewForm) =
     member this.MaximizeWindow() = parent.MaximizeWindow()
     member this.MinimizeWindow() = parent.MinimizeWindow()
     member this.RestoreWindow() = parent.RestoreWindow()
-    member this.GetWindowState() = parent.GetWindowState()
-    
+    member this.OnHamburger(ratioLeft: float, ratioTop: float) = parent.OnHamburger(ratioLeft, ratioTop)
     // public Task DragStart(string fileList)
     //     => JsonSerializer.Deserialize<FileListType>(fileList, JsonWebDefaults)
     //         .Map(flt =>

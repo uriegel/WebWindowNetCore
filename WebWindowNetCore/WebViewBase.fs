@@ -4,8 +4,8 @@ open System.Diagnostics
 open System.Threading.Tasks
 open Giraffe
 open Microsoft.AspNetCore.Http
-open FSharpTools
 #if Linux
+open FSharpTools
 open GtkDotNet.SafeHandles
 #endif
 #if Windows
@@ -44,6 +44,7 @@ type WebViewBase() =
 #endif    
 #if Windows
     let mutable onFormCreating: Option<Form->unit> = None
+    let mutable onHamburger: Option<float->float->unit> = None
 #endif
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
@@ -67,6 +68,7 @@ type WebViewBase() =
 #endif
 #if Windows
     member internal this.OnFormCreatingValue = onFormCreating
+    member internal this.OnHamburgerValue = onHamburger
 #endif    
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -158,6 +160,10 @@ type WebViewBase() =
     member this.OnFormCreating(formCreateFunc: Action<Form>) =
         onFormCreating <- Some formCreateFunc.Invoke
         this
+    member this.OnHamburger(action: Action<float, float>) = 
+        onHamburger <- Some (fun rl rt -> action.Invoke(rl, rt))
+        this
+
 #endif
     abstract member Run: unit->int
 
@@ -232,6 +238,10 @@ module Requests =
                             restore.onclick = () => callback.RestoreWindow()
                             restore.hidden = true
                         }
+                        const hamburger = document.getElementById('$HAMBURGER$')
+                        if (hamburger) 
+                            hamburger.onclick = () => callback.OnHamburger(hamburger.offsetLeft / document.body.offsetWidth, (hamburger.offsetTop + hamburger.offsetHeight) / document.body.offsetHeight)
+                            
                     })()
                 """ title
             else
@@ -272,8 +282,6 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onEventsCreated port
 
-// TODO Special (minimal) README.md for nuget with reference to the original readme on Github
-// TODO Window Hamburger menu
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
 // TODO CORS cache

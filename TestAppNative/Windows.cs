@@ -129,5 +129,8 @@ static class WindowsExtensions
         nichtsMehrToolStripMenuItem.Size = new Size(171, 26);
         nichtsMehrToolStripMenuItem.Text = "Nichts mehr";
     }
+
+    public static void OnHamburger(double ratioLeft, double ratioTop) =>
+        contextMenuStrip1?.Show(form!.PointToScreen(new((int)(ratioLeft * form.Width), (int)(ratioTop * form.Height))));
 }
 #endif
