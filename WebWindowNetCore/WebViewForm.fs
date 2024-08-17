@@ -65,8 +65,6 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         this.AutoScaleMode <- AutoScaleMode.Font
 
         let bounds = Bounds.retrieve settings.AppIdValue
-        if bounds.X.IsSome && bounds.Y.IsSome then
-            this.Location <- Point(bounds.X |> Option.defaultValue 0, bounds.Y |> Option.defaultValue 0)
         this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
         this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
         if this.WindowState = FormWindowState.Maximized then
@@ -141,15 +139,26 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
 
     member this.onLoad (_: EventArgs) =
         let bounds = Bounds.retrieve settings.AppIdValue
+        if bounds.X.IsSome && bounds.Y.IsSome then
+            this.Location <- Point(bounds.X |> Option.defaultValue 0, bounds.Y |> Option.defaultValue 0)
+        
+        // let screenBounds = Screen.FromRectangle(this.Bounds).WorkingArea
+        // if screenBounds.Contains(this.Bounds) = false then
+        //     // Adjust the form's location if it is out of bounds
+        //     this.Location <- Point(Math.Max(screenBounds.X, this.Bounds.X), Math.Max(screenBounds.Y, this.Bounds.Y))
+        //     // Ensure the form fits within the screen
+        //     this.Size <- Size(Math.Min(screenBounds.Width, this.Bounds.Width), Math.Min(screenBounds.Height, this.Bounds.Height))
+
         if bounds.X.IsSome && bounds.Y.IsSome 
-                && Screen.AllScreens |> Seq.exists (fun s -> s.WorkingArea.IntersectsWith(Rectangle(
-                                                                                                            bounds.X |> Option.defaultValue 0, 
-                                                                                                            bounds.Y |> Option.defaultValue 0, 
-                                                                                                            this.Size.Width, 
-                                                                                                            this.Size.Height))) then
+            && Screen.AllScreens |> Seq.exists (fun s -> s.WorkingArea.IntersectsWith(Rectangle(
+                                                                                                             bounds.X |> Option.defaultValue 0, 
+                                                                                                             bounds.Y |> Option.defaultValue 0, 
+                                                                                                             this.Size.Width, 
+                                                                                                             this.Size.Height))) then
             this.Location <- Point(bounds.X |> Option.defaultValue 0 , bounds.Y |> Option.defaultValue 0)
-            this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
-        ()
+        //     this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
+        this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
+
     member this.onClosing (e: FormClosingEventArgs) =
             { Bounds.retrieve settings.AppIdValue with 
                 X = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Location.X else Some this.Location.X

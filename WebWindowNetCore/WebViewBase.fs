@@ -283,7 +283,6 @@ module Requests =
         """ noTitlebarScript devTools onEventsCreated port
 
 // TODO Drag n Drop Windows
-// TODO Windows client is shrinking with every new start
 // TODO CORS cache
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
