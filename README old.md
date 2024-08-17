@@ -1,5 +1,94 @@
 # WebWindowNetCore
 
+# Table of Contents
+1. [Example](#example)
+2. [Example2](#example2)
+3. [Third Example](#third-example)
+4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+
+
+## Example
+
+yxsgfdfs 
+df
+g dsfg
+ 
+ sdfh
+  f
+  h
+   fdgh
+    fdgh
+    fdg
+    h
+## Example2
+
+f hgfgdh 
+fdgh
+ fdg
+ h 
+ dfhg
+  df
+  h
+   df
+   h
+   dfg h
+   fdg
+   h d
+## Third Example
+d fghdfgh 
+dfhg
+ 
+ dfgh
+  df
+  hg 
+  dfh
+   d
+   fhg
+    df
+    hg
+    df
+## [Fourth Example](http://www.fourthexample.com) 
+
+df ghj
+df
+gh 
+df
+h 
+dfgh
+dfg
+
+## Prerequisites 
+### Linux
+
+Abhängig von 
+Sometimes it is necessary to install libgtk-4-dev ???
+```
+sudo apt install libgtk-4-dev 
+```
+
+### Windows
+
+WebView2 runtime (installed on Window 10 and 11, but not on Windows Server)
+
+install it:
+
+## next
+
+```cs
+{
+    var test = new Class(239)
+    var erg = test.Run()
+}
+```
+
+```fs
+{
+    let test = new Class(239)
+    let erg = test ()
+        |> hallo
+}
+```
+
 ## Notes for Developers
 
 ### Developing for Windows
@@ -22,17 +111,6 @@ Don't forget to replace it to the original value before publishing a new nuget v
 
 
  
-## Prerequisites for Linux
-
-```
-sudo apt install libgtk-4-dev !!!No!!!
-` 
-
-WebWindowNetCore is the base Nuget packege, you need one more Nuget packages for every to supporting Operating system:
-
-| Windows  | Linux  |
-|---|---|
-| WebWindowNetCore.Window  |  WebWindowNetCore.Linux |
 
 ## Functional builder setup in the C# application
 There is a builder pattern to setup the application (```WebView.Create```):
