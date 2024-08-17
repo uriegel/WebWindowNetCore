@@ -213,7 +213,7 @@ while ```launch.json``` should lkook like
 }
 ```
 
-Now you can choose your platform (Linux or Windows) in the debugger tap of the sidebar in Visual Studio Code and build and debug your app.
+Now you can choose your platform (Linux or Windows) in the debugger tab of the sidebar in Visual Studio Code and build and debug your app.
 
 ## Features of WebViewBuilder <a name="features"></a>
 
