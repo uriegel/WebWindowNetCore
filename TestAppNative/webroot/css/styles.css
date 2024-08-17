@@ -9,9 +9,13 @@ body {
 }
 
 h1 {
+    display: flex;
+    margin-top: 0px;
+}
+h1>span {
     -webkit-app-region: drag;
     background-color: aqua;
-    margin-top: 0px;
+    flex-grow: 1;
 }
 
 .dropZone {

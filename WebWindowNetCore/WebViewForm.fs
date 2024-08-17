@@ -9,9 +9,31 @@ open Microsoft.Web.WebView2.WinForms
 open FSharpTools
 open System.ComponentModel
 open System.Text.Json
+open ClrWinApi
 
 type WebViewForm(appDataPath: string, settings: WebViewBase) as this = 
+
     inherit Form()
+
+    [<Literal>]
+    let WM_NCCALCSIZE = 0x83
+
+    let calcSizeNoTitlebar (m: byref<Message>) =
+        if m.WParam <> 0 then    
+            let nccsp = NcCalcSizeParams.FromIntPtr(m.LParam)
+            nccsp.Rgrc0.Top <- nccsp.Rgrc0.Top + 1
+            nccsp.Rgrc0.Bottom <- nccsp.Rgrc0.Bottom - 5
+            nccsp.Rgrc0.Left <- nccsp.Rgrc0.Left + 5  
+            nccsp.Rgrc0.Right <- nccsp.Rgrc0.Right - 5 
+            System.Runtime.InteropServices.Marshal.StructureToPtr(nccsp, m.LParam, true)
+        else
+            let mutable clnRect = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, typedefof<Rect>) :?> Rect
+            clnRect.Top <- clnRect.Top + 1
+            clnRect.Bottom <- clnRect.Bottom - 5
+            clnRect.Left <- clnRect.Left + 5  
+            clnRect.Right <- clnRect.Right - 5 
+            System.Runtime.InteropServices.Marshal.StructureToPtr(clnRect, m.LParam, true)
+        m.Result <- 0
 
     let webView = new WebView2()
 
@@ -170,11 +192,18 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> ignore)
         WebViewAccess (runJavascript, onEvent)
 
-
     override this.OnClosing(e: CancelEventArgs) = 
         base.OnClosing(e)
         settings.CanCloseValue
         |> Option.iter (fun cc -> e.Cancel <- cc() = false)
+
+    override this.WndProc(m: byref<Message>) = 
+        if this.DesignMode || not settings.WithoutNativeTitlebarValue then
+            base.WndProc &m
+        else
+            match m.Msg with
+            | WM_NCCALCSIZE -> calcSizeNoTitlebar &m 
+            | _ -> base.WndProc &m 
         
 and [<ComVisible(true)>] Callback(parent: WebViewForm) =
 
