@@ -240,7 +240,6 @@ module Requests =
             } catch { }
         """ title devTools onEventsCreated port
 
-// TODO Title in Custom Taskbar Windows
 // TODO Window state controlling in Custom Taskbar Windows
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
