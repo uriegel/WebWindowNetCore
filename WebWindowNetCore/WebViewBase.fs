@@ -204,12 +204,24 @@ module Requests =
         let noTitlebarScript = 
             if noNativeTitlbar then 
                 sprintf """
-                    const setTitle = () => {
+                    (() => {
                         const title = document.getElementById('$TITLE$')
                         if (title)
                             title.innerText = "%s"
-                    }
-                    setTitle()
+                        const close = document.getElementById('$CLOSE$')
+                        if (close)
+                            close.onclick = () => window.close()
+                        const maximize = document.getElementById('$MAXIMIZE$')
+                        if (maximize)
+                            maximize.onclick = () => callback.MaximizeWindow()
+                        const minimize = document.getElementById('$MINIMIZE$')
+                        if (minimize)
+                            minimize.onclick = () => callback.MinimizeWindow()
+                        const restore = document.getElementById('$RESTORE$')
+                        if (restore)
+                            restore.onclick = () => callback.RestoreWindow()
+                           
+                    })()
                 """ title
             else
                 ""
@@ -249,7 +261,8 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onEventsCreated port
 
-// TODO Window state controlling in Custom Taskbar Windows
+// TODO Window toggling restore/maximize in Custom Taskbar Windows
+// TODO Window Hamburger menu
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
 // TODO CORS cache

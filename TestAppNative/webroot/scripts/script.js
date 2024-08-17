@@ -1,8 +1,3 @@
-const btnMinimize = document.getElementById("buttonMinimize")
-const btnRestore = document.getElementById("buttonRestore")
-const btnMaximize = document.getElementById("buttonMaximize")
-const btnClose = document.getElementById("buttonClose")
-const btnWindowState = document.getElementById("buttonWindowState")
 const btnDevTools = document.getElementById("buttonDevTools")
 const dropZone = document.getElementById("dropZone")
 const dragZone = document.getElementById("dragZone")
@@ -43,11 +38,3 @@ dropZone.addEventListener("drop", e => {
     webViewDropFiles("dropZone", true, e.dataTransfer.files)
 })
 
-btnClose.onclick = () => window.close()
-btnMinimize.onclick = () => webViewMinimize()
-btnRestore.onclick = () => webViewRestore()
-btnMaximize.onclick = () => webViewMaximize()
-
-btnWindowState.onclick = async () => {
-    alert(`Window State: ${await webViewGetWindowState()}`)
-}
