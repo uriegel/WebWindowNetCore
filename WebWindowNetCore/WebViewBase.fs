@@ -1,9 +1,10 @@
 namespace WebWindowNetCore
-open Giraffe
 open System
 open System.Diagnostics
 open System.Threading.Tasks
+open Giraffe
 open Microsoft.AspNetCore.Http
+open FSharpTools
 #if Linux
 open GtkDotNet.SafeHandles
 #endif
@@ -133,7 +134,9 @@ type WebViewBase() =
         this
     /// Only for Windows
     member this.WithoutNativeTitlebar () = 
+#if Windows    
         withoutNativeTitlebar <- true
+#endif
         this
     member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
 
@@ -184,7 +187,7 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-    let getScript title port windows =
+    let getScript noNativeTitlbar title port windows =
 
         let devTools = 
             if windows then
@@ -198,17 +201,23 @@ module Requests =
             else
                 "const onEventsCreated = id => fetch(`req://onEvents/${id}`)"
 
+        let noTitlebarScript = 
+            if noNativeTitlbar then 
+                sprintf """
+                    const setTitle = () => {
+                        const title = document.getElementById('$TITLE$')
+                        if (title)
+                            title.innerText = "%s"
+                    }
+                    setTitle()
+                """ title
+            else
+                ""
+
         sprintf """
+            %s
+
             var webViewEventSinks = new Map()
-
-            const setTitle = () => {
-                console.log("Hallo Ttile")
-                const title = document.getElementById('$TITLE$')
-                if (title)
-                    title.innerText = "%s"
-            }
-            setTitle()
-
 
             var WebView = (() => {
                 %s
@@ -238,7 +247,7 @@ module Requests =
                 if (onWebViewLoaded) 
                     onWebViewLoaded()
             } catch { }
-        """ title devTools onEventsCreated port
+        """ noTitlebarScript devTools onEventsCreated port
 
 // TODO Window state controlling in Custom Taskbar Windows
 // TODO Drag n Drop Windows

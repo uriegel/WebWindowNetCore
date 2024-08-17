@@ -16,7 +16,7 @@ const onDragStart = async evt => {
     dragZone.classList.remove("blurry")
 }
 
-btnDevTools.onclick = () => webViewShowDevTools()
+btnDevTools.onclick = () => WebView.showDevTools()
 
 btnHamburger.onclick = () => webViewScriptAction(99, JSON.stringify({
     ratioLeft: btnHamburger.offsetLeft / document.body.offsetWidth,

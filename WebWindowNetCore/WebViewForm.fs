@@ -109,7 +109,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
-            webView.ExecuteScriptAsync(Requests.getScript settings.TitleValue settings.RequestPortValue true) 
+            webView.ExecuteScriptAsync(Requests.getScript settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true) 
                 |> Async.AwaitTask
                 |> ignore
 
