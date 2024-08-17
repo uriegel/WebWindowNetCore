@@ -4,7 +4,7 @@ A .NET 8 Webview Application for Windows and Linux similar to Electron. It uses 
 Sample WebWindowNetCore app:
 ![Sample WebView app](readme/sampleapp.png)
 
-WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#, so that it is "F# friendly". Of course C# is supported as well. Unlike the older versions, there is no other Nuget packe required other than this. 
+WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#, so that it is "F# friendly". Of course C# is supported as well. Unlike the older versions, there is no other Nuget packet required other than this. 
 
 > WebViewNetCore.Linux and WebViewNetCore.Windows are now obsolete!
 
@@ -134,7 +134,7 @@ In the two last property groups we define constants ```Windows``` and ```Linux``
 Now we can import the necessary nuget package WebWindowNetCore (version 10 or higher!) by typing the following in the terminal window:
 
 ```
-dotnet add package WebWindowNetCore --version 10.0.0-beta-8
+dotnet add package WebWindowNetCore --version 10.0.0-beta-9
 ```
 
 For a minimal program replace all from the file "Program.cs" with:
