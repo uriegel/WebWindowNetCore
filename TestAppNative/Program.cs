@@ -1,7 +1,4 @@
 ﻿using WebWindowNetCore;
-#if Linux
-using GtkDotNet;
-#endif
 
 new WebView()
     .AppId("de.uriegel.test")
@@ -18,7 +15,7 @@ new WebView()
     .Url("res://webroot/index.html")
     //.Url($"file://{Directory.GetCurrentDirectory()}/TestAppNative/webroot/index.html")
 #if Linux
-    .TitleBar()
+    .TitleBar(Titlebar.Create)
 #elif Windows
     .OnFormCreating(WindowsExtensions.FormCreation)
 #endif
