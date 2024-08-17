@@ -1,5 +1,7 @@
 # WebWindowNetCore
 
+
+
 ## Notes for Developers
 
 ### Developing for Windows
@@ -20,8 +22,10 @@ Don't forget to replace it to the original value before publishing a new nuget v
 * Test lionux version in Linux with if Windows Windows code and Windows.Forms.dlls
 
 
+![Sample WebView app](readme/sampleapp.png)
+Unterschrift
 
-A Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. It has an integrted Asp.NET (Kestrel) server which can be used to host the app and to communicate between the C# application and the web app:
+ A Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. It has an integrted Asp.NET (Kestrel) server which can be used to host the app and to communicate between the C# application and the web app:
 * you can call via javascript fetch from the web app (json input and output)
 * The C# app can send SSE events to the web app
 
