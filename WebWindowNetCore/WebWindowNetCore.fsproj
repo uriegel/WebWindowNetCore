@@ -22,7 +22,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageTags>CSharp;FSharp;C#;F#;.NET;Functional;WebView;WebView2;Gtk4;WebKit</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <Compile Include="WebViewForm.fs" />
     <Compile Include="WebViewWindows.fs" />
     <Compile Include="WebViewLinux.fs" />
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\READMENuget.md" Pack="true" PackagePath="\" />
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath>

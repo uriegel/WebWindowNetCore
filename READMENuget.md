@@ -5,7 +5,7 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
 
 > WebViewNetCore.Linux and WebViewNetCore.Windows are now obsolete!
 
-## Features <a name="features"></a>
+## Features
 
 WebWindowNetCore includes following features:
 * Is built on .NET 8
