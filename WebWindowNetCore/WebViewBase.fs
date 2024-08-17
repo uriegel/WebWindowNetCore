@@ -261,6 +261,7 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onEventsCreated port
 
+// TODO Special (minimal) README.md for nuget with reference to the original readme on Github
 // TODO Window toggling restore/maximize in Custom Taskbar Windows
 // TODO Window Hamburger menu
 // TODO Drag n Drop Windows

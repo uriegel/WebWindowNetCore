@@ -21,6 +21,7 @@
     <PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageTags>CSharp;FSharp;C#;F#;.NET;Functional;WebView;WebView2;Gtk4;WebKit</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>CS1591</NoWarn>
