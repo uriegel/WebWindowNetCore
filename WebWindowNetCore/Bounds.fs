@@ -23,7 +23,11 @@ module internal Bounds =
         getPath id
         |> File.readAllText 
         |> Option.defaultValue ""
+
+
         |> sideEffect (printfn  "%s")
+        
+        
         |> TextJson.deserialize<Bounds>
     
     let save id bounds =

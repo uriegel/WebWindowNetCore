@@ -1,4 +1,3 @@
-const btn1 = document.getElementById("button")
 const btnMinimize = document.getElementById("buttonMinimize")
 const btnRestore = document.getElementById("buttonRestore")
 const btnMaximize = document.getElementById("buttonMaximize")
@@ -43,14 +42,6 @@ dropZone.addEventListener("drop", e => {
     e.stopPropagation()
     webViewDropFiles("dropZone", true, e.dataTransfer.files)
 })
-
-btn1.onclick = async () => {
-    var res = await webViewRequest("cmd1", {
-        text: "Text",
-        id: 123
-    })
-    console.log("cmd1", res)
-}
 
 btnClose.onclick = () => window.close()
 btnMinimize.onclick = () => webViewMinimize()

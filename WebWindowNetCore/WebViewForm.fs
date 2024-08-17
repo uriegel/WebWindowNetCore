@@ -109,7 +109,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
-            webView.ExecuteScriptAsync(Requests.getScript settings.RequestPortValue true) 
+            webView.ExecuteScriptAsync(Requests.getScript settings.TitleValue settings.RequestPortValue true) 
                 |> Async.AwaitTask
                 |> ignore
 
@@ -185,11 +185,14 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore)
         let onEvent (id) (a: obj) = 
-            this.Invoke(fun () ->
-                sprintf "webViewEventSinks.get('%s')(%s)" id (JsonSerializer.Serialize(a, TextJson.Default))
-                |> webView.ExecuteScriptAsync 
-                |> Async.AwaitTask
-                |> ignore)
+            try 
+                this.Invoke(fun () ->
+                    sprintf "webViewEventSinks.get('%s')(%s)" id (JsonSerializer.Serialize(a, TextJson.Default))
+                    |> webView.ExecuteScriptAsync 
+                    |> Async.AwaitTask
+                    |> ignore)
+            with 
+            | _ -> ()
         WebViewAccess (runJavascript, onEvent)
 
     override this.OnClosing(e: CancelEventArgs) = 

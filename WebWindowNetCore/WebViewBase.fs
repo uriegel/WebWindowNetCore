@@ -184,7 +184,7 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-    let getScript port windows =
+    let getScript title port windows =
 
         let devTools = 
             if windows then
@@ -200,6 +200,15 @@ module Requests =
 
         sprintf """
             var webViewEventSinks = new Map()
+
+            const setTitle = () => {
+                console.log("Hallo Ttile")
+                const title = document.getElementById('$TITLE$')
+                if (title)
+                    title.innerText = "%s"
+            }
+            setTitle()
+
 
             var WebView = (() => {
                 %s
@@ -229,9 +238,10 @@ module Requests =
                 if (onWebViewLoaded) 
                     onWebViewLoaded()
             } catch { }
-        """ devTools onEventsCreated port
+        """ title devTools onEventsCreated port
 
-// TODO Custom Taskbar Windows
+// TODO Title in Custom Taskbar Windows
+// TODO Window state controlling in Custom Taskbar Windows
 // TODO Drag n Drop Windows
 // TODO Windows client is shrinking with every new start
 // TODO CORS cache

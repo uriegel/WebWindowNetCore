@@ -84,7 +84,7 @@ type WebView() =
     member this.onWebViewLoad (webView: WebViewHandle) (load: WebViewLoad) =
         if load = WebViewLoad.Committed then   
 
-            webView.RunJavascript(Requests.getScript this.RequestPortValue false)
+            webView.RunJavascript(Requests.getScript "" this.RequestPortValue false)
             this.OnStartedValue |> iter (fun f -> f (this.createWebViewAccess(webView)))
 
     member this.enableResourceScheme (webView: WebViewHandle) =

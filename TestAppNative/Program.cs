@@ -10,7 +10,7 @@ new WebView()
     .ResourceIcon("icon")
     .ResourceScheme()
     .SaveBounds()
-    .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
 #if DEBUG    
     .DevTools()
 #endif
