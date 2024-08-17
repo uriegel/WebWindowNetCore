@@ -14,6 +14,10 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
     1. [Prerequisites for Windows](#prewindows)
     2. [Prerequisites for Linux](#prelinux)
 3. [Hello World (a minimal web view app)](#helloworld)
+    1. [Adaptions for debug and build integration in visual studio code](#adaptionHelloWorld)
+4. [Features of WebViewBuilder](#features)
+    1. [Creating WebViewBuilder and running app](#featuresCreating)
+
 
 ## Features <a name="features"></a>
 
@@ -52,10 +56,6 @@ new WebView()
 ```
 Sample of a Windows App with custom titlebar:
 ![custom titlebar](readme/customTitlebar.png) 
-
-
-
-
 
 ## Setup <a name="setup"></a>
 
@@ -154,12 +154,84 @@ Now type ```dotnet run``` in the terminal and the web view app is starting and y
 
 Congratulations! Your first web view app is running!
 
-### Adaptions for debug and build integration in visual studio code
+### Adaptions for debug and build integration in visual studio code <a name="adaptionHelloWorld"></a>
 
-When you press ```F5```, the old terminal program is running, not the newly build web view app. This is because you has changed the target and runtime identifier. In order to debug the app in visul studio code you should add two files in a folder ```.vscode```:
+When you press ```F5```, the old terminal program is running, not the newly build web view app. This is because you has changed the target and runtime identifier. In order to debug the app in visul studio code you should add two files in a folder ```.vscode```, if they are not already present:
 
 ![.vscode folder](readme/vscode.png)
 
-beide Dateien anzeigen
+The content of ```tasks.json``` shoud look like this:
 
-Erklärungen
+```
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/HelloWorld.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}        
+```
+
+while ```launch.json``` should lkook like
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net8.0/linux-x64/HelloWorld.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }, {
+            "name": ".NET Core Launch (Windows)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}bin/Debug/net8.0-windows/win-x64/HelloWorld.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}
+```
+
+Now you can choose your platform (Linux or Windows) in the debugger tap of the sidebar in Visual Studio Code and build and debug your app.
+
+## Features of WebViewBuilder <a name="features"></a>
+
+### Creating WebViewBuilder and running app <a name="featuresCreating"></a>
+
+
+
+
+
+
+
+new WebView()
+
+.Run() starts the WebView window and runs the application until the window is closed
+
+### FromResource
+### Title
+### appid
+### SaveBounds
+### ResourceScheme
+### ResourceIcon
