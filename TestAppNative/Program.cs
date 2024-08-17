@@ -16,6 +16,7 @@ new WebView()
 #endif
     .WithoutNativeTitlebar()
     .Url("res://webroot/index.html")
+    //.Url($"file://{Directory.GetCurrentDirectory()}/TestAppNative/webroot/index.html")
 #if Linux
     .TitleBar()
 #elif Windows
