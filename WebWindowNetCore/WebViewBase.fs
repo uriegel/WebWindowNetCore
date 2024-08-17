@@ -24,14 +24,12 @@ type WebViewBase() =
     let mutable height = 600
     let mutable title = ""
     let mutable url: Option<string> = None
-    // let mutable query: Option<string> = None
-    // let mutable getQuery: Option<unit->string> = None
     let mutable debugUrl: Option<string> = None
     let mutable saveBounds = false
     let mutable devTools = false
     let mutable resourceIcon: Option<string> = None
     let mutable resourceScheme = false
-    // let mutable withoutNativeTitlebar = false
+    let mutable withoutNativeTitlebar = false
     // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
     let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     let mutable onStarted: Option<WebViewAccess->unit> = None
@@ -62,6 +60,7 @@ type WebViewBase() =
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
     member internal this.RequestPortValue = requestPort
+    member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
 #if Linux
     member internal this.TitleBarValue = titleBar    
 #endif
@@ -131,6 +130,10 @@ type WebViewBase() =
         this
     member this.RequestPort(port) =
         requestPort <- port
+        this
+    /// Only for Windows
+    member this.WithoutNativeTitlebar () = 
+        withoutNativeTitlebar <- true
         this
     member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
 

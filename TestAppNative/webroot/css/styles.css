@@ -10,6 +10,8 @@ body {
 
 h1 {
     -webkit-app-region: drag;
+    background-color: aqua;
+    margin-top: 0px;
 }
 
 .dropZone {
@@ -22,3 +24,6 @@ h1 {
 .blurry {
     opacity:0.4;
 }
+Test 1 Minimize Restore Maximize Window State Dev Tools = Close
+
+File drop zone

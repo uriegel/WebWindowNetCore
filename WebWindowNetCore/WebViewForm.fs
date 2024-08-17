@@ -66,8 +66,9 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                         appDataPath, 
                         CoreWebView2EnvironmentOptions(
                             customSchemeRegistrations = ResizeArray<CoreWebView2CustomSchemeRegistration> [ 
-                                CoreWebView2CustomSchemeRegistration("res") 
-                            ] ))
+                                CoreWebView2CustomSchemeRegistration("res")
+                            ],
+                            AdditionalBrowserArguments = if settings.WithoutNativeTitlebarValue then "--enable-features=msWebView2EnableDraggableRegions" else ""))
                         |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
             webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
