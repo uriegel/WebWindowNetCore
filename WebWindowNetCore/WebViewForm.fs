@@ -120,9 +120,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
-            webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if this.WindowState = FormWindowState.Maximized then "true" else "false") 
-            |> Async.AwaitTask
-            |> ignore        
+            this.setMaximized(this.WindowState = FormWindowState.Maximized)
 
             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
         } 
