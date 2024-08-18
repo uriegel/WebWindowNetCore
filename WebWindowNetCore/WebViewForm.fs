@@ -11,6 +11,12 @@ open System.ComponentModel
 open System.Text.Json
 open ClrWinApi
 
+type WebMsg = {
+    Msg: int
+    Move: bool
+    Text: string 
+}
+
 type WebViewForm(appDataPath: string, settings: WebViewBase) as this = 
 
     inherit Form()
@@ -106,6 +112,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled <- settings.DefaultContextMenuDisabledValue = false
             webView.CoreWebView2.WindowCloseRequested.Add(fun _ -> this.Close())
             webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
+            if settings.OnFilesDropValue.IsSome then
+                webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
 
             webView.Source <- Uri (settings.GetUrl ())
             webView.ExecuteScriptAsync(@"
@@ -114,7 +122,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                 |> Async.AwaitTask
                 |> ignore
 
-            webView.ExecuteScriptAsync(Requests.getScript settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true) 
+            webView.ExecuteScriptAsync(Requests.getScript settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true settings.OnFilesDropValue.IsSome) 
                 |> Async.AwaitTask
                 |> ignore
 
@@ -184,6 +192,17 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             this.WindowState <- FormWindowState.Normal
             this.FormBorderStyle <- FormBorderStyle.Sizable
             Taskbar.show ()
+
+    member this.OnFilesDropReceived (e: CoreWebView2WebMessageReceivedEventArgs) =
+        let msg = JsonSerializer.Deserialize<WebMsg>(e.WebMessageAsJson, TextJson.Default)
+        match msg.Msg = 1, settings.OnFilesDropValue with
+        | true, Some func ->
+            let filesDropPathes = 
+                e.AdditionalObjects
+                |> Seq.map (fun n -> (n :?> CoreWebView2File).Path)
+                |> Seq.toArray        
+            func msg.Text msg.Move filesDropPathes
+        | _ -> ()
 
     member this.serveRes e = 
         let serveResourceStream (url: string) (stream: System.IO.Stream) = 

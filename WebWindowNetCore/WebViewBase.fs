@@ -31,8 +31,6 @@ type WebViewBase() =
     let mutable resourceIcon: Option<string> = None
     let mutable resourceScheme = false
     let mutable withoutNativeTitlebar = false
-    // let mutable onWindowStateChanged: Option<WebWindowState->unit> = None
-    let mutable onFilesDrop: Option<string->bool->string[]->unit> = None
     let mutable onStarted: Option<WebViewAccess->unit> = None
     let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
     let mutable canClose: Option<unit->bool> = None
@@ -45,6 +43,7 @@ type WebViewBase() =
 #if Windows
     let mutable onFormCreating: Option<Form->unit> = None
     let mutable onHamburger: Option<float->float->unit> = None
+    let mutable onFilesDrop: Option<string->bool->string array->unit> = None
 #endif
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
@@ -69,6 +68,7 @@ type WebViewBase() =
 #if Windows
     member internal this.OnFormCreatingValue = onFormCreating
     member internal this.OnHamburgerValue = onHamburger
+    member internal this.OnFilesDropValue = onFilesDrop
 #endif    
     member internal this.GetUrl () = 
         if Debugger.IsAttached then
@@ -99,12 +99,6 @@ type WebViewBase() =
     /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.DebugUrl(url) =
         debugUrl <- Some url                                
-        this
-    member this.OnFilesDrop(action: string->bool->string[]->unit) = 
-        onFilesDrop <- Some action
-        this
-    member this.OnFilesDrop(action: System.Action<string, bool, string[]>) = 
-        onFilesDrop <- Some (fun s b sa -> action.Invoke(s, b, sa))
         this
     member this.SaveBounds() =
         saveBounds <- true
@@ -163,7 +157,14 @@ type WebViewBase() =
     member this.OnHamburger(action: Action<float, float>) = 
         onHamburger <- Some (fun rl rt -> action.Invoke(rl, rt))
         this
-
+    /// <summary>
+    /// Enable dropping windows files to a drop zone with html identifier 'id'.
+    /// When a file/directory or multiple files/directories are dropped to a certain drag zone, this callback is being called from javascript
+    /// </summary>
+    /// <param name="action">Callback which is called from javascript when dropping files. First parameter is the id of the drag zone, second is if the files are moved (true) or copied (false), the third parameter is the array with the complete filenames</param>
+    member this.OnFilesDrop(action: Action<string, bool, string array>) =
+        onFilesDrop <- Some (fun id move files -> action.Invoke(id, move, files))
+        this
 #endif
     abstract member Run: unit->int
 
@@ -193,7 +194,7 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-    let getScript noNativeTitlbar title port windows =
+    let getScript noNativeTitlbar title port windows doFilesDrop =
 
         let devTools = 
             if windows then
@@ -247,12 +248,25 @@ module Requests =
             else
                 ""
 
+        let onFilesDropScript =
+            if doFilesDrop then
+                @"function dropFiles(id, move, droppedFiles) {
+                    chrome.webview.postMessageWithAdditionalObjects({
+                        msg: 1,
+                        text: id,
+                        move
+                    }, droppedFiles)
+                }"
+            else
+                "function dropFiles() {}"
+        
         sprintf """
             %s
 
             var webViewEventSinks = new Map()
 
             var WebView = (() => {
+                %s
                 %s
                 %s
                 const request = async (method, data) => {
@@ -272,7 +286,8 @@ module Requests =
                 return {
                     showDevTools,
                     request,
-                    registerEvents
+                    registerEvents,
+                    dropFiles
                 }
             })()
 
@@ -280,9 +295,9 @@ module Requests =
                 if (onWebViewLoaded) 
                     onWebViewLoaded()
             } catch { }
-        """ noTitlebarScript devTools onEventsCreated port
+        """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
-// TODO Drag n Drop Windows
+// TODO Windows: DragStart with files
 // TODO CORS cache
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection

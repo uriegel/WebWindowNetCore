@@ -19,6 +19,7 @@ new WebView()
 #elif Windows
     .OnFormCreating(WindowsExtensions.FormCreation)
     .OnHamburger(WindowsExtensions.OnHamburger)
+    .OnFilesDrop(WindowsExtensions.OnFilesDrop)
 #endif
     .Run();
 
