@@ -299,5 +299,6 @@ module Requests =
 
 // TODO Windows: DragStart with files
 // TODO CORS cache
+// TODO CORS Domains
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
