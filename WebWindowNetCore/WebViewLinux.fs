@@ -9,6 +9,10 @@ open System.Text
 open System.Text.Json
 open FSharpTools.String
 
+type DragFiles = {
+    Files: string array
+}
+
 type WebView() = 
     inherit WebViewBase()
 
@@ -110,6 +114,11 @@ type WebView() =
             match request.GetUri () with
             | "req://showDevTools" ->  
                 webView.GetInspector().Show()
+                sendResponse request "OK"
+            | "req://startDragFiles" ->  
+                let files = 
+                    request.GetHttpBody()
+                    |> Extensions.autoDispose Extensions.deserializeStream<DragFiles>
                 sendResponse request "OK"
             |id when id.StartsWith "req://onEvents/" ->  
                 this.OnEventSinkValue

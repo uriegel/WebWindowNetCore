@@ -197,10 +197,16 @@ module Requests =
 
         let devTools = 
             if windows then
-                "const showDevTools = () => callback.ShowDevtools()"
+                "const showDevTools = () => callback.ShowDevtools()
+                 const startDragFiles = files => callback.StartDragFiles(files)"
             else
-                "const showDevTools = () => fetch('req://showDevTools')"
-            
+                "const showDevTools = () => fetch('req://showDevTools')
+                 const startDragFiles = files => fetch('req://startDragFiles', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ files })
+                    })"
+
         let onEventsCreated = 
             if windows then
                 "const onEventsCreated = id => callback.OnEvents(id)"
@@ -284,6 +290,7 @@ module Requests =
 
                 return {
                     showDevTools,
+                    startDragFiles,
                     request,
                     registerEvents,
                     dropFiles
@@ -302,3 +309,21 @@ module Requests =
 // TODO CORS Domains
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
+
+module Extensions =
+    open System.IO
+    open System.Text.Json
+    
+    let autoDispose<'a, 'd when 'd :> IDisposable> (func: 'd->'a) (disposable: 'd) =
+        let res = func disposable
+        disposable.Dispose()
+        res
+    
+    let withStreamReader (stream: Stream) =
+        new StreamReader(stream)
+
+    let readToEnd (sr: StreamReader) =
+        sr.ReadToEnd ()
+
+    let deserializeStream<'a> (s: Stream) =
+        JsonSerializer.Deserialize<'a>(s, FSharpTools.TextJson.Default)
