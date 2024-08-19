@@ -296,6 +296,7 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
+// TODO Linux: DragStart with files via req://startDrag with files
 // TODO Windows: DragStart with files
 // TODO CORS cache
 // TODO CORS Domains
