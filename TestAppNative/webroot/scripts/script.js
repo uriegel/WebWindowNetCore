@@ -6,7 +6,7 @@ const onDragStart = async evt => {
     dragZone.classList.add("blurry")
     evt.preventDefault()
 //    await webViewDragStart("C:\\Users\\urieg\\test2", ["affe.config", "affen.config"])
-    await webViewDragStart("D:\\CaesarTeams", ["CaesarTeams.exe", "clrcompression.dll"])
+//    await webViewDragStart("D:\\CaesarTeams", ["CaesarTeams.exe", "clrcompression.dll"])
     dragZone.classList.remove("blurry")
 }
 
@@ -23,12 +23,12 @@ document.body.addEventListener("dragover", e => {
 dropZone.addEventListener("dragover", e => {
     e.preventDefault()
     e.stopPropagation()
-    e.dataTransfer.dropEffect = evt.shiftKey ? "move" : "copy"
+    e.dataTransfer.dropEffect = e.shiftKey ? "move" : "copy"
 })
 
 dropZone.addEventListener("drop", e => {
     e.preventDefault()
     e.stopPropagation()
-    webViewDropFiles("dropZone", true, e.dataTransfer.files)
+    WebView.dropFiles("dropZone", e.shiftKey, e.dataTransfer.files)
 })
 

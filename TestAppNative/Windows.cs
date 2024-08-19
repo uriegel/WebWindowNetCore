@@ -130,7 +130,11 @@ static class WindowsExtensions
         nichtsMehrToolStripMenuItem.Text = "Nichts mehr";
     }
 
-    public static void OnHamburger(double ratioLeft, double ratioTop) =>
-        contextMenuStrip1?.Show(form!.PointToScreen(new((int)(ratioLeft * form.Width), (int)(ratioTop * form.Height))));
+    public static void OnHamburger(double ratioLeft, double ratioTop)
+        => contextMenuStrip1?.Show(form!.PointToScreen(new((int)(ratioLeft * form.Width), (int)(ratioTop * form.Height))));
+
+    public static void OnFilesDrop(string id, bool moved, string[] files)  
+        => form?.BeginInvoke(() => MessageBox.Show($"Id: {id}, Moved: {moved}, files: ${string.Join('\n', files)})"));
+        
 }
 #endif
