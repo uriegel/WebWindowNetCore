@@ -303,27 +303,11 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
-// TODO Linux: DragStart with files via req://startDrag with files
 // TODO Windows: DragStart with files
+// TODO GtkDotNet4: DreagCancel, DragCompleted event handler
+// TODO OnDropped, OnDragFinished
 // TODO CORS cache
 // TODO CORS Domains
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
 
-module Extensions =
-    open System.IO
-    open System.Text.Json
-    
-    let autoDispose<'a, 'd when 'd :> IDisposable> (func: 'd->'a) (disposable: 'd) =
-        let res = func disposable
-        disposable.Dispose()
-        res
-    
-    let withStreamReader (stream: Stream) =
-        new StreamReader(stream)
-
-    let readToEnd (sr: StreamReader) =
-        sr.ReadToEnd ()
-
-    let deserializeStream<'a> (s: Stream) =
-        JsonSerializer.Deserialize<'a>(s, FSharpTools.TextJson.Default)

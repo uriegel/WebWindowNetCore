@@ -8,6 +8,7 @@ open FSharpTools
 open System.Text
 open System.Text.Json
 open FSharpTools.String
+open FSharpTools.TextJson
 
 type DragFiles = {
     Files: string array
@@ -15,6 +16,8 @@ type DragFiles = {
 
 type WebView() = 
     inherit WebViewBase()
+
+    let webViewRef = ObjectRef<WebViewHandle>() 
 
     let sendResponse (request: WebkitUriSchemeRequestHandle) (text: string) =
         let bytes = Encoding.UTF8.GetBytes text
@@ -33,8 +36,6 @@ type WebView() =
         request.Finish response
     
     override this.Run() =
-        let webViewRef = ObjectRef<WebViewHandle>() 
-
         Application
             .NewAdwaita(this.AppIdValue)
             .OnActivate(fun app ->
@@ -118,7 +119,17 @@ type WebView() =
             | "req://startDragFiles" ->  
                 let files = 
                     request.GetHttpBody()
-                    |> Extensions.autoDispose Extensions.deserializeStream<DragFiles>
+                    |> Disposable.auto deserializeStream<DragFiles>
+                use provider = ContentProvider.NewFileUris(files.Files)
+                let device = webViewRef.Ref.GetDisplay().GetDefaultSeat().GetDevice()
+                let surface = webView.GetNative().GetSurface()
+                let dragContext = surface.DragBegin(device, provider, DragAction.Copy ||| DragAction.Move, 0.0, 0.0)
+                // dragContext.DragAndDropFinished(success =>
+                // {
+                //     // TODO finished cancelled
+                //     WriteLine($"Drag and drop finished: {success}");
+                //     drag.Dispose();
+                // })
                 sendResponse request "OK"
             |id when id.StartsWith "req://onEvents/" ->  
                 this.OnEventSinkValue
