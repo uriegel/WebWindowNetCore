@@ -2,6 +2,7 @@ console.log("script loaded")
 
 const btn1 = document.getElementById("button")
 const btn2 = document.getElementById("button2")
+const btn3 = document.getElementById("button3")
 const btnDevTools = document.getElementById("buttonDevTools")
 
 btnDevTools.onclick = () => WebView.showDevTools()
@@ -36,4 +37,5 @@ btn2.onclick = async () => {
     console.log("cmd2", res)
 }
 
+btn3.onclick = () => alert("A message from javascript");
 

@@ -5,7 +5,6 @@ open System.Threading.Tasks
 open Giraffe
 open Microsoft.AspNetCore.Http
 #if Linux
-open FSharpTools
 open GtkDotNet.SafeHandles
 #endif
 #if Windows
