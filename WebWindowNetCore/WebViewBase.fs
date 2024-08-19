@@ -288,12 +288,19 @@ module Requests =
                     onEventsCreated(id)
                 }
 
+                let evtHandler = () => { }
+                const setDroppedFilesEventHandler = eh => evtHandler = eh
+
+                const setDroppedEvent = success => evtHandler(success)
+
                 return {
                     showDevTools,
                     startDragFiles,
                     request,
                     registerEvents,
-                    dropFiles
+                    dropFiles,
+                    setDroppedFilesEventHandler,
+                    setDroppedEvent
                 }
             })()
 
@@ -303,9 +310,7 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
-// TODO Windows: DragStart with files
-// TODO GtkDotNet4: DreagCancel, DragCompleted event handler
-// TODO OnDropped, OnDragFinished
+// TODO Windows: DragStart with files, OnDropped, OnDragFinished
 // TODO CORS cache
 // TODO CORS Domains
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)

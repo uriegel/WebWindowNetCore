@@ -124,12 +124,15 @@ type WebView() =
                 let device = webViewRef.Ref.GetDisplay().GetDefaultSeat().GetDevice()
                 let surface = webView.GetNative().GetSurface()
                 let dragContext = surface.DragBegin(device, provider, DragAction.Copy ||| DragAction.Move, 0.0, 0.0)
-                // dragContext.DragAndDropFinished(success =>
-                // {
-                //     // TODO finished cancelled
-                //     WriteLine($"Drag and drop finished: {success}");
-                //     drag.Dispose();
-                // })
+
+                let onFinished success = 
+                    webView.RunJavascript (sprintf "WebView.setDroppedEvent(%s)" <| if success then "true" else "false" )
+                    dragContext.Dispose()
+
+                dragContext
+                    .DragAndDropFinished(fun _ -> onFinished true) 
+                    .DragAndDropCancelled(fun _ -> onFinished false) 
+                    |> ignore
                 sendResponse request "OK"
             |id when id.StartsWith "req://onEvents/" ->  
                 this.OnEventSinkValue
