@@ -41,8 +41,12 @@ btn2.onclick = async () => {
 
 btn3.onclick = () => alert("A message from javascript")
 
-dragzone.onmousedown = () => WebView.startDragFiles([
-    "/home/uwe/Projekte/WebWindowNetCore/LICENSE",
-    "/home/uwe/Projekte/WebWindowNetCore/README.md"
-])
+// dragzone.onmousedown = () => WebView.startDragFiles([
+//     "/home/uwe/Projekte/WebWindowNetCore/LICENSE",
+//     "/home/uwe/Projekte/WebWindowNetCore/README.md"
+// ])
 
+dragzone.onmousedown = () => WebView.startDragFiles([
+    "C:\\Users\\urieg\\source\\repos\\WebWindowNetCore\\LICENSE",
+    "C:\\Users\\urieg\\source\\repos\\WebWindowNetCore\\README.md"
+])

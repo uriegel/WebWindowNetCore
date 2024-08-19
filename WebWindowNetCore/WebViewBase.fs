@@ -17,6 +17,10 @@ type internal Request = {
     Request: RequestFun
 }
 
+type DragFiles = {
+    Files: string array
+}
+
 [<AbstractClass>]
 type WebViewBase() = 
     let mutable appId = "de.uriegel.webwindownetcore"
@@ -198,7 +202,7 @@ module Requests =
         let devTools = 
             if windows then
                 "const showDevTools = () => callback.ShowDevtools()
-                 const startDragFiles = files => callback.StartDragFiles(files)"
+                 const startDragFiles = files => callback.StartDragFiles(JSON.stringify({ files }))"
             else
                 "const showDevTools = () => fetch('req://showDevTools')
                  const startDragFiles = files => fetch('req://startDragFiles', {
@@ -310,7 +314,6 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
-// TODO Windows: DragStart with files, OnDropped, OnDragFinished
 // TODO CORS cache
 // TODO CORS Domains
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)

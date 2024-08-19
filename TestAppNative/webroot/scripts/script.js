@@ -5,8 +5,6 @@ const dragZone = document.getElementById("dragZone")
 const onDragStart = async evt => { 
     dragZone.classList.add("blurry")
     evt.preventDefault()
-//    await webViewDragStart("C:\\Users\\urieg\\test2", ["affe.config", "affen.config"])
-//    await webViewDragStart("D:\\CaesarTeams", ["CaesarTeams.exe", "clrcompression.dll"])
     dragZone.classList.remove("blurry")
 }
 

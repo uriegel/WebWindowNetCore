@@ -81,6 +81,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
 
         this.Load.Add(this.onLoad)
 
+        this.QueryContinueDrag.Add(this.onDrop);
+
         if settings.WithoutNativeTitlebarValue then
             this.Resize.Add(this.onResize)
 
@@ -140,6 +142,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
     member this.ShowDevtools () = 
         if settings.DevToolsValue then
             webView.CoreWebView2.OpenDevToolsWindow()
+    member this.StartDragFiles (fileList: string) = 
+            this.DoDragDrop(DataObject(DataFormats.FileDrop, (TextJson.deserialize<DragFiles> fileList).Files), DragDropEffects.All)
     member this.OnEvents(id: string) = 
         settings.OnEventSinkValue
         |> Option.iter (fun action -> action(id, (this.createWebViewAccess ())))
@@ -204,6 +208,16 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             func msg.Text msg.Move filesDropPathes
         | _ -> ()
 
+    member this.onDrop (e: QueryContinueDragEventArgs) = 
+        if e.Action = DragAction.Drop then
+            webView.ExecuteScriptAsync "WebView.setDroppedEvent(true)"
+            |> Async.AwaitTask
+            |> ignore
+        else if e.Action = DragAction.Cancel then
+            webView.ExecuteScriptAsync "WebView.setDroppedEvent(false)"
+            |> Async.AwaitTask
+            |> ignore
+            
     member this.serveRes e = 
         let serveResourceStream (url: string) (stream: System.IO.Stream) = 
             try
@@ -262,6 +276,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
 and [<ComVisible(true)>] Callback(parent: WebViewForm) =
 
     member this.ShowDevtools() = parent.ShowDevtools()
+    member this.StartDragFiles(files: string) = parent.StartDragFiles(files)
     member this.OnEvents(id: string) = parent.OnEvents(id)
     member this.MaximizeWindow() = parent.MaximizeWindow()
     member this.MinimizeWindow() = parent.MinimizeWindow()

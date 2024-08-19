@@ -10,10 +10,6 @@ open System.Text.Json
 open FSharpTools.String
 open FSharpTools.TextJson
 
-type DragFiles = {
-    Files: string array
-}
-
 type WebView() = 
     inherit WebViewBase()
 
