@@ -229,9 +229,15 @@ new WebView()
 
 .Run() starts the WebView window and runs the application until the window is closed
 
-### FromResource
+### Url
+### DebugUrl
 ### Title
+### InitialBounds
 ### appid
 ### SaveBounds
 ### ResourceScheme
 ### ResourceIcon
+### DevTools
+### DefaultContextMenuDisabled
+
+### RequestPort

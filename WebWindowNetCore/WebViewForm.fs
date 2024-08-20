@@ -106,7 +106,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                             AdditionalBrowserArguments = if settings.WithoutNativeTitlebarValue then "--enable-features=msWebView2EnableDraggableRegions" else ""))
                         |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
-            webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
+            if settings.enableResourceScheme then
+                webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
             webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
             webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled <- false
