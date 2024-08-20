@@ -134,7 +134,7 @@ In the two last property groups we define constants ```Windows``` and ```Linux``
 Now we can import the necessary nuget package WebWindowNetCore (version 10 or higher!) by typing the following in the terminal window:
 
 ```
-dotnet add package WebWindowNetCore --version 10.0.0-beta-9
+dotnet add package WebWindowNetCore --version 10.0.0-beta-10
 ```
 
 For a minimal program replace all from the file "Program.cs" with:
