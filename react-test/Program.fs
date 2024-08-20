@@ -14,14 +14,15 @@ let onRequest (method: string) (input: Stream) =
             | "cmd1" -> input |> GetInput |> getContact |> AsTask
             | _ -> task { return obj() }
     }
-
+ 
 WebView()
     .AppId("de.uriegel.test")
     .Title("React WebView")
+    .ResourceScheme()
     .DebugUrl("http:localhost:5173")
-    .Url(sprintf "file://%s/webroot/index.html" (Directory.GetCurrentDirectory ()))
+    .Url("res://webroot/index.html")
     .SaveBounds()
-    .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
     .AddRequest<Input, Contact>("cmd1", getContact)
     .DevTools()
     .Run()

@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+"dev": "vite",
+    "lint": "tsc && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "build": "tsc && vite build && npm run copy",
+    "build Windows": "tsc && vite build && npm run wincopy",
+    "copy": "cp dist/assets/*.js resources/script.js && cp dist/assets/*.css resources/style.css",
+    "wincopy": "xcopy .\\dist\\assets\\*.js .\\resources\\script.js /y &&  copy .\\dist\\assets\\*.css .\\resources\\style.css /y"
   },
   "dependencies": {
     "react": "^18.3.1",
