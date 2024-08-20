@@ -40,6 +40,8 @@ type WebViewBase() =
     let mutable requests: Request list = []
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
+    let mutable corsDomains: string array = [||]
+    let mutable corsCache = TimeSpan.FromSeconds 5
 #if Linux
     let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
 #endif    
@@ -65,6 +67,8 @@ type WebViewBase() =
     member internal this.Requests = requests
     member internal this.RequestPortValue = requestPort
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
+    member internal this.CorsDomainsValue = corsDomains
+    member internal this.CorsCacheValue = corsCache
 #if Linux
     member internal this.TitleBarValue = titleBar    
 #endif
@@ -148,6 +152,14 @@ type WebViewBase() =
 
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
+
+    member this.CorsDomains (domains: string[]) = 
+        corsDomains <- domains
+        this
+    member this.CorsCache (cache: TimeSpan) = 
+        corsCache <- cache
+        this
+
 #if Linux
     member this.TitleBar(titleBarCreate: Func<ApplicationHandle, WindowHandle, ObjectRef<WebViewHandle>, WidgetHandle>) =
         titleBar <- Some (fun a w wv -> titleBarCreate.Invoke(a, w, wv))
@@ -199,8 +211,7 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-// TODO CORS Domains (Windows)
-// TODO CORS cache (Windows)
+// TODO WebSite downloads with Kestrel (react debug 5173)
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
 

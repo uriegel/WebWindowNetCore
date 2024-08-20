@@ -29,9 +29,9 @@ module Server =
 
         let useCors (builder: CorsPolicyBuilder) = 
             builder
-                .WithOrigins([|"*"|])
+                .WithOrigins(webView.CorsDomainsValue)
                 .AllowAnyHeader()
-                .SetPreflightMaxAge(TimeSpan.FromSeconds(5))
+                .SetPreflightMaxAge(webView.CorsCacheValue)
                 .AllowAnyMethod () 
                 |> ignore
             ()

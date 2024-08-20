@@ -1,4 +1,5 @@
 ﻿open WebWindowNetCore
+open System
 open System.IO
 open Requests
 
@@ -23,6 +24,8 @@ WebView()
     .Url("res://webroot/index.html")
     .SaveBounds()
     .DefaultContextMenuDisabled()
+    .CorsDomains([|"http://localhost:5173"|])
+    .CorsCache(TimeSpan.FromSeconds(20))
     .AddRequest<Input, Contact>("cmd1", getContact)
     .DevTools()
     .Run()

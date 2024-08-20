@@ -15,6 +15,7 @@ new WebView()
     .ResourceScheme()
     .SaveBounds()
     .DefaultContextMenuDisabled()
+    .CorsDomains(["*"])
     .AddRequest<Empty, CurrentDirectory>(
         "getCurrentDir", _ => Task.FromResult(new CurrentDirectory(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar)))
     .AddRequest<Input, Contact>("cmd1", GetContact)
