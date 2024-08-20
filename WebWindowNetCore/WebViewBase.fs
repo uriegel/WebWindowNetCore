@@ -199,10 +199,8 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-// TODO react assets folder, 2 svgs
-// TODO react using .d.ts template for requests and devTools    
-// TODO CORS Domains
-// TODO CORS cache
+// TODO CORS Domains (Windows)
+// TODO CORS cache (Windows)
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
 

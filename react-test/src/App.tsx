@@ -13,8 +13,8 @@ type Input = {
 }
 
 type Contact = {
-    Name: string,
-    Id: number
+    name: string,
+    id: number
 }
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
 
   const onRequest = async () => {
     var res = await WebView.request<Input, Contact>("cmd1", { id: 98, text: "Uwe" })
-    console.log(res, res.Name)
+    console.log(res, res.name)
   }
 
   const onDevtools = () => WebView.showDevTools() 
