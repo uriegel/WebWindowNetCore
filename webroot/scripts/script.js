@@ -8,12 +8,14 @@ const dragzone = document.getElementById("dragzone")
 
 btnDevTools.onclick = () => WebView.showDevTools()
 
-const initialize = () => {
+let currentDirectory = ""
+
+const initialize = async () => {
     WebView.registerEvents("fast", console.log)
     WebView.registerEvents("slow", console.log)
     WebView.setDroppedFilesEventHandler(success => console.log("Files dropped", success))
+    currentDirectory = (await WebView.request("getCurrentDir", {})).directory
 }
-
 try {
     if (WebView)
         initialize()
@@ -41,12 +43,9 @@ btn2.onclick = async () => {
 
 btn3.onclick = () => alert("A message from javascript")
 
-// dragzone.onmousedown = () => WebView.startDragFiles([
-//     "/home/uwe/Projekte/WebWindowNetCore/LICENSE",
-//     "/home/uwe/Projekte/WebWindowNetCore/README.md"
-// ])
-
 dragzone.onmousedown = () => WebView.startDragFiles([
-    "C:\\Users\\urieg\\source\\repos\\WebWindowNetCore\\LICENSE",
-    "C:\\Users\\urieg\\source\\repos\\WebWindowNetCore\\README.md"
-])
+        "TestApp",
+        "FSharpTools.dll"
+    ]
+    .map(n => `${currentDirectory}${n}`)
+)

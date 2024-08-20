@@ -15,6 +15,8 @@ new WebView()
     .ResourceScheme()
     .SaveBounds()
     .DefaultContextMenuDisabled()
+    .AddRequest<Empty, CurrentDirectory>(
+        "getCurrentDir", _ => Task.FromResult(new CurrentDirectory(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar)))
     .AddRequest<Input, Contact>("cmd1", GetContact)
     .AddRequest<Input2, Contact2>("cmd2", GetContact2)
 #if DEBUG    
@@ -38,6 +40,8 @@ new WebView()
     )
     .Run();
 
+record Empty();
+record CurrentDirectory(string Directory);
 record Input(string Text, int Id);
 record Contact(string Name, int Id);
 record Input2(string EMail, int Count, int Nr);
