@@ -219,19 +219,57 @@ Now you can choose your platform (Linux or Windows) in the debugger tab of the s
 
 ### Creating WebViewBuilder and running app <a name="featuresCreating"></a>
 
+The absolute minial program is
 
-
-
-
-
+```cs
+using WebWindowNetCore;
 
 new WebView()
+    .Run();
+```
 
-.Run() starts the WebView window and runs the application until the window is closed
+```new WebView()``` creates a new WebViewBuilder. This builder has a lot of optional builder functions to add behaviors to the web app. At the end you have to call the function ```Run```. This function creates the web view app, runs the application and show the web view. 
+
+Of course in this minimal setup only an empty window appears. You have to call one or more of the following builder functions. They have all in common that they are optoinal and are returning the web view builder, so that the builder functions can be chained and one big declaration is created.
+
+When you close the window, the app is stopping.
 
 ### Url
+
+In the minimal sample above a web view was created, but it was empty. So the most important builder function is ```Url``` to set an url like this:
+
+```cs
+using WebWindowNetCore;
+
+new WebView()
+    .Url("https://google.de")
+    .Run();
+```
+Now the wep app is doing somtething, it is displaying Google's home page! 
+
+You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource schemes.
+
 ### DebugUrl
+
+Sometimes you have to use a different url for debugging the app, for example when you use a react app. If yu want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource (see later).
+
+For debugging the web app you can use the builder function ```DebugUrl``` together with ```Url```. When you are debugging in visual studio code, the debug url is beeing used whereas in the relaese version the normal url is used:
+
+```cs
+    ...
+    .Url("res://webroot/index.html")
+    .DebugUrl("http://localhost:5173")
+    ...
+```
 ### Title
+
+The created app has no title. Take the builder function ```Title``` to set one
+
+```cs
+    ...
+    .Title("My phenominal web app")
+    ...
+```
 ### InitialBounds
 ### appid
 ### SaveBounds
