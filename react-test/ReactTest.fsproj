@@ -28,17 +28,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="./resources/script.js">
-      <LogicalName>webroot/script.js</LogicalName>
+    <EmbeddedResource Include="./resources/assets/script.js">
+      <LogicalName>webroot/assets/script.js</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./resources/style.css">
-      <LogicalName>webroot/style.css</LogicalName>
+    <EmbeddedResource Include="./resources/assets/style.css">
+      <LogicalName>webroot/assets/style.css</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./resources/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./public/vite.svg">
       <LogicalName>webroot/vite.svg</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./public/react.svg">
+      <LogicalName>webroot/react.svg</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
 

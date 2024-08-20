@@ -18,7 +18,7 @@ let onRequest (method: string) (input: Stream) =
 WebView()
     .AppId("de.uriegel.test")
     .Title("React WebView")
-    .ResourceScheme()
+    .ResourceScheme() 
     //.DebugUrl("http:localhost:5173")
     .Url("res://webroot/index.html")
     .SaveBounds()
