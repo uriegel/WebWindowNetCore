@@ -1,5 +1,5 @@
 namespace WebWindowNetCore
-open Giraffe
+open System
 open System.Text.Json
 open System.Text.Encodings.Web
 open System.Text.Json.Serialization
@@ -11,6 +11,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.Extensions.Logging
+open Giraffe
 
 module Server =
     let start (webView: WebViewBase) =
@@ -27,8 +28,12 @@ module Server =
             |> ignore
 
         let useCors (builder: CorsPolicyBuilder) = 
-            // TODO Cors origin
-            builder.WithOrigins([|"*"|]).AllowAnyHeader().AllowAnyMethod () |> ignore
+            builder
+                .WithOrigins([|"*"|])
+                .AllowAnyHeader()
+                .SetPreflightMaxAge(TimeSpan.FromSeconds(5))
+                .AllowAnyMethod () 
+                |> ignore
             ()
 
         let warble (request: Request) =
