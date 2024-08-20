@@ -44,7 +44,7 @@ btn2.onclick = async () => {
 btn3.onclick = () => alert("A message from javascript")
 
 dragzone.onmousedown = () => WebView.startDragFiles([
-        "TestApp",
+        "TestApp.dll",
         "FSharpTools.dll"
     ]
     .map(n => `${currentDirectory}${n}`)
