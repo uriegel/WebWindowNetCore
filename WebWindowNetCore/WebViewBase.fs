@@ -183,6 +183,8 @@ module ContentType =
             "text/css"
         else if uri.EndsWith ".js" then
             "application/javascript"
+        else if uri.EndsWith ".svg" then
+            "image/svg+xml"
         else
             "text/text"
 
@@ -314,8 +316,10 @@ module Requests =
             } catch { }
         """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
 
+// TODO react assets folder, 2 svgs
+// TODO react using .d.ts template for requests and devTools
 // TODO CORS Domains
+// TODO CORS cache
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
-// TODO react test app
-// TODO CORS cache
+
