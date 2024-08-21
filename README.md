@@ -245,17 +245,61 @@ new WebView()
     .Url("https://google.de")
     .Run();
 ```
-Now the wep app is doing somtething, it is displaying Google's home page! 
+Now the wep app is doing something, it is displaying Google's home page! 
 
-You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource schemes.
+You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource scheme ```res://```. 
 
-### Custom resource scheme
+#### Custom resource scheme
 
+The complete web site can be included as .NET resources. With the ```res://``` url specifier it is possible that the web view is automatically loaded from resources. All you have to do is include the website parts as .NET resources and add logical names with the help of the ```LogicalName``` node. The resources have to be included in the .csproj file like this:
+
+```
+<ItemGroup>
+    <EmbeddedResource Include="../webroot/index.html">
+      <LogicalName>webroot/index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/css/styles.css">
+      <LogicalName>webroot/css/styles.css</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/scripts/script.js">
+      <LogicalName>webroot/scripts/script.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/images/image.jpg">
+      <LogicalName>webroot/images/image.jpg</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup> 
+```
+
+The property ```Include``` specifies the local file path of the web file. ```LogicalName``` is the path name which is used to identifiy the resource from the custom resource scheme. The url is in this case: 
+
+```
+...
+.Url("res://webroot/index.html")
+...
+```
+the sub files are requested via the html file:
+
+```
+...
+<head>
+    ...
+    <link rel="stylesheet" href="css/styles.css">
+    ...
+</head>
+<body>
+    ...
+        <img src="images/image.jpg"/>
+    ...
+    <script src="scripts/script.js"></script>
+    ...
+```
+
+All urls in the index.html file are relative to ```/webroot```, so that the resources are requested with the correct absolute path matching the logical name.
 
 
 ### DebugUrl
 
-Sometimes you have to use a different url for debugging the app, for example when you use a react app. If yu want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource (see later).
+Sometimes you have to use a different url for debugging the app, for example when you use a react app. If you want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource with ```res://```.
 
 For debugging the web app you can use the builder function ```DebugUrl``` together with ```Url```. When you are debugging in visual studio code, the debug url is being used whereas in the relaese version the normal url is used:
 
@@ -267,7 +311,7 @@ For debugging the web app you can use the builder function ```DebugUrl``` togeth
 ```
 ### Title
 
-The created app has no title. Take the builder function ```Title``` to set one
+The created app has no title. Take the builder function ```Title``` to set one.
 
 ```cs
     ...
