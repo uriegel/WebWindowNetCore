@@ -21,11 +21,6 @@ type DragFiles = {
     Files: string array
 }
 
-type ResourceWebroot = {
-    ResourcePath: string
-    UrlPath: string
-}
-
 [<AbstractClass>]
 type WebViewBase() = 
     let mutable appId = "de.uriegel.webwindownetcore"
@@ -46,7 +41,7 @@ type WebViewBase() =
     let mutable defaultContextMenuDisabled = false
     let mutable corsDomains: string array = [||]
     let mutable corsCache = TimeSpan.FromSeconds 5
-    let mutable resourceWebroot: ResourceWebroot option = None
+    let mutable resourceWebroot: string option = None
 #if Linux
     let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
 #endif    
@@ -85,7 +80,7 @@ type WebViewBase() =
     member internal this.GetUrl () = 
         let getUrl () = 
             let getResourceUrl resourceWebroot =
-                sprintf "http://localhost:%d/%s" requestPort resourceWebroot.UrlPath
+                sprintf "http://localhost:%d/%s/index.html" requestPort resourceWebroot
             let getUrl () = 
                 this.UrlValue |> Option.defaultValue ""
             
@@ -171,8 +166,8 @@ type WebViewBase() =
     member this.CorsCache (cache: TimeSpan) = 
         corsCache <- cache
         this
-    member this.ResourceWebroot (resourcePath: string, urlPath: string) =
-        resourceWebroot <- Some { ResourcePath = resourcePath; UrlPath = urlPath}
+    member this.ResourceWebroot (path: string) =
+        resourceWebroot <- Some path
         this
 
 #if Linux

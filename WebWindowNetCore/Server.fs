@@ -1,5 +1,4 @@
 namespace WebWindowNetCore
-open System.Reflection
 open System.Text.Json
 open System.Text.Encodings.Web
 open System.Text.Json.Serialization
@@ -11,6 +10,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.Extensions.Logging
+open FSharpTools
 open Giraffe
 open GiraffeTools
 
@@ -40,15 +40,22 @@ module Server =
         let warble (request: Request) =
             route  ("/requests/" + request.Method) >=> warbler (fun _ -> request.Request ())
 
-        let getResource path= 
-            Assembly
-                .GetExecutingAssembly()
-                .GetManifestResourceStream(path)
+        let getWebrootResource path= 
+            Resources.get ("webroot/" + path) 
+            |> Option.defaultValue null
 
         let getResourceFile path = 
-            setContentType <| ContentType.get path >=> streamData false (getResource <| sprintf "web/%s" path) None None
+            setContentType <| ContentType.get path >=> streamData false (getWebrootResource path) None None
 
-        let getStatic = routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")            
+        let getStatic = subRoute "/webroot" (routePathes () <| httpHandlerParam getResourceFile)
+
+        let prependIf predicate handler  handlerList =
+            if predicate then
+                handler :: handlerList
+            else
+                handlerList
+
+
 
         let configureRoutes (app : IApplicationBuilder) = 
             let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
@@ -57,7 +64,8 @@ module Server =
                 | _                       -> skipPipeline
 
             let routes = choose [ host "localhost" 
-                >=> choose (getStatic :: (webView.Requests |> List.map warble)) ]
+                >=> choose ((webView.Requests |> List.map warble)
+                                        |> prependIf webView.ResourceWebrootValue.IsSome getStatic)]
             
             app
                 .UseResponseCompression()

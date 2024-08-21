@@ -297,6 +297,13 @@ the sub files are requested via the html file:
 All urls in the index.html file are relative to ```/webroot```, so that the resources are requested with the correct absolute path matching the logical name.
 
 
+
+
+
+
+
+react: set base url in vite.config.js
+
 ### DebugUrl
 
 Sometimes you have to use a different url for debugging the app, for example when you use a react app. If you want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource with ```res://```.
