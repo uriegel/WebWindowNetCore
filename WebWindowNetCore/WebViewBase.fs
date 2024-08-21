@@ -21,6 +21,11 @@ type DragFiles = {
     Files: string array
 }
 
+type ResourceWebroot = {
+    ResourcePath: string
+    UrlPath: string
+}
+
 [<AbstractClass>]
 type WebViewBase() = 
     let mutable appId = "de.uriegel.webwindownetcore"
@@ -41,6 +46,7 @@ type WebViewBase() =
     let mutable defaultContextMenuDisabled = false
     let mutable corsDomains: string array = [||]
     let mutable corsCache = TimeSpan.FromSeconds 5
+    let mutable resourceWebroot: ResourceWebroot option = None
 #if Linux
     let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
 #endif    
@@ -67,6 +73,7 @@ type WebViewBase() =
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
     member internal this.CorsDomainsValue = corsDomains
     member internal this.CorsCacheValue = corsCache
+    member internal this.ResourceWebrootValue = resourceWebroot
 #if Linux
     member internal this.TitleBarValue = titleBar    
 #endif
@@ -76,10 +83,20 @@ type WebViewBase() =
     member internal this.OnFilesDropValue = onFilesDrop
 #endif    
     member internal this.GetUrl () = 
+        let getUrl () = 
+            let getResourceUrl resourceWebroot =
+                sprintf "http://localhost:%d/%s" requestPort resourceWebroot.UrlPath
+            let getUrl () = 
+                this.UrlValue |> Option.defaultValue ""
+            
+            this.ResourceWebrootValue
+            |> Option.map getResourceUrl
+            |> Option.defaultValue (getUrl ()) 
+
         if Debugger.IsAttached then
-            this.DebugUrlValue |> Option.defaultValue (this.UrlValue |> Option.defaultValue "")
+            this.DebugUrlValue |> Option.defaultValue (getUrl ())
         else
-            this.UrlValue |> Option.defaultValue ""
+            getUrl ()
 
     member this.AppId(id) =
         appId <- id
@@ -154,6 +171,9 @@ type WebViewBase() =
     member this.CorsCache (cache: TimeSpan) = 
         corsCache <- cache
         this
+    member this.ResourceWebroot (resourcePath: string, urlPath: string) =
+        resourceWebroot <- Some { ResourcePath = resourcePath; UrlPath = urlPath}
+        this
 
 #if Linux
     member this.TitleBar(titleBarCreate: Func<ApplicationHandle, WindowHandle, ObjectRef<WebViewHandle>, WidgetHandle>) =
@@ -206,7 +226,7 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-// TODO WebSite downloads with Kestrel (react debug 5173)
+// TODO .ResourceWebroot("webroot", "/static")  WebSite downloads with Kestrel (react debug 5173)
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
 

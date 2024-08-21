@@ -92,7 +92,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         this.ResumeLayout false
 
-        if settings.Requests |> List.length > 0 then
+        if settings.ResourceWebrootValue.IsSome || settings.Requests |> List.length > 0 then
             Server.start settings
 
         async {

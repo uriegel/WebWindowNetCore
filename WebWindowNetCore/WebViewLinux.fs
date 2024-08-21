@@ -61,7 +61,9 @@ type WebView() =
                                     |> iter (fun func -> func app w webViewRef |> w.Titlebar |> ignore))
                     .Show()
                     |> ignore)
-            .If(this.Requests |> List.length > 0, fun _ -> Server.start this)
+            .If(
+                this.ResourceWebrootValue.IsSome || this.Requests |> List.length > 0, 
+                fun _ -> Server.start this)
             .Run(0, 0)
 
     member this.retrieveBounds (w: WindowHandle) =
