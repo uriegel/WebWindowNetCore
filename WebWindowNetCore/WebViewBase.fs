@@ -32,7 +32,6 @@ type WebViewBase() =
     let mutable saveBounds = false
     let mutable devTools = false
     let mutable resourceIcon: Option<string> = None
-    let mutable resourceScheme = false
     let mutable withoutNativeTitlebar = false
     let mutable onStarted: Option<WebViewAccess->unit> = None
     let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
@@ -61,7 +60,6 @@ type WebViewBase() =
     member internal this.OnStartedValue = onStarted
     member internal this.OnEventSinkValue = onEventSink
     member internal this.ResourceIconValue = resourceIcon
-    member internal this.ResourceSchemeValue = resourceScheme
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
@@ -122,9 +120,6 @@ type WebViewBase() =
     /// Does not work for Linux
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
-        this
-    member this.ResourceScheme() =
-        resourceScheme <- true
         this
     member this.DevTools() =
         devTools <- true

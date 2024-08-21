@@ -44,7 +44,7 @@ type WebView() =
                         (fun (w: WindowHandle) -> w.DefaultSize(this.WidthValue, this.HeightValue) |> ignore))
                     .Child(WebKit.New()
                         .Ref(webViewRef)
-                        .If(this.ResourceSchemeValue, this.enableResourceScheme)
+                        .If(this.GetUrl () |> String.startsWith "res://", this.enableResourceScheme)
                         .With(fun w -> this.enableWebViewHost w)
                         .If(this.DevToolsValue,
                             (fun webview -> webview.GetSettings().EnableDeveloperExtras <- true))
@@ -102,8 +102,9 @@ type WebView() =
             |> Resources.get 
             |> iter (serveResourceStream uri)
 
-        let context = WebKitWebContext.GetDefault()
-        context.RegisterUriScheme("res", onRequest)
+        WebKitWebContext
+            .GetDefault()
+            .RegisterUriScheme("res", onRequest)
         |> ignore
 
     member this.enableWebViewHost (webView: WebViewHandle) =

@@ -5,7 +5,6 @@ new WebView()
     .InitialBounds(1200, 800)
     .Title("Web Window Net Core Native Extensions👍")
     .ResourceIcon("icon")
-    .ResourceScheme()
     .SaveBounds()
     .DefaultContextMenuDisabled()
 #if DEBUG    

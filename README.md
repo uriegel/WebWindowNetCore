@@ -249,11 +249,15 @@ Now the wep app is doing somtething, it is displaying Google's home page!
 
 You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource schemes.
 
+### Custom resource scheme
+
+
+
 ### DebugUrl
 
 Sometimes you have to use a different url for debugging the app, for example when you use a react app. If yu want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource (see later).
 
-For debugging the web app you can use the builder function ```DebugUrl``` together with ```Url```. When you are debugging in visual studio code, the debug url is beeing used whereas in the relaese version the normal url is used:
+For debugging the web app you can use the builder function ```DebugUrl``` together with ```Url```. When you are debugging in visual studio code, the debug url is being used whereas in the relaese version the normal url is used:
 
 ```cs
     ...
@@ -273,7 +277,6 @@ The created app has no title. Take the builder function ```Title``` to set one
 ### InitialBounds
 ### appid
 ### SaveBounds
-### ResourceScheme
 ### ResourceIcon
 ### DevTools
 ### DefaultContextMenuDisabled
