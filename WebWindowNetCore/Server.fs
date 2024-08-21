@@ -1,5 +1,5 @@
 namespace WebWindowNetCore
-open System
+open System.Reflection
 open System.Text.Json
 open System.Text.Encodings.Web
 open System.Text.Json.Serialization
@@ -12,6 +12,7 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.Extensions.Logging
 open Giraffe
+open GiraffeTools
 
 module Server =
     let start (webView: WebViewBase) =
@@ -39,13 +40,24 @@ module Server =
         let warble (request: Request) =
             route  ("/requests/" + request.Method) >=> warbler (fun _ -> request.Request ())
 
+        let getResource path= 
+            Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream(path)
+
+        let getResourceFile path = 
+            setContentType <| ContentType.get path >=> streamData false (getResource <| sprintf "web/%s" path) None None
+
+        let getStatic = routef "/static/js/%s" (fun _ -> httpHandlerParam getResourceFile "scripts/script.js")            
+
         let configureRoutes (app : IApplicationBuilder) = 
             let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
                 match ctx.Request.Host.Host with
                 | value when value = host -> next ctx
                 | _                       -> skipPipeline
 
-            let routes = choose [ host "localhost" >=> choose (webView.Requests |> List.map warble) ]
+            let routes = choose [ host "localhost" 
+                >=> choose (getStatic :: (webView.Requests |> List.map warble)) ]
             
             app
                 .UseResponseCompression()
