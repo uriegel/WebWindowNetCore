@@ -71,9 +71,15 @@ On modern Linux like Ubuntu 24.04 WebWindowNetCore app will run out of the box (
 
 On older/other Linux systems perhaps you have to install one of the following packages in order to make the app runnable, like
 
-```
+``` 
+sudo apt install libwebkitgtk-6.0-dev
 sudo apt install libgtk-4-dev
 sudo apt install libadwaita-1-dev
+```
+
+For example on Linux Mint 22 you only have to install 
+
+``` 
 sudo apt install libwebkitgtk-6.0-dev
 ```
 ## Hello World (a minimal web view app) <a name="helloworld"></a>
