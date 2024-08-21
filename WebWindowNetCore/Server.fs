@@ -65,7 +65,7 @@ module Server =
 
             let routes = choose [ host "localhost" 
                 >=> choose ((webView.Requests |> List.map warble)
-                                        |> prependIf webView.ResourceWebrootValue.IsSome getStatic)]
+                                        |> prependIf webView.ResourceFromHttpValue getStatic)]
             
             app
                 .UseResponseCompression()

@@ -41,7 +41,7 @@ type WebViewBase() =
     let mutable defaultContextMenuDisabled = false
     let mutable corsDomains: string array = [||]
     let mutable corsCache = TimeSpan.FromSeconds 5
-    let mutable resourceWebroot: string option = None
+    let mutable resourceFromHttp = false
 #if Linux
     let mutable titleBar: Option<ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle> = None 
 #endif    
@@ -68,7 +68,7 @@ type WebViewBase() =
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
     member internal this.CorsDomainsValue = corsDomains
     member internal this.CorsCacheValue = corsCache
-    member internal this.ResourceWebrootValue = resourceWebroot
+    member internal this.ResourceFromHttpValue = resourceFromHttp
 #if Linux
     member internal this.TitleBarValue = titleBar    
 #endif
@@ -79,14 +79,10 @@ type WebViewBase() =
 #endif    
     member internal this.GetUrl () = 
         let getUrl () = 
-            let getResourceUrl resourceWebroot =
-                sprintf "http://localhost:%d/%s/index.html" requestPort resourceWebroot
-            let getUrl () = 
+            if this.ResourceFromHttpValue then
+                sprintf "http://localhost:%d/webroot/index.html" requestPort 
+            else
                 this.UrlValue |> Option.defaultValue ""
-            
-            this.ResourceWebrootValue
-            |> Option.map getResourceUrl
-            |> Option.defaultValue (getUrl ()) 
 
         if Debugger.IsAttached then
             this.DebugUrlValue |> Option.defaultValue (getUrl ())
@@ -166,8 +162,8 @@ type WebViewBase() =
     member this.CorsCache (cache: TimeSpan) = 
         corsCache <- cache
         this
-    member this.ResourceWebroot (path: string) =
-        resourceWebroot <- Some path
+    member this.ResourceFromHttp () =
+        resourceFromHttp <- true
         this
 
 #if Linux
