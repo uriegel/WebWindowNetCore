@@ -92,7 +92,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         this.ResumeLayout false
 
-        if settings.ResourceWebrootValue.IsSome || settings.Requests |> List.length > 0 then
+        if settings.ResourceFromHttpValue || settings.Requests |> List.length > 0 then
             Server.start settings
 
         async {
@@ -106,7 +106,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                             AdditionalBrowserArguments = if settings.WithoutNativeTitlebarValue then "--enable-features=msWebView2EnableDraggableRegions" else ""))
                         |> Async.AwaitTask
             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
-            if settings.ResourceSchemeValue then
+            if settings.GetUrl () |> String.startsWith "res://" then
                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
             webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
             webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
