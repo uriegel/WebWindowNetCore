@@ -283,7 +283,7 @@ The property ```Include``` specifies the local file path of the web file. ```Log
 .Url("res://webroot/index.html")
 ...
 ```
-the sub files are requested via the html file:
+the sub files are requested by the html file:
 
 ```
 ...
@@ -302,13 +302,23 @@ the sub files are requested via the html file:
 
 All urls in the index.html file are relative to ```/webroot```, so that the resources are requested with the correct absolute path matching the logical name.
 
+#### Custom resource scheme via HTTP Server
 
+The ```res``` scheme has the following pitfall:
+* It is not CORS enabled in Windows, because the origin is always ```null```. If you want to call HTTP requests form the web site, it is not possible in Windows.
 
+Due to this you have the possibility to get the web site from resource via the included Kestrel HTTP-Server:
 
+```
+...
+.ResourceFromHttp()
+...
+```
+You don't have to set the ```.Url()``` property.
 
+Important hint:
 
-
-react: set base url in vite.config.js
+* The url is automatically set to ```http://localhost/webroot/index.html```. You have to set the ```LogicalName``` properties of the resources accordingly.
 
 ### DebugUrl
 
@@ -339,3 +349,10 @@ The created app has no title. Take the builder function ```Title``` to set one.
 ### DefaultContextMenuDisabled
 
 ### RequestPort
+
+### Hosting react 
+in res:// : no requests in Windows
+res://index.html
+
+=> resource via HTTP:
+react: set base url in vite.config.js
