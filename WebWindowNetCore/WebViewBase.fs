@@ -217,7 +217,6 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-// TODO .ResourceWebroot("webroot", "/static")  WebSite downloads with Kestrel (react debug 5173)
 // TODO Stream downloads with Kestrel, icons, jpg, range (mp4, mp3)
 // TODO Theme change detection
 
