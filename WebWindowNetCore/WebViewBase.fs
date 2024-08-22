@@ -1,6 +1,7 @@
 namespace WebWindowNetCore
 open System
 open System.Diagnostics
+open System.IO
 open System.Threading.Tasks
 open Giraffe
 open Microsoft.AspNetCore.Http
@@ -155,6 +156,16 @@ type WebViewBase() =
 
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
+
+    /// <summary>
+    /// Requesting a stream content from fix 'uripath' and queryString
+    /// </summary>
+    /// <param name="uripath">Path of this HTTP route</param>
+    /// <param name="request">Request function, input is query string, output the associated stream</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
+    member this.AddContentRequest(uripath: string, request: Func<string, Task<Stream>>) = 
+        ()
+        this        
 
     member this.CorsDomains (domains: string[]) = 
         corsDomains <- domains

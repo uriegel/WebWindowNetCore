@@ -99,3 +99,9 @@ module Server =
             .ConfigureWebHostDefaults(webHostBuilder)
             .Build()
             .Start()
+
+
+//TODO HttpFunc->HttpContext->HttpFuncResult  list
+// TODO /getFile?path=...
+// TODO /getIcon?path=...
+// TODO getContent via query
