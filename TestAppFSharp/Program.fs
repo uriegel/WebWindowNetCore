@@ -2,6 +2,8 @@
 open System.IO
 open Requests
 open System.Threading
+open Giraffe
+open FSharpTools
 
 let canClose () = true
 
@@ -10,6 +12,11 @@ type Contact = { Name: string; Id: int }
 type Input2 = { EMail: string; Count: int;  Nr: int }
 type Contact2 = { DisplayName: string; Phone: string }
 type Event = { Text: string }
+[<CLIMutable>]
+type FileRequest = { Path: string }
+type Empty = { Nil: int }
+type CurrentDirectory = { Directory: string }
+
 let getContact (text: Input) =
     task { return { Name = "Uwe Riegel"; Id = 9865 } }  
 
@@ -27,6 +34,11 @@ let onRequest (method: string) (input: Stream) =
 let onStarted (webViewAccess: WebViewAccess) =
     webViewAccess.ExecuteJavascript.Invoke "console.log('app started now ')"
 
+let getCurrentDirectory (_: Empty) = 
+    task {
+        return { Directory = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar.ToString() }
+    }
+
 let eventSink id (webView: WebViewAccess) =
     let func () = 
         while true do
@@ -37,15 +49,26 @@ let eventSink id (webView: WebViewAccess) =
     t.IsBackground <- true
     t.Start ()
 
+let getImage =
+    let getFile fileRequest = 
+        let path = 
+            fileRequest.Path
+            |> Directory.combine2Pathes (Directory.GetCurrentDirectory ())
+        streamFile false path None None
+    route "/get/image" >=> bindQuery<FileRequest> None getFile
+
 WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
     .Title("F# WebView")
     .Url(sprintf "file://%s/webroot/index.html" (Directory.GetCurrentDirectory ()))
+    .CorsDomains([|"*"|])
     .SaveBounds()
     .DefaultContextMenuDisabled()
     .AddRequest<Input, Contact>("cmd1", getContact)
     .AddRequest<Input2, Contact2>("cmd2", getContact2)
+    .AddRequest<Empty, CurrentDirectory>("getCurrentDir", getCurrentDirectory)
+    .AddGetRequest(getImage)
     .OnStarted(onStarted)
     .OnEventSink(eventSink)
 #if DEBUG    

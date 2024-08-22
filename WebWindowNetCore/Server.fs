@@ -64,7 +64,7 @@ module Server =
                 | _                       -> skipPipeline
 
             let routes = choose [ host "localhost" 
-                >=> choose ((webView.Requests |> List.map warble)
+                >=> choose ((webView.Requests |> List.map warble) |> List.append webView.GetRequests
                                         |> prependIf webView.ResourceFromHttpValue getStatic)]
             
             app
@@ -100,8 +100,3 @@ module Server =
             .Build()
             .Start()
 
-
-//TODO HttpFunc->HttpContext->HttpFuncResult  list
-// TODO /getFile?path=...
-// TODO /getIcon?path=...
-// TODO getContent via query

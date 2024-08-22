@@ -38,6 +38,7 @@ type WebViewBase() =
     let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
+    let mutable getRequests: (HttpFunc->HttpContext->HttpFuncResult) list = [] 
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
     let mutable corsDomains: string array = [||]
@@ -65,6 +66,7 @@ type WebViewBase() =
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.Requests = requests
+    member internal this.GetRequests = getRequests
     member internal this.RequestPortValue = requestPort
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
     member internal this.CorsDomainsValue = corsDomains
@@ -157,14 +159,11 @@ type WebViewBase() =
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
 
-    /// <summary>
-    /// Requesting a stream content from fix 'uripath' and queryString
-    /// </summary>
-    /// <param name="uripath">Path of this HTTP route</param>
-    /// <param name="request">Request function, input is query string, output the associated stream</param>
-    /// <returns>WebView for chaining (fluent Syntax)</returns>
-    member this.AddContentRequest(uripath: string, request: Func<string, Task<Stream>>) = 
-        ()
+    member this.AddGetRequest(request: Func<HttpContext, Task>) = 
+        this        
+
+    member this.AddGetRequest(request: HttpFunc->HttpContext->HttpFuncResult) = 
+        getRequests <- getRequests |> List.append [ request ] 
         this        
 
     member this.CorsDomains (domains: string[]) = 
