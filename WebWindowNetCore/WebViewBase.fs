@@ -38,7 +38,8 @@ type WebViewBase() =
     let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
-    let mutable getRequests: (HttpFunc->HttpContext->HttpFuncResult) list = [] 
+    let mutable requestsDelegates: RequestDelegate array = [||]
+    let mutable rawRequests: (HttpFunc->HttpContext->HttpFuncResult) list = [] 
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
     let mutable corsDomains: string array = [||]
@@ -66,7 +67,8 @@ type WebViewBase() =
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
     member internal this.RequestsValue = requests
-    member internal this.GetRequests = getRequests
+    member internal this.RawRequestsValue = rawRequests
+    member internal this.RequestsDelegatesValue = requestsDelegates
     member internal this.RequestPortValue = requestPort
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
     member internal this.CorsDomainsValue = corsDomains
@@ -163,7 +165,11 @@ type WebViewBase() =
         this        
 
     member this.Requests(requests: (HttpFunc->HttpContext->HttpFuncResult) list) = 
-        getRequests <- getRequests |> List.append requests 
+        rawRequests <- requests 
+        this        
+
+    member this.RequestsDelegates(requests: RequestDelegate array) = 
+        requestsDelegates <- requests
         this        
 
     member this.CorsDomains (domains: string[]) = 
