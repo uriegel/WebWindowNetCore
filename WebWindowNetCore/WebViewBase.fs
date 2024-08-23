@@ -1,6 +1,7 @@
 namespace WebWindowNetCore
 open System
 open System.Diagnostics
+open System.Drawing
 open System.IO
 open System.Threading.Tasks
 open Giraffe
@@ -29,6 +30,7 @@ type WebViewBase() =
     let mutable width = 800
     let mutable height = 600
     let mutable title = ""
+    let mutable backgroundColor: Color option = None
     let mutable url: Option<string> = None
     let mutable debugUrl: Option<string> = None
     let mutable saveBounds = false
@@ -56,6 +58,7 @@ type WebViewBase() =
 #endif
     member internal this.AppIdValue = appId
     member internal this.TitleValue = title
+    member internal this.BackgroundColorValue = backgroundColor
     member internal this.WidthValue = width
     member internal this.HeightValue = height
     member internal this.UrlValue = url
@@ -104,6 +107,9 @@ type WebViewBase() =
         this
     member this.Title(t) =
         title <- t                        
+        this
+    member this.BackgroundColor(color: Color) = 
+        backgroundColor <- Some color
         this
     member this.Url(u) =
         url <- Some u                                
@@ -234,5 +240,4 @@ module Requests =
     let GetInput<'a> (input: Stream) =
         System.Text.Json.JsonSerializer.Deserialize<'a>(input)
 
-// TODO Theme change detection
 

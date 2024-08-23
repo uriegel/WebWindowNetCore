@@ -9,6 +9,7 @@ open System.Text
 open System.Text.Json
 open FSharpTools.String
 open FSharpTools.TextJson
+open System.Drawing
 
 type WebView() = 
     inherit WebViewBase()
@@ -44,6 +45,8 @@ type WebView() =
                         (fun (w: WindowHandle) -> w.DefaultSize(this.WidthValue, this.HeightValue) |> ignore))
                     .Child(WebKit.New()
                         .Ref(webViewRef)
+                        .If(this.BackgroundColorValue.IsSome = true, 
+                            (fun webview -> webview.BackgroundColor(this.BackgroundColorValue |> defaultValue Color.White) |> ignore))
                         .If(this.GetUrl () |> String.startsWith "res://", this.enableResourceScheme)
                         .With(fun w -> this.enableWebViewHost w)
                         .If(this.DevToolsValue,

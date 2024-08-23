@@ -63,6 +63,6 @@
     <PackageReference Include="ClrWinApi" Version="2.4.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
-    <PackageReference Include="Gtk4DotNet" Version="6.5.2" />
+    <PackageReference Include="Gtk4DotNet" Version="6.5.3" />
   </ItemGroup>
 </Project>

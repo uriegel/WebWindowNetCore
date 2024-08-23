@@ -4,6 +4,14 @@ body {
 
 #dragzone {
     background-color: chartreuse;
+    color: black;
     width: 200px;
     height: 100px;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(56, 56, 56);
+        color: lightgray;
+    }
 }

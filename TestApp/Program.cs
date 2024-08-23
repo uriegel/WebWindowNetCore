@@ -1,5 +1,6 @@
-﻿using WebWindowNetCore;
+﻿using System.Drawing;
 using CsTools.Extensions;
+using WebWindowNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -23,6 +24,7 @@ new WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
     .Title("Web Window Net Core 👍")
+    .BackgroundColor(Color.Transparent)
     .ResourceIcon("icon")
     .SaveBounds()
     .DefaultContextMenuDisabled()

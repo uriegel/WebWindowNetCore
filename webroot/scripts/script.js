@@ -1,5 +1,4 @@
 console.log("script loaded")
-
 const btn1 = document.getElementById("button")
 const btn2 = document.getElementById("button2")
 const btn3 = document.getElementById("button3")

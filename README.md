@@ -25,7 +25,7 @@ WebWindowNetCore includes following features:
 * Is built on .NET 8
 * Functional approach with a builder pattern
 * (almost) the same setup for Windows and Linux version
-* Uses WebView2 on Windows and WebKitGtk-6.0 on Linux
+* Uses WebView2 on Windows and WebKitGtk-6.0 (with [Gtk4DotNet](https://github.com/uriegel/Gtk4DotNet) P/Invoke bindings) on Linux
 * Can serve the web site via .NET resources (single file approach)
 * Optional save and restore of window bounds
 * Has an integrated event sink mechanismen, so you can retrieve javascript events from the .NET app

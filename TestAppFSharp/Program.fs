@@ -1,7 +1,8 @@
-﻿open WebWindowNetCore
-open System.IO
-open Requests
+﻿open System.IO
+open System.Drawing
 open System.Threading
+open WebWindowNetCore
+open Requests
 open Giraffe
 open FSharpTools
 
@@ -61,6 +62,7 @@ WebView()
     .AppId("de.uriegel.test")
     .InitialBounds(1200, 800)
     .Title("F# WebView")
+    .BackgroundColor(Color.Transparent)
     .Url(sprintf "file://%s/webroot/index.html" (Directory.GetCurrentDirectory ()))
     .CorsDomains([|"*"|])
     .SaveBounds()
