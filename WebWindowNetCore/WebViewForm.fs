@@ -50,7 +50,8 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         this.SuspendLayout();
         webView.AllowExternalDrop <- true
         webView.CreationProperties <- null
-        webView.DefaultBackgroundColor <- Color.White
+        settings.BackgroundColorValue 
+        |> Option.iter (fun c -> webView.DefaultBackgroundColor <- c)
         webView.Location <- Point (0, 0)
         webView.Margin <- Padding 0
         webView.Dock <- DockStyle.Fill
@@ -92,7 +93,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         this.ResumeLayout false
 
-        if settings.ResourceFromHttpValue || settings.Requests |> List.length > 0 then
+        if settings.ResourceFromHttpValue || settings.RequestsValue |> List.length > 0 then
             Server.start settings
 
         async {
@@ -273,7 +274,17 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             match m.Msg with
             | WM_NCCALCSIZE -> calcSizeNoTitlebar &m 
             | _ -> base.WndProc &m 
-        
+
+    member this.SetDarkMode(dark: bool) =
+        this.Invoke(fun () -> 
+                        Api.DwmSetWindowAttribute(this.Handle, DwmWindowAttribute.ImmersiveDarkMode, [| if dark then 1 else 0 |], 4) |> ignore
+                        this.BackColor <- if dark then Color.Black else Color.White
+                    )
+
+    override this.OnHandleCreated(e: EventArgs) =
+        Theme.startDetection (fun b -> this.SetDarkMode(b))
+        this.SetDarkMode(Theme.isDark ())
+            
 and [<ComVisible(true)>] Callback(parent: WebViewForm) =
 
     member this.ShowDevtools() = parent.ShowDevtools()
