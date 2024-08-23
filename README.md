@@ -17,7 +17,21 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
     1. [Adaptions for debug and build integration in visual studio code](#adaptionHelloWorld)
 4. [Features of WebViewBuilder](#features)
     1. [Creating WebViewBuilder and running app](#featuresCreating)
-
+    2. [Url](#featuresUrl)
+    3. [Custom resource scheme](#featuresCustomScheme)
+    4. [Custom resource scheme via HTTP Server](#featuresCustomSchemeHttp)
+    5. [DebugUrl](#featuresDebugUrl)
+    6. [Title](#featuresTitle)
+    7. [InitialBounds](#featuresInitialBounds)
+    8. [AppId](#featuresAppId)
+    9. [SaveBounds](#featuresSaveBounds)
+    10. [ResourceIcon](#featuresResourceIcon)
+    11. [CanClose](#featuresCanClose)
+    12. [OnStarted](#featuresOnStarted)
+    13. [DevTools](#featuresDevTools)
+    14. [DefaultContextMenuDisabled](#featuresDefaultContextMenuDisabled)
+    15. [RequestPort](#featuresRequestPort)
+5. [Hosting react](#featuresHostingReact)
 
 ## Features <a name="features"></a>
 
@@ -240,7 +254,7 @@ Of course in this minimal setup only an empty window appears. You have to call o
 
 When you close the window, the app is stopping.
 
-### Url
+### Url <a name="featuresUrl"></a>
 
 In the minimal sample above a web view was created, but it was empty. So the most important builder function is ```Url``` to set an url like this:
 
@@ -255,7 +269,7 @@ Now the wep app is doing something, it is displaying Google's home page!
 
 You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource scheme ```res://```. 
 
-#### Custom resource scheme
+### Custom resource scheme <a name="featuresCustomScheme"></a>
 
 The complete web site can be included as .NET resources. With the ```res://``` url specifier it is possible that the web view is automatically loaded from resources. All you have to do is include the website parts as .NET resources and add logical names with the help of the ```LogicalName``` node. The resources have to be included in the .csproj file like this:
 
@@ -302,7 +316,7 @@ the sub files are requested by the html file:
 
 All urls in the index.html file are relative to ```/webroot```, so that the resources are requested with the correct absolute path matching the logical name.
 
-#### Custom resource scheme via HTTP Server
+### Custom resource scheme via HTTP Server <a name="featuresCustomSchemeHttp"></a>
 
 The ```res``` scheme has the following pitfall:
 * It is not CORS enabled in Windows, because the origin is always ```null```. If you want to call HTTP requests form the web site, it is not possible in Windows.
@@ -320,7 +334,7 @@ Important hint:
 
 * The url is automatically set to ```http://localhost/webroot/index.html```. You have to set the ```LogicalName``` properties of the resources accordingly.
 
-### DebugUrl
+### DebugUrl <a name="featuresDebugUrl"></a>
 
 Sometimes you have to use a different url for debugging the app, for example when you use a react app. If you want to debug this web app, you have to use vite's debug server ```http://localhost:5173```. But when you build the final web app, you want to include the built web app as .NET resource with ```res://```.
 
@@ -332,7 +346,7 @@ For debugging the web app you can use the builder function ```DebugUrl``` togeth
     .DebugUrl("http://localhost:5173")
     ...
 ```
-### Title
+### Title <a name="featuresTitle"></a>
 
 The created app has no title. Take the builder function ```Title``` to set one.
 
@@ -341,16 +355,50 @@ The created app has no title. Take the builder function ```Title``` to set one.
     .Title("My phenominal web app")
     ...
 ```
-### InitialBounds
-### appid
-### SaveBounds
-### ResourceIcon
-### DevTools
-### DefaultContextMenuDisabled
+### InitialBounds <a name="featuresInitialBounds"></a>
 
-### RequestPort
+With the help of the property ```InitialBounds``` you can initialize the size of the window with custom values.
 
-### Hosting react 
+```cs
+...
+.InitialBounds(1200, 800)
+...
+```
+In combination with ```SaveBounds``` this is the initial width and heigth of the window at first start, otherwise the window is always starting with these values.
+
+### AppId <a name="featuresAppId"></a>
+
+The ```AppId``` is necessary for a webview app on Linux, it is the AppId for a ```GtkApplication```. It is a reverse domain name, like
+
+```cs
+...
+.AppId("de.uriegel.webapp")
+...
+```
+### SaveBounds <a name="featuresSaveBounds"></a>
+
+When you call ```SaveBounds```, then windows location and width and height and normal/maximized state is saved on close. After restarting the app the webview is displayed at these settings again.
+
+```cs
+...
+.AppId("de.uriegel.webapp")
+.SaveBounds()
+...
+```
+The ```AppId``` is used to create a path, where these settings are saved.
+
+### ResourceIcon <a name="featuresResourceIcon"></a>
+
+Only on Windows
+
+### CanClose <a name="featuresCanClose"></a>
+### OnStarted <a name="featuresOnStarted"></a>
+### DevTools <a name="featuresDevTools"></a>
+### DefaultContextMenuDisabled <a name="featuresDefaultContextMenuDisabled"></a>
+
+### RequestPort <a name="featuresRequestPort"></a>
+
+## Hosting react <a name="featuresHostingReact"></a>
 in res:// : no requests in Windows
 res://index.html
 
