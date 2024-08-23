@@ -389,14 +389,67 @@ The ```AppId``` is used to create a path, where these settings are saved.
 
 ### ResourceIcon <a name="featuresResourceIcon"></a>
 
-Only on Windows
+With ```ResourceIcon``` you can display a windows icon from C# resource. It is only working on Windows.
 
+```cs
+...
+.ResourceIcon("icon")
+...
+```
+
+The icon has to be included as C# resource with the ```LogicalName``` matching, in the project file:
+
+```
+<ItemGroup>
+  <EmbeddedResource Include="../icon.ico">
+    <LogicalName>icon</LogicalName>
+  </EmbeddedResource>
+</ItemGroup> 
+```
 ### CanClose <a name="featuresCanClose"></a>
+
+Here you can set a callback function which is called when the window is about to close. In the callback you can prevent the close request by returning false.
+
+```cs
+bool CanClose()
+{
+    ...
+}
+
+...
+.CanClose(CanClose)
+...
+```
+
 ### OnStarted <a name="featuresOnStarted"></a>
+
+```OnStarted``` is a callback which is called when the web view is loaded,
+
 ### DevTools <a name="featuresDevTools"></a>
+
+When you call ```DevTools```, the web app can show the developer tools. Otherwise it is not possible to open these tools.
+
+```cs
+...
+#if DEBUG    
+    .DevTools()
+#endif
+...
+```
 ### DefaultContextMenuDisabled <a name="featuresDefaultContextMenuDisabled"></a>
 
+If you set ```DefaultContextMenuDisabled```, then the default context menu in the web app is not being displayed when you right click the mouse.
+
+```cs
+...
+.DefaultContextMenuDisabled()
+...
+```
+====================================
+
 ### RequestPort <a name="featuresRequestPort"></a>
+
+
 
 ## Hosting react <a name="featuresHostingReact"></a>
 in res:// : no requests in Windows
