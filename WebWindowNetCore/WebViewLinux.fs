@@ -62,7 +62,7 @@ type WebView() =
                     .Show()
                     |> ignore)
             .If(
-                this.ResourceFromHttpValue || this.Requests |> List.length > 0, 
+                this.ResourceFromHttpValue || this.RequestsValue |> List.length > 0, 
                 fun _ -> Server.start this)
             .Run(0, 0)
 

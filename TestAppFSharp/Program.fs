@@ -68,7 +68,7 @@ WebView()
     .AddRequest<Input, Contact>("cmd1", getContact)
     .AddRequest<Input2, Contact2>("cmd2", getContact2)
     .AddRequest<Empty, CurrentDirectory>("getCurrentDir", getCurrentDirectory)
-    .AddGetRequest(getImage)
+    .Requests([getImage])
     .OnStarted(onStarted)
     .OnEventSink(eventSink)
 #if DEBUG    

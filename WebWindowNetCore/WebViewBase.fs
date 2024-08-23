@@ -65,7 +65,7 @@ type WebViewBase() =
     member internal this.ResourceIconValue = resourceIcon
     member internal this.DevToolsValue = devTools
     member internal this.DefaultContextMenuDisabledValue = defaultContextMenuDisabled
-    member internal this.Requests = requests
+    member internal this.RequestsValue = requests
     member internal this.GetRequests = getRequests
     member internal this.RequestPortValue = requestPort
     member internal this.WithoutNativeTitlebarValue = withoutNativeTitlebar
@@ -159,11 +159,11 @@ type WebViewBase() =
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
 
-    member this.AddGetRequest(request: Func<HttpContext, Task>) = 
+    member this.Requests(request: Func<HttpContext, Task>) = 
         this        
 
-    member this.AddGetRequest(request: HttpFunc->HttpContext->HttpFuncResult) = 
-        getRequests <- getRequests |> List.append [ request ] 
+    member this.Requests(requests: (HttpFunc->HttpContext->HttpFuncResult) list) = 
+        getRequests <- getRequests |> List.append requests 
         this        
 
     member this.CorsDomains (domains: string[]) = 

@@ -64,7 +64,9 @@ module Server =
                 | _                       -> skipPipeline
 
             let routes = choose [ host "localhost" 
-                >=> choose ((webView.Requests |> List.map warble) |> List.append webView.GetRequests
+                >=> choose ((webView.RequestsValue 
+                                        |> List.map warble) 
+                                        |> List.append webView.GetRequests
                                         |> prependIf webView.ResourceFromHttpValue getStatic)]
             
             app
