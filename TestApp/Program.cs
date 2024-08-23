@@ -1,5 +1,7 @@
 ﻿using WebWindowNetCore;
 using CsTools.Extensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 static Task<Contact> GetContact(Input text)
     => Task.FromResult(new Contact("Uwe Riegel", 9865));
@@ -7,12 +9,15 @@ static Task<Contact> GetContact(Input text)
 static Task<Contact2> GetContact2(Input2 text)
     => Task.FromResult(new Contact2("Uwe Riegel", "0177622111"));
 
-static async Task GetImage(Microsoft.AspNetCore.Http.HttpContext context) 
+static async Task GetImage(HttpContext context) 
 {
     var path = Path.Combine(Directory.GetCurrentDirectory(), context.Request.Query["path"].ToString());
     using var stream = File.OpenRead(path);
     await stream.CopyToAsync(context.Response.Body, 8192);
 }
+
+static void GetImageRequest(IApplicationBuilder app)
+    => app.Map("/get/image", a => a.Run(GetImage));
 
 new WebView()
     .AppId("de.uriegel.test")
@@ -26,7 +31,7 @@ new WebView()
         "getCurrentDir", _ => Task.FromResult(new CurrentDirectory(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar)))
     .AddRequest<Input, Contact>("cmd1", GetContact)
     .AddRequest<Input2, Contact2>("cmd2", GetContact2)
-    .RequestsDelegates([GetImage])
+    .RequestsDelegates([GetImageRequest])
 #if DEBUG    
     .DevTools()
 #endif

@@ -55,20 +55,6 @@ module Server =
             else
                 handlerList
 
-        // let renne (context: HttpContext) =
-        //     let SendStream (stream: System.IO.Stream) (path: string) = 
-        //         task {
-        //             do! stream.CopyToAsync(context.Response.Body, 8192);
-        //         }
-
-        //     let path = 
-        //         context.Request.Query["path"].ToString()
-        //         |> Directory.combine2Pathes (System.IO.Directory.GetCurrentDirectory ())
-        //     use stream = System.IO.File.OpenRead(path)
-        //     task  {
-        //         do! SendStream stream path
-        //     }
-
         let configureRoutes (app : IApplicationBuilder) = 
             let host (host: string) (next: HttpFunc) (ctx: HttpContext) =
                 match ctx.Request.Host.Host with
@@ -87,10 +73,7 @@ module Server =
                 .UseGiraffe routes      
 
             webView.RequestsDelegatesValue
-            |> Array.iter (fun d -> 
-            
-                // TODO this requestdelegate in array
-                app.Map("/get/image", (fun a -> a.Run (d))) |> ignore )
+            |> Array.iter (fun d ->  d.Invoke(app))
                 
         let configureKestrel (options: KestrelServerOptions) = 
             options.ListenAnyIP(webView.RequestPortValue)

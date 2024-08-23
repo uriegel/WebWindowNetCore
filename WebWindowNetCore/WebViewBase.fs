@@ -5,6 +5,7 @@ open System.IO
 open System.Threading.Tasks
 open Giraffe
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Builder
 #if Linux
 open GtkDotNet.SafeHandles
 #endif
@@ -38,7 +39,7 @@ type WebViewBase() =
     let mutable onEventSink: Option<(string*WebViewAccess)->unit> = None
     let mutable canClose: Option<unit->bool> = None
     let mutable requests: Request list = []
-    let mutable requestsDelegates: RequestDelegate array = [||]
+    let mutable requestsDelegates: Action<IApplicationBuilder> array = [||]
     let mutable rawRequests: (HttpFunc->HttpContext->HttpFuncResult) list = [] 
     let mutable requestPort = 2222
     let mutable defaultContextMenuDisabled = false
@@ -168,7 +169,7 @@ type WebViewBase() =
         rawRequests <- requests 
         this        
 
-    member this.RequestsDelegates(requests: RequestDelegate array) = 
+    member this.RequestsDelegates(requests: Action<IApplicationBuilder> array) = 
         requestsDelegates <- requests
         this        
 
