@@ -493,3 +493,5 @@ res://index.html
 
 => resource via HTTP:
 react: set base url in vite.config.js
+
+hints for developers: the nuget package have to be build on Windows!
