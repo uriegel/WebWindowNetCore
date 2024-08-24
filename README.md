@@ -516,7 +516,7 @@ This downloads an image with the url path ```http://localhost:2222/get/image?pat
 
 ### Requests (F# Giraffe version) <a name="featuresRequests"></a>
 
-If you are usin F# there is a more F# friendly version to serve requests with the help of [Giraffe](https://github.com/giraffe-fsharp/giraffe):
+If you are using F# there is a more F# friendly version to serve requests with the help of [Giraffe](https://github.com/giraffe-fsharp/giraffe):
 
 
 ```fs
