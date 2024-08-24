@@ -265,7 +265,7 @@ new WebView()
     .Url("https://google.de")
     .Run();
 ```
-Now the wep app is doing something, it is displaying Google's home page! 
+Now the web app is doing something, it is displaying Google's home page! 
 
 You can use ```http(s)://``` scheme, ```file://``` scheme, and custom resource scheme ```res://```. 
 
@@ -423,11 +423,12 @@ bool CanClose()
 
 ### OnStarted <a name="featuresOnStarted"></a>
 
-```OnStarted``` is a callback which is called when the web view is loaded,
+```OnStarted``` is a callback which is called when the web view is loaded.
 
 ### DevTools <a name="featuresDevTools"></a>
 
-When you call ```DevTools```, the web app can show the developer tools. Otherwise it is not possible to open these tools.
+Used to enable (not to show) the developer tools. Otherwise it is not possible to open these tools.
+The developer tools can be shown by default context menu or by calling the javascript method ```WebView.showDevtools()```
 
 ```cs
 ...
@@ -438,18 +439,45 @@ When you call ```DevTools```, the web app can show the developer tools. Otherwis
 ```
 ### DefaultContextMenuDisabled <a name="featuresDefaultContextMenuDisabled"></a>
 
-If you set ```DefaultContextMenuDisabled```, then the default context menu in the web app is not being displayed when you right click the mouse.
+If you set ```DefaultContextMenuDisabled```, the web view's default context menu is not being displayed when you right click the mouse..
 
 ```cs
 ...
 .DefaultContextMenuDisabled()
 ...
+
 ```
 ====================================
 
+### ResourceFromHttp
+
+
+
+### BackgroundColor
+
+### AddRequest
+
+### Requests (F# Giraffe version)
+
+### RequestsDelegates (C# version)
+
+### CorsDomains
+
+### CorsCache
+
+### OnEventSink
+
 ### RequestPort <a name="featuresRequestPort"></a>
 
+### WithoutNativeTitlebar
 
+### TitleBar 
+
+### OnFormCreating
+### OnHamburger
+### OnFilesDrop
+
+## Typescript definitions
 
 ## Hosting react <a name="featuresHostingReact"></a>
 in res:// : no requests in Windows

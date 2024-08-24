@@ -98,64 +98,135 @@ type WebViewBase() =
         else
             getUrl ()
 
+
+    /// <summary>
+    /// The AppId is necessary for a webview app on Linux, it is the AppId for a GtkApplication. 
+    /// It is a reverse domain name, like "de.uriegel.webapp"
+    /// </summary>
+    /// <param name="id">The AppId</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.AppId(id) =
         appId <- id
         this
+    
+    /// <summary>
+    /// With the help of this property you can initialize the size of the window with custom values.
+    /// In combination with "SaveBounds()" this is the initial width and heigth of the window at first start,
+    /// otherwise the window is always starting with these values.
+    /// </summary>
+    /// <param name="w">The initial width of the window</param>
+    /// <param name="h">The initial height of the window</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.InitialBounds(w, h) =
         width <- w
         height<- h
         this
+
+    /// <summary>
+    /// The window title is set by this method.
+    /// </summary>
+    /// <param name="t">Window title</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.Title(t) =
         title <- t                        
         this
+
     member this.BackgroundColor(color: Color) = 
         backgroundColor <- Some color
         this
+    
+    /// <summary>
+    /// Here you set the url of the web view. You can use "http(s)://" scheme, "file://" scheme, and custom resource scheme "res://". This value is 
+    /// not used, when you set "DebugUrl" and a debugger is attached
+    /// </summary>
+    /// <param name="u">The webview's url</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.Url(u) =
         url <- Some u                                
         this
+
     /// <summary>
-    /// This url is set to the webview only in debug mode, if HttpBuilder.ResourceWebroot is normally used. 
+    /// This url is set to the webview only when a debugger is attached.  
     /// It is used for React, Vue,... which have their
     /// own web server at debug time, like http://localhost:3000 . If set, it has precedence over 
-    /// HttpBuilder.ResourceWebroot
+    /// "Url"
     /// </summary>
-    /// <param name="url"></param>
+    /// <param name="url">The url for a web app being debugged</param>
     /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.DebugUrl(url) =
         debugUrl <- Some url                                
         this
+
+    /// <summary>
+    /// When you call "SaveBounds", then windows location and width and height and normal/maximized state is saved on close. 
+    /// After restarting the app the webview is displayed at these settings again.
+    /// The "AppId" is used to create a path, where these settings are saved.
+    /// </summary>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.SaveBounds() =
         saveBounds <- true
         this
+
+    /// <summary>
+    /// Here you can set a callback function which is called when the window is about to close. 
+    /// In the callback you can prevent the close request by returning false.
+    /// </summary>
+    /// <param name="canCloseFunc">Callback funciton called when the window should be closed. Return "true" to close the window, "false" to prevent</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.CanClose(canCloseFunc: Func<bool>) = 
         canClose <- Some canCloseFunc.Invoke
         this
+
+    /// <summary>
+    /// Callback which is called when the web view is loaded.
+    /// </summary>
+    /// <param name="onStartedFunc">Callback function called when the webview is loaded. Parameter is this WebViewBuilder</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.OnStarted(onStartedFunc: Action<WebViewAccess>) = 
         onStarted <- Some onStartedFunc.Invoke
         this
+
     member this.OnEventSink(onCreated: Action<string, WebViewAccess>) = 
         onEventSink <- Some onCreated.Invoke
         this
-    /// Does not work for Linux
+    
+    /// <summary>
+    /// Used to display a windows icon from C# resource. It is only working on Windows.
+    /// </summary>
+    /// <param name="iconName">Logical name of the resource icon</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.ResourceIcon(iconName: string) =
         resourceIcon <- Some iconName
         this
+
+    /// <summary>
+    /// Used to enable (not to show) the developer tools. If not called, it is not possible to open these tools.
+    /// The developer tools can be shown by default context menu or by calling the javascript method WebView.showDevtools()
+    /// </summary>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.DevTools() =
         devTools <- true
         this
+
+    /// <summary>
+    /// When called the web view's default context menu is not being displayed when you right click the mouse.
+    /// </summary>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.DefaultContextMenuDisabled() =
         defaultContextMenuDisabled <- true
         this
+
     member this.RequestPort(port) =
         requestPort <- port
         this
+    
     /// Only for Windows
     member this.WithoutNativeTitlebar () = 
 #if Windows    
         withoutNativeTitlebar <- true
 #endif
         this
+    
     member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
 
         let req () (next : HttpFunc) (ctx : HttpContext) = 
@@ -167,9 +238,6 @@ type WebViewBase() =
 
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
-
-    member this.Requests(request: Func<HttpContext, Task>) = 
-        this        
 
     member this.Requests(requests: (HttpFunc->HttpContext->HttpFuncResult) list) = 
         rawRequests <- requests 
@@ -194,6 +262,7 @@ type WebViewBase() =
         titleBar <- Some (fun a w wv -> titleBarCreate.Invoke(a, w, wv))
         this
 #endif
+
 #if Windows
     member this.OnFormCreating(formCreateFunc: Action<Form>) =
         onFormCreating <- Some formCreateFunc.Invoke
@@ -206,10 +275,16 @@ type WebViewBase() =
     /// When a file/directory or multiple files/directories are dropped to a certain drag zone, this callback is being called from javascript
     /// </summary>
     /// <param name="action">Callback which is called from javascript when dropping files. First parameter is the id of the drag zone, second is if the files are moved (true) or copied (false), the third parameter is the array with the complete filenames</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.OnFilesDrop(action: Action<string, bool, string array>) =
         onFilesDrop <- Some (fun id move files -> action.Invoke(id, move, files))
         this
 #endif
+
+    /// <summary>
+    /// Runs the built app and displays the web view
+    /// </summary>
+    /// <returns>Exit code</returns>
     abstract member Run: unit->int
 
 and WebViewAccess(executeJavascript: Action<string>, sendEvent: Action<string, obj>) = 
