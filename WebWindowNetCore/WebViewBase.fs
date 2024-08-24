@@ -192,6 +192,11 @@ type WebViewBase() =
         onStarted <- Some onStartedFunc.Invoke
         this
 
+    /// <summary>
+    /// Callback which is called when an event handler is registered in javascript
+    /// </summary>
+    /// <param name="onCreated">Callback when the event handler is ready</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.OnEventSink(onCreated: Action<string, WebViewAccess>) = 
         onEventSink <- Some onCreated.Invoke
         this
@@ -274,11 +279,22 @@ type WebViewBase() =
         rawRequests <- requests 
         this        
 
+    /// <summary>
+    /// Setting the enabled domains for CORS requests
+    /// </summary>
+    /// <param name="domains">Array of CORS domains</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.CorsDomains (domains: string[]) = 
         corsDomains <- domains
         this
-    member this.CorsCache (cache: TimeSpan) = 
-        corsCache <- cache
+
+    /// <summary>
+    /// Setting the duration of the CORS cache for preventing preflights
+    /// </summary>
+    /// <param name="duration">Duration of the CORS cache</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
+    member this.CorsCache (duration: TimeSpan) = 
+        corsCache <- duration
         this
 
     /// <summary>

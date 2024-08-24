@@ -37,8 +37,21 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
     18. [RequestsDelegates (C# version)](#RequestsDelegates)
     19. [Requests (F# Giraffe version)](#featuresRequests)
     20. [RequestPort](#featuresRequestPort)
+    21. [CorsDomains](#featuresCorsDomains)
+    22. [CorsCache](#featuresCorsCache)
+    23. [OnEventSink](#featuresOnEventSink)
 
-5. [Hosting react](#featuresHostingReact)
+5. [The injected javascript WebView object](#javascriptWebView)
+    1. [Typescript definitions](#typescript)
+6. [Hosting react](#featuresHostingReact)
+7. [Native adaption for Windows and Linux](#native)
+    1. [Native adaption for Windows](#nativeWindows)
+        1. [WithoutNativeTitlebar](#WithoutNativeTitlebar)
+        2. [OnFormCreating](#OnFormCreating)
+        2. [OnHamburger](#OnHamburger)
+        3. [OnFilesDrop](#OnFilesDrop)
+    2. [Native adaption for Linux](#nativeLinux)
+        1. [TitleBar](#TitleBar)
 
 ## Features <a name="features"></a>
 
@@ -488,7 +501,7 @@ static Task<Contact2> GetContact2(Input2 text)
 ...
 
 ```
-Now the web site can call these requests from javascript by sending a input data object and receiving an output data object. These request can be called via fetch, but there is even a better approach with the  [The injected javascript WebView object](#JavascriptWebView)
+Now the web site can call these requests from javascript by sending a input data object and receiving an output data object. These request can be called via fetch, but there is even a better approach with the [The injected javascript WebView object](#JavascriptWebView)
 
 ### RequestsDelegates (C# version) <a name="RequestsDelegates"></a>
 
@@ -539,33 +552,67 @@ let getImage =
 With this property you can change the port of the included HTTP Kestrel server from 2222 to one of your choice
 
 ```cs
-  .RequestPort(9999)
+.RequestPort(9999)
 ...
 ```
-====================================
+
+### CorsDomains <a name="featuresCorsDomains"></a>
+
+There are a few Cross Origin Resource Sharing (CORS) scenarios:
+* You use HTTP requests and the web site is hosted via ```file://``` or ```res://```
+* In a react app while debugging the web site is hosted from ```http://localhost:5173```. When you use HTTP requests, you also have a CORS problem
+
+You can enable CORS domains which are safe to access the integrated Kestrel server. Here is an example to enable react debug server:
+
+```cs
+...
+.CorsDomains(["http://localhost:5173"])
+...
+```
+Now the react site can access the integrated HTTP server.
+
+### CorsCache <a name="featuresCorsCache"></a>
+
+When there is a CORS scenario, the request is not immediatly executed, but a preflight request with the HTTP method ```OPTION```. There is a cache to reduce the need for those preflights. The default value is 5 s. 
+
+With this method you have to set the cache duration:
+```cs
+...
+.CorsCache(TimeSpan.FromSeconds(20))
+...
+```
+
+### OnEventSink <a name="featuresOnEventSink"></a>
+
+There is the possiblity to send events from the app to javascript. With ```OnEventSink``` you set a callback which is called when javascript has registered an event handler. Then you can call the method ```webView.SendEvent()```. Each registered event handler has its own id. For registering event handlers in javascript please consult [The injected javascript WebView object](#JavascriptWebView)
+
+Here is an exampe that fires events every 5s to javascript:
+
+```cs
+...
+.OnEventSink((id, webView) => 
+    new Thread(() =>
+    {
+        while (true)
+        {
+            webView.SendEvent(id, new Event($"A new event for {id}"));
+            Thread.Sleep(5000);
+        }
+    })
+        .SideEffect(t => t.IsBackground = true)
+        .Start()
+...
+```
+Remark:
+
+```SideEffect``` is a function from [CsTools](https://www.nuget.org/packages/CsTools/) to inject SideEffects for a functional chaining flow.
 
 
 
 
+## The injected javascript WebView object <a name="javascriptWebView"></a>
 
-### CorsDomains
-
-### CorsCache
-
-### OnEventSink
-
-
-### WithoutNativeTitlebar
-
-### TitleBar 
-
-### OnFormCreating
-### OnHamburger
-### OnFilesDrop
-
-## The injected javascript WebView object <a name="JavascriptWebView"></a>
-
-### Typescript definitions
+### Typescript definitions <a name="typescript"></a>
 
 ## Hosting react <a name="hostingReact"></a>
 in res:// : no requests in Windows
@@ -573,5 +620,22 @@ res://index.html
 
 => resource via HTTP:
 react: set base url in vite.config.js
+
+====================================
+
+## Drop files on specified html element
+
+## Native adaption for Windows and Linux <a name="native"></a>
+### Native adaption for Windows  <a name="nativeWindows"></a>
+
+#### WithoutNativeTitlebar <a name="WithoutNativeTitlebar"></a>
+#### OnFormCreating <a name="OnFormCreating"></a>
+#### OnHamburger <a name="OnHamburger"></a>
+#### OnFilesDrop <a name="OnFilesDrop"></a>
+
+### Native adaption for Linux <a name="nativeLinux"></a>
+#### TitleBar <a name="TitleBar"></a>
+
+
 
 hints for developers: the nuget package have to be build on Windows!
