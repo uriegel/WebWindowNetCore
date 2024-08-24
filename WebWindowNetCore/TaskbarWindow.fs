@@ -3,7 +3,7 @@ namespace WebWindowNetCore
 
 open ClrWinApi
 
-module Taskbar =
+module internal Taskbar =
     let getHandle () = 
         Api.FindWindow("Shell_TrayWnd", "")
 

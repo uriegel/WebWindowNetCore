@@ -13,6 +13,7 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
 2. [Setup](#setup)
     1. [Prerequisites for Windows](#prewindows)
     2. [Prerequisites for Linux](#prelinux)
+    3. [The necessary WebWindowNetCore Nuget package](#nuget)
 3. [Hello World (a minimal web view app)](#helloworld)
     1. [Adaptions for debug and build integration in visual studio code](#adaptionHelloWorld)
 4. [Features of WebViewBuilder](#features)
@@ -96,6 +97,11 @@ For example on Linux Mint 22 you only have to install
 ``` 
 sudo apt install libwebkitgtk-6.0-dev
 ```
+
+### The necessary WebWindowNetCore Nuget package <a name="nuget"></a>
+
+To use these features there is a nuget package  [WebWindowNetCore](https://www.nuget.org/packages/WebWindowNetCore/), which you have to imclude. 
+
 ## Hello World (a minimal web view app) <a name="helloworld"></a>
 
 In this tutoriual I am using Visula Studio Code, but of course you can also use Visual Studio, but only on Windows.
@@ -451,6 +457,8 @@ If you set ```DefaultContextMenuDisabled```, the web view's default context menu
 
 ### ResourceFromHttp
 
+
+test window and linux stadalone apps with nuget package
 
 
 ### BackgroundColor

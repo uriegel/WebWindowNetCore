@@ -1,6 +1,6 @@
 namespace WebWindowNetCore
 
-module WebView = 
+module internal WebView = 
 #if Windows
     let Create (): WebViewBase = WebViewWindows ()
 #elif Linux

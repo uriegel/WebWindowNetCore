@@ -11,7 +11,7 @@ open FSharpTools
 open FSharpTools.Functional
 open ClrWinApi
 
-type WebView() = 
+type internal WebView() = 
     inherit WebViewBase()
 
     let getWebViewLoader () =

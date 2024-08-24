@@ -1,6 +1,6 @@
 namespace WebWindowNetCore
 
-module Script = 
+module internal Script = 
     let get noNativeTitlbar title port windows doFilesDrop =
 
         let devTools = 

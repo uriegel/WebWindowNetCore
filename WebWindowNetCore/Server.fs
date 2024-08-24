@@ -14,7 +14,7 @@ open FSharpTools
 open Giraffe
 open GiraffeTools
 
-module Server =
+module internal Server =
     let start (webView: WebViewBase) =
         let configureServices (services : IServiceCollection) = 
             let jsonOptions = JsonSerializerOptions()
