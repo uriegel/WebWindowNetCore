@@ -14,10 +14,10 @@ open ClrWinApi
 type WebView() = 
     inherit WebViewBase()
 
-    let getWebViewLoader () =
+    let getWebViewLoader appId =
         let targetFileName = 
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-            |> Directory.attachSubPath (sprintf "de.uriegel.WebWindowNetCore\%s" <|Process.GetCurrentProcess().ProcessName)
+            |> Directory.attachSubPath (sprintf "%s\%s" appId (Process.GetCurrentProcess().ProcessName))
             |> sideEffectIf Directory.Exists Directory.CreateDirectory
             |> Directory.attachSubPath "WebView2Loader.dll"
         try 
@@ -40,7 +40,7 @@ type WebView() =
         Application.SetCompatibleTextRenderingDefault false
         Application.SetHighDpiMode HighDpiMode.PerMonitorV2 |> ignore
 
-        let loader = getWebViewLoader ()
+        let loader = getWebViewLoader this.AppIdValue
         let appDataPath = FileInfo(loader).DirectoryName
         Api.LoadLibrary loader |> ignore
 
