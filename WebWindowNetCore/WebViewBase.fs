@@ -131,6 +131,12 @@ type WebViewBase() =
         title <- t                        
         this
 
+    /// <summary>
+    /// Setting the background color of the web view. Normally the html page has its own background color, 
+    /// but when starting and before the html page is loaded, this property is active and this color is shown. 
+    /// To prevent flickering when starting the app, adapt the BackgroundColor to the http page's value.
+    /// </summary>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.BackgroundColor(color: Color) = 
         backgroundColor <- Some color
         this
@@ -216,6 +222,11 @@ type WebViewBase() =
         defaultContextMenuDisabled <- true
         this
 
+    /// <summary>
+    /// Used to change the port of the included HTTP Kestrel server from 2222 to one of your choice
+    /// </summary>
+    /// <param name="port">TCP port</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.RequestPort(port) =
         requestPort <- port
         this
@@ -227,6 +238,12 @@ type WebViewBase() =
 #endif
         this
     
+    /// <summary>
+    /// With the help of the included HTTP (Kestrel) server your web site can communicate with the app. You can add json post requests
+    /// </summary>
+    /// <param name="method">A name for the request method</param>
+    /// <param name="request">A function getting generic input as the input data and returning a Task of generic output data</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.AddRequest<'input, 'output>(method: string, request: Func<'input, Task<'output>>) =  
 
         let req () (next : HttpFunc) (ctx : HttpContext) = 
@@ -239,12 +256,22 @@ type WebViewBase() =
         requests <- requests |> List.append [ { Method = method; Request = req } ] 
         this
 
-    member this.Requests(requests: (HttpFunc->HttpContext->HttpFuncResult) list) = 
-        rawRequests <- requests 
-        this        
-
+    /// <summary>
+    /// Setting low level Kestrel requests, e.g. for downloading file streams or images
+    /// </summary>
+    /// <param name="requests">Array of builders for creating requests with the IApplicationBuilder</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.RequestsDelegates(requests: Action<IApplicationBuilder> array) = 
         requestsDelegates <- requests
+        this        
+
+    /// <summary>
+    /// Setting low level Kestrel requests, e.g. for downloading file streams or images, with the help of Giraffe (for F#)
+    /// </summary>
+    /// <param name="requests">List of Kestrel routes</param>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
+    member this.Requests(requests: (HttpFunc->HttpContext->HttpFuncResult) list) = 
+        rawRequests <- requests 
         this        
 
     member this.CorsDomains (domains: string[]) = 
@@ -253,6 +280,11 @@ type WebViewBase() =
     member this.CorsCache (cache: TimeSpan) = 
         corsCache <- cache
         this
+
+    /// <summary>
+    /// Host web site from resource via the included Kestrel HTTP-Server
+    /// </summary>
+    /// <returns>WebView for chaining (fluent Syntax)</returns>
     member this.ResourceFromHttp () =
         resourceFromHttp <- true
         this

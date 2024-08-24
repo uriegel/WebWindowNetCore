@@ -16,7 +16,7 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
     3. [The necessary WebWindowNetCore Nuget package](#nuget)
 3. [Hello World (a minimal web view app)](#helloworld)
     1. [Adaptions for debug and build integration in visual studio code](#adaptionHelloWorld)
-4. [Features of WebViewBuilder](#features)
+4. [WebViewBuilder's featues](#webViewfeatures)
     1. [Creating WebViewBuilder and running app](#featuresCreating)
     2. [Url](#featuresUrl)
     3. [Custom resource scheme](#featuresCustomScheme)
@@ -27,11 +27,17 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
     8. [AppId](#featuresAppId)
     9. [SaveBounds](#featuresSaveBounds)
     10. [ResourceIcon](#featuresResourceIcon)
-    11. [CanClose](#featuresCanClose)
-    12. [OnStarted](#featuresOnStarted)
-    13. [DevTools](#featuresDevTools)
-    14. [DefaultContextMenuDisabled](#featuresDefaultContextMenuDisabled)
-    15. [RequestPort](#featuresRequestPort)
+    11. [BackgroundColor](#featuresBackgroundColor)
+    12. [CanClose](#featuresCanClose)
+    13. [OnStarted](#featuresOnStarted)
+    14. [DevTools](#featuresDevTools)
+    15. [DefaultContextMenuDisabled](#featuresDefaultContextMenuDisabled)
+    16. [RequestPort](#featuresRequestPort)
+    17. [AddRequest](#featuresAddRequest)
+    18. [RequestsDelegates (C# version)](#RequestsDelegates)
+    19. [Requests (F# Giraffe version)](#featuresRequests)
+    20. [RequestPort](#featuresRequestPort)
+
 5. [Hosting react](#featuresHostingReact)
 
 ## Features <a name="features"></a>
@@ -241,7 +247,7 @@ while ```launch.json``` should lkook like
 
 Now you can choose your platform (Linux or Windows) in the debugger tab of the sidebar in Visual Studio Code and build and debug your app.
 
-## Features of WebViewBuilder <a name="features"></a>
+## WebViewBuilder's featues <a name="webViewfeatures"></a>
 
 ### Creating WebViewBuilder and running app <a name="featuresCreating"></a>
 
@@ -412,6 +418,11 @@ The icon has to be included as C# resource with the ```LogicalName``` matching, 
   </EmbeddedResource>
 </ItemGroup> 
 ```
+
+### BackgroundColor <a name="featuresBackgroundColor"></a>
+
+This sets the background color of the web view. Normally the html page has its own background color, but when starting and before the html page is loaded, this property is active and this color is shown. To prevent flickering when starting the app, adapt the ```BackgroundColor``` to the http page's value.
+
 ### CanClose <a name="featuresCanClose"></a>
 
 Here you can set a callback function which is called when the window is about to close. In the callback you can prevent the close request by returning false.
@@ -453,21 +464,89 @@ If you set ```DefaultContextMenuDisabled```, the web view's default context menu
 ...
 
 ```
+
+### AddRequest <a name="featuresAddRequest"></a>
+
+With the help of the included HTTP (Kestrel) server your web site can communicate with the app. You can add json post requests like this:
+
+
+```cs
+record Input(string Text, int Id);
+record Contact(string Name, int Id);
+record Input2(string EMail, int Count, int Nr);
+record Contact2(string DisplayName, string Phone);
+...
+static Task<Contact> GetContact(Input text)
+    => Task.FromResult(new Contact("Uwe Riegel", 9865));
+
+static Task<Contact2> GetContact2(Input2 text)
+    => Task.FromResult(new Contact2("Uwe Riegel", "0177622111"));
+...
+
+    .AddRequest<Input, Contact>("cmd1", GetContact)
+    .AddRequest<Input2, Contact2>("cmd2", GetContact2)
+...
+
+```
+Now the web site can call these requests from javascript by sending a input data object and receiving an output data object. These request can be called via fetch, but there is even a better approach with the  [The injected javascript WebView object](#JavascriptWebView)
+
+### RequestsDelegates (C# version) <a name="RequestsDelegates"></a>
+
+If you want to request other data like file streams, images, ..., with this method you have the possibility. This is a more low level approach in comparison to the above [AddRequest](#featuresAddRequest) method. You can set delegates to create requests with the ```IApplicationBuilder``` object. Here is an example for downloading an image:
+
+```cs
+static async Task GetImage(HttpContext context) 
+{
+    var path = Path.Combine(Directory.GetCurrentDirectory(), context.Request.Query["path"].ToString());
+    using var stream = File.OpenRead(path);
+    await stream.CopyToAsync(context.Response.Body, 8192);
+}
+
+static void GetImageRequest(IApplicationBuilder app)
+    => app.Map("/get/image", a => a.Run(GetImage));
+
+...
+
+  .RequestsDelegates([GetImageRequest])
+...
+```
+This downloads an image with the url path ```http://localhost:2222/get/image?path=forest.jpg```
+
+2222 is the default port of the integrated HTTP server, you can change this port with [RequestPort](#featuresRequestPort)
+
+### Requests (F# Giraffe version) <a name="featuresRequests"></a>
+
+If you are usin F# there is a more F# friendly version to serve requests with the help of [Giraffe](https://github.com/giraffe-fsharp/giraffe):
+
+
+```fs
+let getImage =
+    let getFile fileRequest = 
+        let path = 
+            fileRequest.Path
+            |> Directory.combine2Pathes (Directory.GetCurrentDirectory ())
+        streamFile false path None None
+    route "/get/image" >=> bindQuery<FileRequest> None getFile
+
+...
+
+  .Requests([getImage])
+...
+```
+
+### RequestPort <a name="featuresRequestPort"></a>
+
+With this property you can change the port of the included HTTP Kestrel server from 2222 to one of your choice
+
+```cs
+  .RequestPort(9999)
+...
+```
 ====================================
 
-### ResourceFromHttp
 
 
-test window and linux stadalone apps with nuget package
 
-
-### BackgroundColor
-
-### AddRequest
-
-### Requests (F# Giraffe version)
-
-### RequestsDelegates (C# version)
 
 ### CorsDomains
 
@@ -475,7 +554,6 @@ test window and linux stadalone apps with nuget package
 
 ### OnEventSink
 
-### RequestPort <a name="featuresRequestPort"></a>
 
 ### WithoutNativeTitlebar
 
@@ -485,9 +563,11 @@ test window and linux stadalone apps with nuget package
 ### OnHamburger
 ### OnFilesDrop
 
-## Typescript definitions
+## The injected javascript WebView object <a name="JavascriptWebView"></a>
 
-## Hosting react <a name="featuresHostingReact"></a>
+### Typescript definitions
+
+## Hosting react <a name="hostingReact"></a>
 in res:// : no requests in Windows
 res://index.html
 
