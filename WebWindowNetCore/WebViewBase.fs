@@ -309,7 +309,7 @@ type WebViewBase() =
     member this.TitleBar(titleBarCreate: Func<ApplicationHandle, WindowHandle, ObjectRef<WebViewHandle>, WidgetHandle>) =
         titleBar <- Some (fun a w wv -> titleBarCreate.Invoke(a, w, wv))
         this
-    member this.TitleBar(titleBarCreate: ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle) =
+    member this.TitleBarFs(titleBarCreate: ApplicationHandle->WindowHandle->ObjectRef<WebViewHandle>->WidgetHandle) =
         titleBar <- Some titleBarCreate
         this
 #endif
