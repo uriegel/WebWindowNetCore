@@ -101,7 +101,7 @@ If you want to run the WebView app on a Windows Server, you have to install the 
 
 ### Prerequisites for Linux <a name="prelinux"></a>
 
-On modern Linux like Ubuntu 24.04 WebWindowNetCore app will run out of the box (if you create a full contained single file exe), otherwise you have to install the necessary dotnet runtime.
+On modern Linux like Ubuntu 24.04 or Fedora 40 WebWindowNetCore app will run out of the box (if you create a full contained single file exe), otherwise you have to install the necessary dotnet runtime.
 
 On older/other Linux systems perhaps you have to install one of the following packages in order to make the app runnable, like
 
@@ -114,6 +114,13 @@ sudo apt install libadwaita-1-dev
 For example on Linux Mint 22 you only have to install 
 
 ``` 
+sudo apt install libwebkitgtk-6.0-dev
+```
+
+whereas for KDE neon 6.0 you have to install 
+
+``` 
+sudo apt install libadwaita-1-dev
 sudo apt install libwebkitgtk-6.0-dev
 ```
 
