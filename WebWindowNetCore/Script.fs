@@ -27,11 +27,11 @@ module internal Script =
                     function WEBVIEWsetMaximized(m) { 
                         const maximize = document.getElementById('$MAXIMIZE$')
                         if (maximize)
-                            maximize.style.display = m ? 'none' : 'revert'
+                            maximize.style.display = m ? 'none' : ''
 
                         const restore = document.getElementById('$RESTORE$')
                         if (restore)
-                            restore.style.display = m ? 'revert' : 'none'
+                            restore.style.display = m ? '' : 'none'
                     }
 
                     const WEBVIEWNoNativeTitlebarInitialize = () => {
@@ -54,7 +54,7 @@ module internal Script =
                         const restore = document.getElementById('$RESTORE$')
                         if (restore) {
                             restore.onclick = () => callback.RestoreWindow()
-                            restore.hidden = true
+                            restore.style.display = 'none'
                         }
                         const hamburger = document.getElementById('$HAMBURGER$')
                         if (hamburger) 
