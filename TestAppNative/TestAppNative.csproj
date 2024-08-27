@@ -45,8 +45,8 @@
     <EmbeddedResource Include="./webroot/scripts/script.js">
       <LogicalName>webroot/scripts/script.js</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./icon.png">
-      <LogicalName>favicon</LogicalName>
+    <EmbeddedResource Include="../icon.ico">
+      <LogicalName>icon</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 

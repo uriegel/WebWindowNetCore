@@ -27,17 +27,18 @@ module internal Script =
                     function WEBVIEWsetMaximized(m) { 
                         const maximize = document.getElementById('$MAXIMIZE$')
                         if (maximize)
-                            maximize.hidden = m
+                            maximize.style.display = m ? 'none' : 'revert'
 
                         const restore = document.getElementById('$RESTORE$')
                         if (restore)
-                            restore.hidden = !m
+                            restore.style.display = m ? 'revert' : 'none'
                     }
 
                     const WEBVIEWNoNativeTitlebarInitialize = () => {
+
                         const favicon = document.getElementById('$FAVICON$')
                         if (favicon)
-                            favicon.src = 'res://favicon'
+                            favicon.src = 'res://icon'
                         const title = document.getElementById('$TITLE$')
                         if (title)
                             title.innerText = "%s"
