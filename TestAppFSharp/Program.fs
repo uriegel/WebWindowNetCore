@@ -21,7 +21,7 @@ type CurrentDirectory = { Directory: string }
 let getContact (text: Input) =
     task { return { Name = "Uwe Riegel"; Id = 9865 } }  
 
-let getContact2 (text: Input2) =
+let getContact2 (i: Empty) =
     task { return { DisplayName = "Uwe Riegel"; Phone = "0177622111" } }  
 
 let onRequest (method: string) (input: Stream) =
@@ -67,8 +67,8 @@ WebView()
     .CorsDomains([|"*"|])
     .SaveBounds()
     .DefaultContextMenuDisabled()
-    .AddRequest<Input, Contact>("cmd1", getContact)
-    .AddRequest<Input2, Contact2>("cmd2", getContact2)
+    .AddRequest("cmd1", getContact)
+    .AddRequest("cmd2", getContact2)
     .AddRequest<Empty, CurrentDirectory>("getCurrentDir", getCurrentDirectory)
     .Requests([getImage])
     .OnStarted(onStarted)

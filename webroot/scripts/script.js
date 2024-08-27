@@ -33,10 +33,7 @@ btn1.onclick = async () => {
 }
 
 btn2.onclick = async () => {
-    var res = await WebView.request("cmd2", {
-        eMail: "uriegel@github.com",
-        nr: 1123
-    })
+    var res = await WebView.request("cmd2", {})
     console.log("cmd2", res)
 }
 
