@@ -34,7 +34,10 @@ module internal Script =
                             restore.hidden = !m
                     }
 
-                    (() => {
+                    const WEBVIEWNoNativeTitlebarInitialize = () => {
+                        const favicon = document.getElementById('$FAVICON$')
+                        if (favicon)
+                            favicon.src = 'res://favicon'
                         const title = document.getElementById('$TITLE$')
                         if (title)
                             title.innerText = "%s"
@@ -56,7 +59,8 @@ module internal Script =
                         if (hamburger) 
                             hamburger.onclick = () => callback.OnHamburger(hamburger.offsetLeft / document.body.offsetWidth, (hamburger.offsetTop + hamburger.offsetHeight) / document.body.offsetHeight)
                             
-                    })()
+                    }
+                    WEBVIEWNoNativeTitlebarInitialize()
                 """ title
             else
                 ""
@@ -101,7 +105,10 @@ module internal Script =
 
                 const setDroppedEvent = success => evtHandler(success)
 
+                initializeNoTitlebar = () => WEBVIEWNoNativeTitlebarInitialize()
+
                 return {
+                    initializeNoTitlebar,
                     showDevTools,
                     startDragFiles,
                     request,

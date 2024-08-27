@@ -12,10 +12,14 @@ h1 {
     display: flex;
     margin-top: 0px;
 }
-h1>span {
+h1>div {
     -webkit-app-region: drag;
     background-color: aqua;
     flex-grow: 1;
+    display: flex;
+}
+h1 img {
+    object-fit: contain;
 }
 
 .dropZone {
