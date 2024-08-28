@@ -17,12 +17,16 @@ type Event = { Text: string }
 type FileRequest = { Path: string }
 type Empty = { Nil: int }
 type CurrentDirectory = { Directory: string }
-
+type Error = {Code: int }
+type JsonResult<'a, 'b> = { Ok: 'a option; Error: 'b option }
 let getContact (text: Input) =
     task { return { Name = "Uwe Riegel"; Id = 9865 } }  
 
 let getContact2 (i: Empty) =
-    task { return { DisplayName = "Uwe Riegel"; Phone = "0177622111" } }  
+    task { 
+        let affe = { Ok = Some { DisplayName = "Uwe Riegel"; Phone = "0177622111" } ; Error = None } 
+        return affe
+    }
 
 let onRequest (method: string) (input: Stream) =
     task {   
