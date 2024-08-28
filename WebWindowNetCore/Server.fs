@@ -12,17 +12,37 @@ open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.Extensions.Logging
 open FSharpTools
 open Giraffe
-open GiraffeTools
+
+type CustomJsonSerializer() =
+    let jsonOptions = JsonSerializerOptions(
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    )
+       
+    interface Json.ISerializer with
+        member _.SerializeToString<'T>(input: 'T) : string =
+            JsonSerializer.Serialize<'T>(input, jsonOptions)
+        member _.Deserialize<'T>(json: string) : 'T =
+            JsonSerializer.Deserialize<'T>(json, jsonOptions)
+        member this.Deserialize(bytes: byte array): 'T = 
+            JsonSerializer.Deserialize(bytes, jsonOptions)
+        member this.DeserializeAsync<'T>(stream: System.IO.Stream): System.Threading.Tasks.Task<'T> = 
+            task {
+                return! JsonSerializer.DeserializeAsync<'T>(stream, jsonOptions)
+            }
+        member this.SerializeToBytes(input: 'T): byte array = 
+            JsonSerializer.SerializeToUtf8Bytes(input, jsonOptions)
+        member this.SerializeToStreamAsync(value: 'T) (stream: System.IO.Stream): System.Threading.Tasks.Task = 
+            JsonSerializer.SerializeAsync(stream, value, jsonOptions)
 
 module internal Server =
+    open Giraffe
+    open GiraffeTools
     let start (webView: WebViewBase) =
         let configureServices (services : IServiceCollection) = 
-            let jsonOptions = JsonSerializerOptions()
-            jsonOptions.PropertyNamingPolicy <- JsonNamingPolicy.CamelCase
-            jsonOptions.Encoder <- JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            jsonOptions.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
             services
-                .AddSingleton(jsonOptions) 
+                .AddSingleton<Json.ISerializer, CustomJsonSerializer>() 
                 .AddResponseCompression()
                 .AddGiraffe()
                 .AddCors()
