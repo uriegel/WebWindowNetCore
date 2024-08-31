@@ -121,5 +121,5 @@ module internal Server =
         Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webHostBuilder)
             .Build()
-            .Start()
+            .StartAsync() |> ignore
 
