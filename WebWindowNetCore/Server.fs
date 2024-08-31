@@ -39,6 +39,7 @@ type CustomJsonSerializer() =
 module internal Server =
     open Giraffe
     open GiraffeTools
+    open System.Threading
     let start (webView: WebViewBase) =
         let configureServices (services : IServiceCollection) = 
             services
@@ -118,8 +119,12 @@ module internal Server =
                 .ConfigureLogging(configureLogging)
                 |> ignore
 
-        Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webHostBuilder)
-            .Build()
-            .StartAsync() |> ignore
+        let server = 
+            Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(webHostBuilder)
+                .Build()
 
+        let thread = Thread(fun () -> server.Run())            
+        thread.IsBackground <- true
+        thread.Start ()
+        ()
