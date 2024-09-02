@@ -10,9 +10,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>10.0.13</Version>
-    <FileVersion>10.0.13.0</FileVersion>
-    <AssemblyVersion>10.0.13.0</AssemblyVersion>
+    <Version>10.0.14</Version>
+    <FileVersion>10.0.14.0</FileVersion>
+    <AssemblyVersion>10.0.14.0</AssemblyVersion>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="8.0.102" />
-    <PackageReference Include="FSharpTools" Version="10.2.7" />
+    <PackageReference Include="FSharpTools" Version="10.2.9" />
     <PackageReference Include="Giraffe" Version="7.0.0" />
     <PackageReference Include="GiraffeTools" Version="1.0.0" />
   </ItemGroup>
