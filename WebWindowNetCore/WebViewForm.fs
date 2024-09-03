@@ -44,6 +44,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         m.Result <- 0
 
     let webView = new WebView2()
+    let panel = new Panel()
 
     do 
         (webView :> ComponentModel.ISupportInitialize).BeginInit()
@@ -52,8 +53,6 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         webView.CreationProperties <- null
         settings.BackgroundColorValue 
         |> Option.iter (fun c -> webView.DefaultBackgroundColor <- c)
-        webView.Location <- Point (0, 0)
-        webView.Margin <- Padding 0
         webView.Dock <- DockStyle.Fill
         webView.TabIndex <- 0
         webView.ZoomFactor <- 1
@@ -68,7 +67,6 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
                                 Resources.get i
                                 |>Option.iter (fun s -> this.Icon <- new Icon (s)))
 
-        this.AutoScaleDimensions <- SizeF(8F, 20F)
         this.AutoScaleMode <- AutoScaleMode.Font
 
         let bounds = Bounds.retrieve settings.AppIdValue
@@ -88,7 +86,10 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
             this.Resize.Add(this.onResize)
 
         this.Text <- settings.TitleValue
-        this.Controls.Add webView
+
+        panel.Dock <- DockStyle.Fill
+        panel.Controls.Add webView
+        this.Controls.Add panel
 
         (webView :> ComponentModel.ISupportInitialize).EndInit ()
         this.ResumeLayout false
@@ -254,6 +255,7 @@ type WebViewForm(appDataPath: string, settings: WebViewBase) as this =
         WebViewAccess (runJavascript, onEvent)
 
     member this.setMaximized maximized = 
+        panel.Padding <- if maximized then Padding(3, 7, 3, 3) else Padding 0
         webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if maximized then "true" else "false") 
         |> Async.AwaitTask
         |> ignore        
