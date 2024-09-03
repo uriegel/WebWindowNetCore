@@ -108,6 +108,8 @@ module internal Script =
 
                 initializeNoTitlebar = () => WEBVIEWNoNativeTitlebarInitialize()
 
+                getRequestUrl = () => `http://localhost:%d/requests/`
+
                 return {
                     initializeNoTitlebar,
                     showDevTools,
@@ -116,7 +118,8 @@ module internal Script =
                     registerEvents,
                     dropFiles,
                     setDroppedFilesEventHandler,
-                    setDroppedEvent
+                    setDroppedEvent,
+                    getRequestUrl
                 }
             })()
 
@@ -124,4 +127,4 @@ module internal Script =
                 if (onWebViewLoaded) 
                     onWebViewLoaded()
             } catch { }
-        """ noTitlebarScript devTools onFilesDropScript onEventsCreated port
+        """ noTitlebarScript devTools onFilesDropScript onEventsCreated port port
