@@ -10,9 +10,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>10.0.15</Version>
-    <FileVersion>10.0.15.0</FileVersion>
-    <AssemblyVersion>10.0.15.0</AssemblyVersion>
+    <Version>10.0.16</Version>
+    <FileVersion>10.0.16.0</FileVersion>
+    <AssemblyVersion>10.0.16.0</AssemblyVersion>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>

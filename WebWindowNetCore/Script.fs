@@ -110,6 +110,8 @@ module internal Script =
 
                 getRequestUrl = () => `http://localhost:%d/requests/`
 
+                closeWindow = () => window.close()
+
                 return {
                     initializeNoTitlebar,
                     showDevTools,
@@ -119,7 +121,8 @@ module internal Script =
                     dropFiles,
                     setDroppedFilesEventHandler,
                     setDroppedEvent,
-                    getRequestUrl
+                    getRequestUrl,
+                    closeWindow
                 }
             })()
 
