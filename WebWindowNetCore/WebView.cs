@@ -25,5 +25,5 @@ public abstract class WebView
     /// <returns>Exit code</returns>
     public abstract int Run();
 
-    string appId = "de.uriegel.webwindownetcore";
+    protected string appId = "de.uriegel.webwindownetcore";
 }
