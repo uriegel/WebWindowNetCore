@@ -18,8 +18,9 @@ public class WebView() : WebWindowNetCore.WebView
             .SideEffectChoose(saveBounds, RetrieveBounds, w => w.DefaultSize(width, height))
             .Show();
 
-    void RetrieveBounds(WindowHandle window)            
-    {
-        
-    }
+    void RetrieveBounds(WindowHandle window)
+        => Bounds
+            .Retrieve(appId)
+            .SideEffect(b => window.DefaultSize(b.Width ?? width, b.Height ?? height))
+            .SideEffectIf(b => b.IsMaximized, _ => window.Maximize());
 }
