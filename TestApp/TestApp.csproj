@@ -35,19 +35,19 @@
 
   <ItemGroup>
     <EmbeddedResource Include="../webroot/index.html">
-      <LogicalName>webroot/index.html</LogicalName>
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(3).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../webroot/css/styles.css">
-      <LogicalName>webroot/css/styles.css</LogicalName>
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(3).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="../webroot/scripts/script.js">
-      <LogicalName>webroot/scripts/script.js</LogicalName>
+    <EmbeddedResource Include="../webroot/scripts/*.js">
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(3).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../webroot/images/image.jpg">
-      <LogicalName>webroot/images/image.jpg</LogicalName>
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(3).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../icon.ico">
-      <LogicalName>icon</LogicalName>
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(3).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
   

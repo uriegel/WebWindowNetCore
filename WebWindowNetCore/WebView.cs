@@ -120,4 +120,5 @@ public abstract class WebView
 #endif
 }
 
+// TODO content_type get from extension in CsTools
 // TODO Use commander.ui with AdwHeaderBar 

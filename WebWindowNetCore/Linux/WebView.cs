@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
@@ -20,6 +21,7 @@ public class WebView() : WebWindowNetCore.WebView
                     .New()
                     .Ref(webViewRef)
                     .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
+                    .SideEffectIf(GetUrl().StartsWith("res://"), EnableReosurceScheme)
                     .LoadUri(GetUrl())
             )
             .Show();
@@ -40,6 +42,23 @@ public class WebView() : WebWindowNetCore.WebView
                         Height = window.GetHeight(),
                         IsMaximized = window.IsMaximized()
                     }));
+
+    void EnableReosurceScheme(WebViewHandle webView)
+        => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
+
+    void OnResRequest(WebkitUriSchemeRequestHandle request)
+    {
+        var uri = request.GetUri()[6..];
+        var res = Resources.Get(uri);
+        if (res != null) 
+        {
+            var bytes = new byte[res.Length];
+            res.Read(bytes, 0, bytes.Length);
+            using var gbytes = GBytes.New(bytes);
+            using var gstream = MemoryInputStream.New(gbytes);
+            request.Finish(gstream, bytes.Length, "text/html");
+        }
+    }
 
     readonly ObjectRef<WebViewHandle> webViewRef = new();
 }
