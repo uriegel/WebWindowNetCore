@@ -9,7 +9,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebWindowNetCore", "WebWind
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNative", "TestAppNative\TestAppNative.csproj", "{17604F0A-89C2-4D45-9D38-6472F0277049}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactTest", "react-test\ReactTest.fsproj", "{A0F10180-547E-4DD7-ACE2-F754C74B0139}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactTest", "react-test\ReactTest.csproj", "{A0F10180-547E-4DD7-ACE2-F754C74B0139}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -15,7 +15,7 @@
 //             | "cmd1" -> input |> GetInput |> getContact |> AsTask
 //             | _ -> task { return obj() }
 //     }
- 
+
 // WebView()
 //     .AppId("de.uriegel.test")
 //     .Title("React WebView")
@@ -30,3 +30,4 @@
 //     .DevTools()
 //     .Run()
 //     |> ignore
+System.Console.WriteLine("");
