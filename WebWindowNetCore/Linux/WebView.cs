@@ -1,3 +1,4 @@
+using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
@@ -10,9 +11,15 @@ public class WebView() : WebWindowNetCore.WebView
             .OnActivate(OnActivate)
             .Run(0, 0);
 
-    static void OnActivate(ApplicationHandle app)
+    void OnActivate(ApplicationHandle app)
         => app
             .NewWindow()
-            .Title("NOCH ZU FÜLLEN")
+            .Title(title)
+            .SideEffectChoose(saveBounds, RetrieveBounds, w => w.DefaultSize(width, height))
             .Show();
+
+    void RetrieveBounds(WindowHandle window)            
+    {
+        
+    }
 }
