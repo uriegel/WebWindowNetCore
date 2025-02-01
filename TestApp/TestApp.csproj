@@ -26,7 +26,7 @@
   </PropertyGroup> 
 
   <ItemGroup>
-    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.fsproj" />
+    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(IsWindows)'=='true'">

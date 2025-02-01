@@ -5,11 +5,9 @@ VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{715594F9-DF40-40AC-8B55-22EE062EF700}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebWindowNetCore", "WebWindowNetCore\WebWindowNetCore.fsproj", "{BC914C95-2BA4-4DB3-A0E3-CEAB46E95F8B}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebWindowNetCore", "WebWindowNetCore\WebWindowNetCore.csproj", "{BC914C95-2BA4-4DB3-A0E3-CEAB46E95F8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNative", "TestAppNative\TestAppNative.csproj", "{17604F0A-89C2-4D45-9D38-6472F0277049}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TestAppFSharp", "TestAppFSharp\TestAppFSharp.fsproj", "{7079AFC8-6E3C-4EFE-878A-A31B959FC6EC}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ReactTest", "react-test\ReactTest.fsproj", "{A0F10180-547E-4DD7-ACE2-F754C74B0139}"
 EndProject
@@ -31,10 +29,6 @@ Global
 		{17604F0A-89C2-4D45-9D38-6472F0277049}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17604F0A-89C2-4D45-9D38-6472F0277049}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17604F0A-89C2-4D45-9D38-6472F0277049}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7079AFC8-6E3C-4EFE-878A-A31B959FC6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7079AFC8-6E3C-4EFE-878A-A31B959FC6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7079AFC8-6E3C-4EFE-878A-A31B959FC6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7079AFC8-6E3C-4EFE-878A-A31B959FC6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A0F10180-547E-4DD7-ACE2-F754C74B0139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A0F10180-547E-4DD7-ACE2-F754C74B0139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0F10180-547E-4DD7-ACE2-F754C74B0139}.Release|Any CPU.ActiveCfg = Release|Any CPU
