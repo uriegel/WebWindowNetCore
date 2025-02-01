@@ -16,6 +16,11 @@ public class WebView() : WebWindowNetCore.WebView
             .NewWindow()
             .Title(title)
             .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
+            .Child(WebKit
+                    .New()
+                    .Ref(webViewRef)
+                    .LoadUri(GetUrl())
+            )
             .Show();
 
     void WithSaveBounds(WindowHandle window)
@@ -34,4 +39,6 @@ public class WebView() : WebWindowNetCore.WebView
                         Height = window.GetHeight(),
                         IsMaximized = window.IsMaximized()
                     }));
+
+    readonly ObjectRef<WebViewHandle> webViewRef = new();
 }

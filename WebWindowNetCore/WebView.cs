@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using CsTools.Extensions;
 
 namespace WebWindowNetCore;
@@ -102,6 +103,8 @@ public abstract class WebView
     /// </summary>
     /// <returns>Exit code</returns>
     public abstract int Run();
+
+    internal string GetUrl() => (Debugger.IsAttached ? debugUrl ?? url : url) ?? "about:blank";
 
     protected string appId = "de.uriegel.webwindownetcore";
     protected int width;
