@@ -15,12 +15,23 @@ public class WebView() : WebWindowNetCore.WebView
         => app
             .NewWindow()
             .Title(title)
-            .SideEffectChoose(saveBounds, RetrieveBounds, w => w.DefaultSize(width, height))
+            .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
             .Show();
 
-    void RetrieveBounds(WindowHandle window)
+    void WithSaveBounds(WindowHandle window)
         => Bounds
             .Retrieve(appId)
             .SideEffect(b => window.DefaultSize(b.Width ?? width, b.Height ?? height))
-            .SideEffectIf(b => b.IsMaximized, _ => window.Maximize());
+            .SideEffectIf(b => b.IsMaximized, _ => window.Maximize())
+            .SideEffect(_ => window.OnClose(SaveBounds));
+
+    bool SaveBounds(WindowHandle window)
+        => false.SideEffect(_ =>
+                Bounds
+                    .Save(appId, Bounds.Retrieve(appId) with
+                    {
+                        Width = window.GetWidth(),
+                        Height = window.GetHeight(),
+                        IsMaximized = window.IsMaximized()
+                    }));
 }

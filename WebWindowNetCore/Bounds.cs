@@ -15,4 +15,12 @@ record Bounds(int? X, int? Y, int? Width, int? Height, bool IsMaximized)
             .SideEffect(Console.WriteLine)
             ?.Deserialize<Bounds>(Json.Defaults) 
             ?? new(null, null, null, null, false);
+
+    public static void Save(string id, Bounds bounds)
+        => Environment
+            .GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            .AppendPath(id)
+            .SideEffect(d => d.EnsureDirectoryExists())
+            .AppendPath("bounds.json")
+            .WriteAllTextToFilePath(bounds.Serialize(Json.Defaults));
 }
