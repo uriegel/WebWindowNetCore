@@ -50,7 +50,7 @@ public abstract class WebView
     /// <param name="color">Background color</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
     public WebView BackgroundColor(Color color)  
-        => this.SideEffect(w => w.color = color);
+        => this.SideEffect(w => w.backgroundColor = color);
 
     /// <summary>
     /// Here you set the url of the web view. You can use "http(s)://" scheme, "file://" scheme, and custom resource scheme "res://". This value is 
@@ -110,7 +110,7 @@ public abstract class WebView
     protected int width;
     protected int height;
     protected string title = "";
-    protected Color? color;
+    protected Color? backgroundColor;
     protected string? url;
     protected string? debugUrl;
     protected bool saveBounds;

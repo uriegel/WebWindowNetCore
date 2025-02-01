@@ -19,6 +19,7 @@ public class WebView() : WebWindowNetCore.WebView
             .Child(WebKit
                     .New()
                     .Ref(webViewRef)
+                    .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
                     .LoadUri(GetUrl())
             )
             .Show();

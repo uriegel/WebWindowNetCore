@@ -1,4 +1,5 @@
-﻿using WebWindowNetCore;
+﻿using System.Drawing;
+using WebWindowNetCore;
 
 WebView
     .Create()
@@ -6,6 +7,7 @@ WebView
     .Title("Web Window Net Core 👍")
     .InitialBounds(600, 800)
     .SaveBounds()
+    .BackgroundColor(Color.Transparent)
     .Url("https://github.com/uriegel/WebWindowNetCore")
     .Run();
 
