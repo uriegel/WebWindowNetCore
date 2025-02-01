@@ -27,3 +27,5 @@ public abstract class WebView
 
     protected string appId = "de.uriegel.webwindownetcore";
 }
+
+// TODO Use commander.ui with AdwHeaderBar 
