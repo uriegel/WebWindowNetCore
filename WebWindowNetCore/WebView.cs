@@ -90,6 +90,13 @@ public abstract class WebView
         => this.SideEffect(w => devTools = true);
 
     /// <summary>
+    /// When called the web view's default context menu is not being displayed when you right click the mouse.
+    /// </summary>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
+    public WebView DefaultContextMenuDisabled() 
+        => this.SideEffect(w => defaultContextMenuDisabled = true);
+
+    /// <summary>
     /// Sets the query string to the final webroot's url
     /// </summary>
     /// <param name="queryString"></param>
@@ -112,7 +119,7 @@ public abstract class WebView
     /// <returns>Exit code</returns>
     public abstract int Run();
 
-    internal string GetUrl() => (Debugger.IsAttached ? debugUrl ?? url : url) ?? "about:blank";
+    internal string GetUrl() => $"{(Debugger.IsAttached ? debugUrl ?? url : url) ?? "about:blank"}{queryString}";
 
     protected string appId = "de.uriegel.webwindownetcore";
     protected int width;
@@ -123,10 +130,11 @@ public abstract class WebView
     protected string? debugUrl;
     protected bool saveBounds;
     protected bool devTools;
+    protected bool defaultContextMenuDisabled;
     protected string? queryString;
 #if Windows    
     protected bool withoutNativeTitlebar;
 #endif
 }
 
-// TODO Use commander.ui with AdwHeaderBar 
+// TODO Query string
