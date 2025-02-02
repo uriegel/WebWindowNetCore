@@ -82,6 +82,14 @@ public abstract class WebView
         => this.SideEffect(w => w.saveBounds = true);
 
     /// <summary>
+    /// Used to enable (not to show) the developer tools. If not called, it is not possible to open these tools.
+    /// The developer tools can be shown by default context menu or by calling the javascript method WebView.showDevtools()
+    /// </summary>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
+    public WebView DevTools()
+        => this.SideEffect(w => devTools = true);
+
+    /// <summary>
     /// Sets the query string to the final webroot's url
     /// </summary>
     /// <param name="queryString"></param>
@@ -114,11 +122,11 @@ public abstract class WebView
     protected string? url;
     protected string? debugUrl;
     protected bool saveBounds;
+    protected bool devTools;
     protected string? queryString;
 #if Windows    
     protected bool withoutNativeTitlebar;
 #endif
 }
 
-// TODO content_type get from extension in CsTools
 // TODO Use commander.ui with AdwHeaderBar 

@@ -20,8 +20,9 @@ public class WebView() : WebWindowNetCore.WebView
             .Child(WebKit
                     .New()
                     .Ref(webViewRef)
+                    .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
                     .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-                    .SideEffectIf(GetUrl().StartsWith("res://"), EnableReosurceScheme)
+                    .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
                     .LoadUri(GetUrl())
             )
             .Show();
@@ -43,7 +44,7 @@ public class WebView() : WebWindowNetCore.WebView
                         IsMaximized = window.IsMaximized()
                     }));
 
-    void EnableReosurceScheme(WebViewHandle webView)
+    void EnableResourceScheme(WebViewHandle webView)
         => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
 
     void OnResRequest(WebkitUriSchemeRequestHandle request)
@@ -56,7 +57,7 @@ public class WebView() : WebWindowNetCore.WebView
             res.Read(bytes, 0, bytes.Length);
             using var gbytes = GBytes.New(bytes);
             using var gstream = MemoryInputStream.New(gbytes);
-            request.Finish(gstream, bytes.Length, "text/html");
+            request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
         }
     }
 
