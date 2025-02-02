@@ -26,7 +26,9 @@ public class WebView() : WebWindowNetCore.WebView
                     .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
                     .LoadUri(GetUrl())
             )
-            .Show();
+            .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
+            .Show()
+            .GrabFocus();
 
     void WithSaveBounds(WindowHandle window)
         => Bounds

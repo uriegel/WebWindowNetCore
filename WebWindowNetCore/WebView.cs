@@ -104,6 +104,15 @@ public abstract class WebView
     public WebView QueryString(string queryString)
         => this.SideEffect(w => w.queryString = queryString);
 
+    /// <summary>
+    /// Here you can set a callback function which is called when the window is about to close. 
+    /// In the callback you can prevent the close request by returning false.
+    /// </summary>
+    /// <param name="canCloseFunc">Callback funciton called when the window should be closed. Return "true" to close the window, "false" to prevent</param>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
+    public WebView CanClose(Func<bool> canClose)
+        => this.SideEffect(w => w.canClose = canClose);
+
 #if Windows    
     /// <summary>
     /// Hides the Windows Titlebar
@@ -132,9 +141,19 @@ public abstract class WebView
     protected bool devTools;
     protected bool defaultContextMenuDisabled;
     protected string? queryString;
+    protected Func<bool>? canClose;
 #if Windows    
     protected bool withoutNativeTitlebar;
 #endif
 }
 
-// TODO Query string
+// TODO CanClose
+// TODO Javascipt
+// TODO showDevTools
+// TODO request
+// TODO res://onevents
+// TODO Drag (Linux)
+// TODO Linux AdwHeaderbar with devtools and builder.ui
+// TODO Up to date Windows version
+// TODO Drag and Drop (Windows)
+// TODO Custom Windows titlebar
