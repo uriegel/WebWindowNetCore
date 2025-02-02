@@ -117,7 +117,7 @@ public class WebView() : WebWindowNetCore.WebView
     {
         if (request != null && msg?.StartsWith("request") == true)
         {
-            var req = Request.Create(msg);
+            var req = Request.Create(webView, msg);
             request(req);
         }
     }

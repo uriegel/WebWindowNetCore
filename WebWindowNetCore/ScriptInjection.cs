@@ -41,7 +41,7 @@ var WebView = (() => {{
         // setDroppedFilesEventHandler,
         // setDroppedEvent,
         // closeWindow,
-        // backtothefuture,
+        backtothefuture,
         // additionalObjectsBack,
         // startDragFilesBack
     }}

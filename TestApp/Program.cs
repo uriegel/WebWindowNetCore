@@ -24,11 +24,20 @@ void OnRequest(Request request)
         case "cmd1":
         {
             var data = request.Deserialize<Input>();
+            request.Response(new Contact("Uwe Riegel", 9865));
+
         }
         break;
         case "cmd2":
         {
             var data = request.Deserialize<Input2>();
+                OnRequest();
+            
+            async void OnRequest()
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                request.Response(new Contact2("Uwe Riegel", "0177622111"));
+            }
         }
         break;
     }
