@@ -147,8 +147,11 @@ public abstract class WebView
 #endif
 }
 
-// TODO Javascipt
-// TODO showDevTools
+// TODO Rust program with inherited and extended Window
+// TODO Now shift the Program into a library
+// TODO Call this library from a C++ program
+// TODO Call this library from a C# program
+
 // TODO request
 // TODO res://onevents
 // TODO Drag (Linux)
