@@ -113,6 +113,9 @@ public abstract class WebView
     public WebView CanClose(Func<bool> canClose)
         => this.SideEffect(w => w.canClose = canClose);
 
+    public WebView OnRequest(Action<Request> request)
+        => this.SideEffect(w => w.request = request);
+
 #if Windows    
     /// <summary>
     /// Hides the Windows Titlebar
@@ -142,15 +145,11 @@ public abstract class WebView
     protected bool defaultContextMenuDisabled;
     protected string? queryString;
     protected Func<bool>? canClose;
+    protected Action<Request>? request;
 #if Windows    
     protected bool withoutNativeTitlebar;
 #endif
 }
-
-// TODO Rust program with inherited and extended Window
-// TODO Now shift the Program into a library
-// TODO Call this library from a C++ program
-// TODO Call this library from a C# program
 
 // TODO request
 // TODO res://onevents

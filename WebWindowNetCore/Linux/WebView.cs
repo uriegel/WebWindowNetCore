@@ -24,6 +24,7 @@ public class WebView() : WebWindowNetCore.WebView
                     .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
                     .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
                     .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
+                    .SideEffectIf(request != null, EnableRequests)
                     .SideEffect(EnableRequestScheme)
                     .SideEffect(w => w.OnLoadChanged(OnLoad))
                     .LoadUri(GetUrl())
@@ -101,12 +102,24 @@ public class WebView() : WebWindowNetCore.WebView
                 }
                 break;
             default:
-                // TODO
+                // TODO                                                     
                 // WebkitView::send_response(req, 404, "Not Found", html::ok());
                 return;
         }
         // TODO
         // WebkitView::send_response(req, 200, "Ok", html::ok());
+    }
+
+    void EnableRequests(WebViewHandle webView)
+        => webView.OnAlert(OnRequest);
+
+    void OnRequest(WebViewHandle webView, string? msg)        
+    {
+        if (request != null && msg?.StartsWith("request") == true)
+        {
+            var req = Request.Create(msg);
+            request(req);
+        }
     }
 
     readonly ObjectRef<WebViewHandle> webViewRef = new();
