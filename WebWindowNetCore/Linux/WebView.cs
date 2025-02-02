@@ -60,9 +60,13 @@ public class WebView() : WebWindowNetCore.WebView
         if (load == WebViewLoad.Committed)
         {
             webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get());
-            var t = Task
-                .Delay(TimeSpan.FromMilliseconds(20))
-                .ContinueWith(_ => webView.Visible(true));
+            SetVisible();
+            
+            async void SetVisible()
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(20));
+                webView.Visible(true);
+            }
         }
     }
 
@@ -85,7 +89,16 @@ public class WebView() : WebWindowNetCore.WebView
         switch (request.GetUri()[6..])            
         {
             case "showDevTools":
-                webViewRef.Ref.GetInspector().Show();
+                var inspector = webViewRef.Ref.GetInspector();
+                inspector.Show();
+                webViewRef.Ref.GrabFocus();
+                DetachInspector();
+
+                async void DetachInspector()
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(600));
+                    inspector.Detach();
+                }
                 break;
             default:
                 // TODO
