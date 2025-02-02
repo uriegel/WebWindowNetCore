@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
@@ -20,10 +19,13 @@ public class WebView() : WebWindowNetCore.WebView
             .Child(WebKit
                     .New()
                     .Ref(webViewRef)
+                    .SideEffect(w => w.Visible(false))
                     .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
                     .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
                     .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
                     .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
+                    .SideEffect(EnableRequestScheme)
+                    .SideEffect(w => w.OnLoadChanged(OnLoad))
                     .LoadUri(GetUrl())
             )
             .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
@@ -50,6 +52,20 @@ public class WebView() : WebWindowNetCore.WebView
     void EnableResourceScheme(WebViewHandle webView)
         => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
 
+    void EnableRequestScheme(WebViewHandle webView)
+        => WebKitWebContext.GetDefault().RegisterUriScheme("req", OnReqRequest);
+
+    void OnLoad(WebViewHandle webView, WebViewLoad load)
+    {
+        if (load == WebViewLoad.Committed)
+        {
+            webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get());
+            var t = Task
+                .Delay(TimeSpan.FromMilliseconds(20))
+                .ContinueWith(_ => webView.Visible(true));
+        }
+    }
+
     void OnResRequest(WebkitUriSchemeRequestHandle request)
     {
         var uri = request.GetUri()[6..].SubstringUntil('?');
@@ -62,6 +78,22 @@ public class WebView() : WebWindowNetCore.WebView
             using var gstream = MemoryInputStream.New(gbytes);
             request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
         }
+    }
+
+    void OnReqRequest(WebkitUriSchemeRequestHandle request)
+    {
+        switch (request.GetUri()[6..])            
+        {
+            case "showDevTools":
+                webViewRef.Ref.GetInspector().Show();
+                break;
+            default:
+                // TODO
+                // WebkitView::send_response(req, 404, "Not Found", html::ok());
+                return;
+        }
+        // TODO
+        // WebkitView::send_response(req, 200, "Ok", html::ok());
     }
 
     readonly ObjectRef<WebViewHandle> webViewRef = new();

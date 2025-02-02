@@ -147,7 +147,6 @@ public abstract class WebView
 #endif
 }
 
-// TODO CanClose
 // TODO Javascipt
 // TODO showDevTools
 // TODO request
