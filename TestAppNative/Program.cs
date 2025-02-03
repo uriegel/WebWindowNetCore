@@ -1,5 +1,21 @@
-﻿// using System.Drawing;
-// using WebWindowNetCore;
+﻿using System.Drawing;
+using WebWindowNetCore;
+
+WebView
+    .Create()
+    .AppId("de.uriegel.test")
+    .Title("Web Window Net Core Native 👍")
+#if Linux    
+    .WithBuilder(TestAppNative.Linux.WebView.WithBuilder)
+#endif    
+    .InitialBounds(600, 800)
+    .SaveBounds()
+    .DevTools()
+    .DefaultContextMenuDisabled()
+    .BackgroundColor(Color.Transparent)
+    .Url("res://webroot/index.html")
+    .CanClose(() => true)
+    .Run();
 
 // new WebView()
 //     .AppId("de.uriegel.test")
@@ -24,4 +40,3 @@
 // #endif
 //     .Run();
 
-Console.WriteLine("");

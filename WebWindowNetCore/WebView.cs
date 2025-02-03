@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using CsTools.Extensions;
+using GtkDotNet.SafeHandles;
 
 namespace WebWindowNetCore;
 
@@ -8,7 +9,15 @@ public abstract class WebView
 {
 #if Linux
     public static WebView Create() => new Linux.WebView();
+
+    public WebView WithBuilder(Func<BuilderHandle> builder)
+        => this.SideEffect(w => w.builder = builder);
 #endif    
+
+#if Windows
+
+    public static WebView Create() => new Windows.WebView();
+#endif
 
     /// <summary>
     /// The AppId is necessary for a webview app on Linux, it is the AppId for a GtkApplication. 
@@ -154,9 +163,11 @@ public abstract class WebView
 #if Windows    
     protected bool withoutNativeTitlebar;
 #endif
+#if Linux
+    protected Func<BuilderHandle>? builder;
+#endif
 }
 
-// TODO Linux AdwHeaderbar with devtools and builder.ui
 // TODO Up to date Windows version
 // TODO Drag and Drop (Windows)
 // TODO Custom Windows titlebar

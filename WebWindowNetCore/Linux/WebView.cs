@@ -1,3 +1,4 @@
+#if Linux
 using System.Text;
 using System.Text.Json;
 using CsTools;
@@ -15,27 +16,43 @@ public class WebView() : WebWindowNetCore.WebView
             .Run(0, 0);
 
     void OnActivate(ApplicationHandle app)
-        => app
-            .NewWindow()
-            .Title(title)
-            .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
-            .Child(WebKit
-                    .New()
-                    .Ref(webViewRef)
-                    .SideEffect(w => w.Visible(false))
-                    .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
-                    .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
-                    .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-                    .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
-                    .SideEffectIf(request != null, EnableRequests)
-                    .SideEffect(EnableRequestScheme)
-                    .SideEffect(Javascript.Initialize)
-                    .SideEffect(w => w.OnLoadChanged(OnLoad))
-                    .LoadUri(GetUrl())
-            )
-            .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
-            .Show()
-            .GrabFocus();
+    {
+        if (builder == null)
+            app
+                .NewWindow()
+                .Title(title)
+                .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
+                .Child(GetWebKit())
+                .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
+                .Show()
+                .GrabFocus();
+        else
+            builder
+                .Invoke()
+                .GetObject<WindowHandle>("window", w => w
+                    .Title(title)
+                    .SetApplication(app)
+                    .Child(GetWebKit())
+                    .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
+                    .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
+                    .Show()
+                    .GrabFocus());
+    }
+
+    WebViewHandle GetWebKit()
+        => WebKit
+                .New()
+                .Ref(webViewRef)
+                .SideEffect(w => w.Visible(false))
+                .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
+                .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
+                .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
+                .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
+                .SideEffectIf(request != null, EnableRequests)
+                .SideEffect(EnableRequestScheme)
+                .SideEffect(Javascript.Initialize)
+                .SideEffect(w => w.OnLoadChanged(OnLoad))
+                .LoadUri(GetUrl());        
 
     void WithSaveBounds(WindowHandle window)
         => Bounds
@@ -171,3 +188,4 @@ public class WebView() : WebWindowNetCore.WebView
 
 record DragFiles(string[] Files);
 
+#endif

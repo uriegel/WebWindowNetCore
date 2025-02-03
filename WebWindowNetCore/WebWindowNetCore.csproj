@@ -16,7 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CsTools" Version="7.19.0" />
-    <PackageReference Include="Gtk4DotNet" Version="6.5.6" />
+    <PackageReference Include="Gtk4DotNet" Version="6.6.0" />
   </ItemGroup>
 
 </Project>

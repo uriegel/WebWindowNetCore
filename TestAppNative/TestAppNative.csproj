@@ -36,6 +36,9 @@
   </PropertyGroup> 
 
   <ItemGroup>
+    <EmbeddedResource Include="./Resources/window.ui">
+      <LogicalName>ui</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="./webroot/index.html">
       <LogicalName>webroot/index.html</LogicalName>
     </EmbeddedResource>
