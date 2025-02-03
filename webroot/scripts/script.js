@@ -9,6 +9,13 @@ btnDevTools.onclick = () => WebView.showDevTools()
 
 let currentDirectory = ""
 
+const init = async () => {
+    const res = await WebView.request("cmd3", {})
+    currentDirectory = res.path
+    console.log("baseDirectory", currentDirectory)
+}
+init()
+
 const initialize = async () => {
     WebView.setDroppedFilesEventHandler(success => console.log("Files dropped", success))
     currentDirectory = (await WebView.request("getCurrentDir", {})).directory

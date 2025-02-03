@@ -12,7 +12,7 @@ public class Request(WebViewHandle webView, string cmd, string id, string json)
 
     public void Response<T>(T t)
     {
-        var back = $"result,{id},{JsonSerializer.Serialize(t)}".Replace("'", "u0027");
+        var back = $"result,{id},{JsonSerializer.Serialize(t, Json.Defaults)}".Replace("'", "u0027");
         webView.RunJavascript($"WebView.backtothefuture('{back}')");
     }
 

@@ -113,12 +113,18 @@ public class WebView() : WebWindowNetCore.WebView
         return Unit.Value;
     }
 
-    Unit SendOk(WebkitUriSchemeRequestHandle request)
+    static Unit SendOk(WebkitUriSchemeRequestHandle request)
     {
         var ok = "OK";
         using var bytes = GBytes.New(Encoding.UTF8.GetBytes(ok));
         using var stream = MemoryInputStream.New(bytes);
-        request.Finish(stream, ok.Length, "text/html");
+        using var response = WebKitUriSchemeResponse.New(stream, ok.Length);
+        using var respondHeaders = SoupMessageHeaders.New(SoupMessageHeaderType.Response);
+        respondHeaders.Set([new("Access-Control-Allow-Origin", "*")]);
+        response
+            .HttpHeaders(respondHeaders)
+            .Status(200, "OK");
+        request.Finish(response);
         return Unit.Value;
     }
 

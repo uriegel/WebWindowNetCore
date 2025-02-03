@@ -31,7 +31,7 @@ void OnRequest(Request request)
         case "cmd2":
         {
             var data = request.Deserialize<Input2>();
-                OnRequest();
+            OnRequest();
             
             async void OnRequest()
             {
@@ -41,6 +41,12 @@ void OnRequest(Request request)
             }
         }
         break;
+        case "cmd3":
+        {
+            var data = request.Deserialize<Input>();
+            request.Response(new BaseDirectory(Directory.GetCurrentDirectory()));
+        }
+        break;
     }
 }
 
@@ -48,3 +54,4 @@ record Input(string Text, int Id);
 record Contact(string Name, int Id);
 record Input2(string EMail, int Count, int Nr);
 record Contact2(string DisplayName, string Phone);
+record BaseDirectory(string Path);
