@@ -1,3 +1,4 @@
+using System.Text;
 using CsTools;
 using CsTools.Extensions;
 using GtkDotNet;
@@ -89,20 +90,20 @@ public class WebView() : WebWindowNetCore.WebView
 
     void OnReqRequest(WebkitUriSchemeRequestHandle request)
     {
-        var _ = request?.GetUri()[6..] switch
+        var _ = request.GetUri()[6..] switch
         {
-            "showDevTools" => ShowDevTools(),
-            _ => Send404()
+            "showDevTools" => ShowDevTools(request),
+            _ => SendOk(request)
         };
     }
 
-    Unit ShowDevTools()
+    Unit ShowDevTools(WebkitUriSchemeRequestHandle request)
     {
         var inspector = webViewRef.Ref.GetInspector();
         inspector.Show();
         webViewRef.Ref.GrabFocus();
         DetachInspector();
-        SendOk();
+        SendOk(request);
 
         async void DetachInspector()
         {
@@ -112,17 +113,12 @@ public class WebView() : WebWindowNetCore.WebView
         return Unit.Value;
     }
 
-    Unit SendOk()
+    Unit SendOk(WebkitUriSchemeRequestHandle request)
     {
-        // TODO
-        // WebkitView::send_response(req, 200, "Ok", html::ok());
-        return Unit.Value;
-    }
-
-    Unit Send404()
-    {
-        // TODO                                                     
-        // WebkitView::send_response(req, 404, "Not Found", html::ok());
+        var ok = "OK";
+        using var bytes = GBytes.New(Encoding.UTF8.GetBytes(ok));
+        using var stream = MemoryInputStream.New(bytes);
+        request.Finish(stream, ok.Length, "text/html");
         return Unit.Value;
     }
 
