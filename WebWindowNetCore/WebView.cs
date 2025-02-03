@@ -156,7 +156,6 @@ public abstract class WebView
 #endif
 }
 
-// TODO static Evaluate function
 // TODO Drag (Linux)
 // TODO Linux AdwHeaderbar with devtools and builder.ui
 // TODO Up to date Windows version

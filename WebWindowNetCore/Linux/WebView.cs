@@ -27,6 +27,7 @@ public class WebView() : WebWindowNetCore.WebView
                     .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
                     .SideEffectIf(request != null, EnableRequests)
                     .SideEffect(EnableRequestScheme)
+                    .SideEffect(Javascript.Initialize)
                     .SideEffect(w => w.OnLoadChanged(OnLoad))
                     .LoadUri(GetUrl())
             )
