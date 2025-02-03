@@ -1,3 +1,4 @@
+using CsTools;
 using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
@@ -87,27 +88,41 @@ public class WebView() : WebWindowNetCore.WebView
 
     void OnReqRequest(WebkitUriSchemeRequestHandle request)
     {
-        switch (request.GetUri()[6..])            
+        var _ = request?.GetUri()[6..] switch
         {
-            case "showDevTools":
-                var inspector = webViewRef.Ref.GetInspector();
-                inspector.Show();
-                webViewRef.Ref.GrabFocus();
-                DetachInspector();
+            "showDevTools" => ShowDevTools(),
+            _ => Send404()
+        };
+    }
 
-                async void DetachInspector()
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(600));
-                    inspector.Detach();
-                }
-                break;
-            default:
-                // TODO                                                     
-                // WebkitView::send_response(req, 404, "Not Found", html::ok());
-                return;
+    Unit ShowDevTools()
+    {
+        var inspector = webViewRef.Ref.GetInspector();
+        inspector.Show();
+        webViewRef.Ref.GrabFocus();
+        DetachInspector();
+        SendOk();
+
+        async void DetachInspector()
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(600));
+            inspector.Detach();
         }
+        return Unit.Value;
+    }
+
+    Unit SendOk()
+    {
         // TODO
         // WebkitView::send_response(req, 200, "Ok", html::ok());
+        return Unit.Value;
+    }
+
+    Unit Send404()
+    {
+        // TODO                                                     
+        // WebkitView::send_response(req, 404, "Not Found", html::ok());
+        return Unit.Value;
     }
 
     void EnableRequests(WebViewHandle webView)

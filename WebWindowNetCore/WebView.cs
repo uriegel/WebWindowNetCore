@@ -113,6 +113,11 @@ public abstract class WebView
     public WebView CanClose(Func<bool> canClose)
         => this.SideEffect(w => w.canClose = canClose);
 
+    /// <summary>
+    /// Requests from Javascript call this installed Action 
+    /// </summary>
+    /// <param name="request">Callback receiving requests</param>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
     public WebView OnRequest(Action<Request> request)
         => this.SideEffect(w => w.request = request);
 
@@ -151,7 +156,7 @@ public abstract class WebView
 #endif
 }
 
-// TODO res://onevents
+// TODO Evaluate
 // TODO Drag (Linux)
 // TODO Linux AdwHeaderbar with devtools and builder.ui
 // TODO Up to date Windows version
