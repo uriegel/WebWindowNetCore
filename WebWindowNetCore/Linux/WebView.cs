@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using CsTools;
 using CsTools.Extensions;
 using GtkDotNet;
@@ -93,6 +94,7 @@ public class WebView() : WebWindowNetCore.WebView
         var _ = request.GetUri()[6..] switch
         {
             "showDevTools" => ShowDevTools(request),
+            "startDragFiles" => StartDragFiles(request),
             _ => SendOk(request)
         };
     }
@@ -104,12 +106,36 @@ public class WebView() : WebWindowNetCore.WebView
         webViewRef.Ref.GrabFocus();
         DetachInspector();
         SendOk(request);
+        return Unit.Value;
 
         async void DetachInspector()
         {
             await Task.Delay(TimeSpan.FromMilliseconds(600));
             inspector.Detach();
         }
+    }
+
+    Unit StartDragFiles(WebkitUriSchemeRequestHandle request)
+    {
+        var files = JsonSerializer.Deserialize<DragFiles>(request.GetHttpBody(), Json.Defaults);
+        if (files != null)
+        {
+            var device = webViewRef.Ref.GetDisplay().GetDefaultSeat().GetDevice();
+            using var provider = ContentProvider.NewFileUris(files.Files);
+            var surface = webViewRef.Ref.GetNative().GetSurface();
+            var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
+            drag.DragAndDropFinished(OnFinished);
+            drag.DragAndDropCancelled(_ => OnFinished(false));
+            SendOk(request);
+            return Unit.Value;
+
+            void OnFinished(bool success)
+            {
+                webViewRef.Ref.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
+                drag.Dispose();
+            }
+        }
+        SendOk(request);
         return Unit.Value;
     }
 
@@ -142,3 +168,6 @@ public class WebView() : WebWindowNetCore.WebView
 
     readonly ObjectRef<WebViewHandle> webViewRef = new();
 }
+
+record DragFiles(string[] Files);
+

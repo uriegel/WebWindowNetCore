@@ -44,7 +44,7 @@ void OnRequest(Request request)
         case "cmd3":
         {
             var data = request.Deserialize<Input>();
-            request.Response(new BaseDirectory(Directory.GetCurrentDirectory()));
+            request.Response(new BaseDirectory(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar));
         }
         break;
     }

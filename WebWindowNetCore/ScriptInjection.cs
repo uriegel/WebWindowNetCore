@@ -34,7 +34,7 @@ var WebView = (() => {{
     return {{
 //        initializeNoTitlebar,
         showDevTools,
-//        startDragFiles,
+        startDragFiles,
         request,
         // dropFiles,
         // filesDropped,
@@ -43,7 +43,7 @@ var WebView = (() => {{
         // closeWindow,
         backtothefuture,
         // additionalObjectsBack,
-        // startDragFilesBack
+        startDragFilesBack
     }}
 }})()
 ";
