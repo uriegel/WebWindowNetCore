@@ -76,10 +76,11 @@ class WebViewForm : Form
                                 new CoreWebView2CustomSchemeRegistration("res")
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
             await webView.EnsureCoreWebView2Async(env);
-//             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
-//                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
-//            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
-//             webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
+            //             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
+            if (settings.GetUrl().StartsWith("res://"))
+                webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
+            //            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
+            webView.CoreWebView2.WebResourceRequested += ServeRes;
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
@@ -88,8 +89,7 @@ class WebViewForm : Form
 //             if settings.OnFilesDropValue.IsSome then
 //                 webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
 
-            //webView.Source = new Uri(settings.GetUrl());
-            webView.Source = new Uri("https://google.de");
+            webView.Source = new Uri(settings.GetUrl());
         }
     }
 
@@ -118,6 +118,28 @@ class WebViewForm : Form
     {
         Theme.StartDetection(SetDarkMode);
         SetDarkMode(Theme.IsDark());
+    }
+
+    void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
+    {
+        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
+        var stream = Resources.Get(uri);
+
+        if (stream != null)
+            ServeResourceStream(uri, stream);
+
+        void ServeResourceStream(string url, Stream stream)
+        {
+            try
+            {
+                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
+                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
+            }
+            catch
+            {
+                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(null, 404, "Not Found", "");
+            }
+        }
     }
 
     void SetDarkMode(bool dark)
@@ -151,8 +173,6 @@ class WebViewForm : Form
 //             this.setMaximized(this.WindowState = FormWindowState.Maximized)
 
 //             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
-//         } 
-//         |> Async.StartWithCurrentContext 
 
 
 
@@ -252,21 +272,6 @@ class WebViewForm : Form
 //             |> Async.AwaitTask
 //             |> ignore
             
-//     member this.serveRes e = 
-//         let serveResourceStream (url: string) (stream: System.IO.Stream) = 
-//             try
-//                 e.Response <- this.WebView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200, "OK", sprintf "Content-Type: %s" (ContentType.get url))
-//             with
-//             | _ ->  e.Response <- this.WebView.CoreWebView2.Environment.CreateWebResourceResponse(null, 404, "Not Found", "")
-
-//         let uri = 
-//             Uri.UnescapeDataString(e.Request.Uri)
-//             |> String.substring 6
-
-//         uri
-//         |> Resources.get 
-//         |> Option.iter (serveResourceStream uri)
-//         ()
 
 //     member this.createWebViewAccess () =
 //         let runJavascript str = 
