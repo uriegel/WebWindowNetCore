@@ -10,6 +10,7 @@ WebView
     .DevTools()
     .DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
+    .ResourceIcon("icon")
     //.DebugUrl("https://github.com/uriegel/WebWindowNetCore")
     .Url("res://webroot/index.html")
     .QueryString("?param1=123&param2=456")

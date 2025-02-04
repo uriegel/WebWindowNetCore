@@ -134,6 +134,9 @@ public abstract class WebView
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
     public WebView WithoutNativeTitlebar()
         => this.SideEffect(w => w.withoutNativeTitlebar = true);
+
+    public WebView ResourceIcon(string icon)
+        => this.SideEffect(w => w.resourceIcon = icon);
 #endif
 
     /// <summary>
@@ -159,6 +162,7 @@ public abstract class WebView
     internal Action<Request>? request;
 #if Windows    
     internal bool withoutNativeTitlebar;
+    internal string? resourceIcon;
 #endif
 #if Linux
     protected Func<BuilderHandle>? builder;

@@ -1,4 +1,5 @@
 #if Windows
+using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
@@ -28,10 +29,8 @@ class WebViewForm : Form
 
 //         settings.OnFormCreatingValue
 //         |> Option.iter (fun f -> f(this))
-//         settings.ResourceIconValue 
-//         |> Option.iter (fun i -> 
-//                                 Resources.get i
-//                                 |>Option.iter (fun s -> this.Icon <- new Icon (s)))
+        if (settings.resourceIcon != null)
+        Icon = new Icon(Resources.Get(settings.resourceIcon)!);
         AutoScaleMode = AutoScaleMode.Font;
 
         if (settings.saveBounds)
