@@ -1,13 +1,6 @@
 #if Windows
-using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
-using System.ComponentModel;
-using System.Text.Json;
-using ClrWinApi;
 
 namespace WebWindowNetCore.Windows;
 
@@ -21,6 +14,8 @@ class WebViewForm : Form
 {
     public WebViewForm(string appDataPath, WebView settings)
     {
+        saveBounds = settings.saveBounds;
+        appId = settings.appId;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -39,14 +34,19 @@ class WebViewForm : Form
 //                                 |>Option.iter (fun s -> this.Icon <- new Icon (s)))
         AutoScaleMode = AutoScaleMode.Font;
 
-        //var bounds = Bounds.retrieve(settings.appId);
-        //this.Size = new Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
-        //WindowState = bounds.IsMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
-        // if (WindowState == FormWindowState.Maximized)
-        //     isMaximized = true;
+        if (settings.saveBounds)
+        {
+            var bounds = settings.saveBounds 
+                ? WebWindowNetCore.Bounds.Retrieve(settings.appId)
+                : null;
+            Size = new Size(bounds?.Width ?? settings.width, bounds?.Height ?? settings.height);
+            WindowState = bounds?.IsMaximized == true? FormWindowState.Maximized : FormWindowState.Normal;
+            // if (WindowState == FormWindowState.Maximized)
+            //     isMaximized = true;
+        }
 
-//         if settings.SaveBoundsValue then
-//             this.FormClosing.Add(this.onClosing)
+        if (settings.saveBounds)
+            FormClosing += OnClosing;
 
 //         this.Load.Add(this.onLoad)
 
@@ -89,9 +89,26 @@ class WebViewForm : Form
         }
     }
 
-    WebView2 webView = new();
-    Panel panel = new();
+    void OnClosing(object? _, FormClosingEventArgs e)
+    { 
+        var bounds = (saveBounds 
+            ? WebWindowNetCore.Bounds.Retrieve(appId)
+            : new Bounds(null, null, null, null, false))
+            with {
+                X = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.X : Location.X,
+                Y = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.Y : Location.Y,
+                Width = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Width : Size.Width,
+                Height = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Height : Size.Height,
+                IsMaximized = WindowState == FormWindowState.Maximized 
+            };
+        WebWindowNetCore.Bounds.Save(appId, bounds);
+    }
 
+    readonly WebView2 webView = new();
+    Panel panel = new();
+    readonly bool saveBounds; 
+    readonly string appId;
+}
 
 
 
@@ -113,7 +130,7 @@ class WebViewForm : Form
 //         } 
 //         |> Async.StartWithCurrentContext 
 
-} 
+
 
 //     let WM_NCCALCSIZE = 0x83
 
@@ -136,8 +153,6 @@ class WebViewForm : Form
 //             System.Runtime.InteropServices.Marshal.StructureToPtr(clnRect, m.LParam, true)
 //         m.Result <- 0
 
-
-//     member this.WebView = webView
 
 //     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
 //     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
@@ -174,14 +189,6 @@ class WebViewForm : Form
 //         //     this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
 //         this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
 
-//     member this.onClosing (e: FormClosingEventArgs) =
-//             { Bounds.retrieve settings.AppIdValue with 
-//                 X = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Location.X else Some this.Location.X
-//                 Y = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Location.Y else Some this.Location.Y
-//                 Width = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Size.Width else Some this.Size.Width
-//                 Height = if this.WindowState = FormWindowState.Maximized then Some this.RestoreBounds.Size.Height else Some this.Size.Height
-//                 IsMaximized = this.WindowState = FormWindowState.Maximized }
-//             |> Bounds.save settings.AppIdValue
 
 //     member this.onResize (e: EventArgs) =
 //         if this.WindowState = FormWindowState.Maximized <> isMaximized then
