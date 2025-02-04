@@ -17,8 +17,101 @@ namespace WebWindowNetCore.Windows;
 //     Text: string 
 // }
 
-class WebViewForm(string appDataPath, WebView settings) : Form
+class WebViewForm : Form
 {
+    public WebViewForm(string appDataPath, WebView settings)
+    {
+        //(this as ComponentModel.ISupportInitialize).BeginInit();
+        SuspendLayout();
+        webView.AllowExternalDrop = true;
+        webView.CreationProperties = null;
+        if (settings.backgroundColor.HasValue)
+            webView.DefaultBackgroundColor = settings.backgroundColor.Value;
+        webView.Dock = DockStyle.Fill;
+        webView.TabIndex = 0;
+        webView.ZoomFactor = 1;
+
+//         settings.OnFormCreatingValue
+//         |> Option.iter (fun f -> f(this))
+//         settings.ResourceIconValue 
+//         |> Option.iter (fun i -> 
+//                                 Resources.get i
+//                                 |>Option.iter (fun s -> this.Icon <- new Icon (s)))
+        AutoScaleMode = AutoScaleMode.Font;
+
+        //var bounds = Bounds.retrieve(settings.appId);
+        //this.Size = new Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
+        //WindowState = bounds.IsMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
+        // if (WindowState == FormWindowState.Maximized)
+        //     isMaximized = true;
+
+//         if settings.SaveBoundsValue then
+//             this.FormClosing.Add(this.onClosing)
+
+//         this.Load.Add(this.onLoad)
+
+//         this.QueryContinueDrag.Add(this.onDrop);
+
+//         if settings.WithoutNativeTitlebarValue then
+//             this.Resize.Add(this.onResize)
+
+        Text = settings.title;
+
+        panel.Dock = DockStyle.Fill;
+        panel.Controls.Add(webView);
+        Controls.Add(panel);
+
+        // (webView :> ComponentModel.ISupportInitialize).EndInit ()
+        ResumeLayout(false);
+
+        Init();
+        async void Init()
+        {
+            var env = await CoreWebView2Environment.CreateAsync(null, appDataPath, new CoreWebView2EnvironmentOptions(
+                            customSchemeRegistrations: [ 
+                                new CoreWebView2CustomSchemeRegistration("res")
+                            ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
+            await webView.EnsureCoreWebView2Async(env);
+//             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
+//                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
+//            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
+//             webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
+            webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+            webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
+            webView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
+            //webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
+//             if settings.OnFilesDropValue.IsSome then
+//                 webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
+
+            //webView.Source = new Uri(settings.GetUrl());
+            webView.Source = new Uri("https://google.de");
+        }
+    }
+
+    WebView2 webView = new();
+    Panel panel = new();
+
+
+
+
+
+
+//             webView.ExecuteScriptAsync(@"
+//                 const callback = chrome.webview.hostObjects.Callback
+//             ") 
+//                 |> Async.AwaitTask
+//                 |> ignore
+
+//             webView.ExecuteScriptAsync(Script.get settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true settings.OnFilesDropValue.IsSome) 
+//                 |> Async.AwaitTask
+//                 |> ignore
+
+//             this.setMaximized(this.WindowState = FormWindowState.Maximized)
+
+//             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
+//         } 
+//         |> Async.StartWithCurrentContext 
 
 } 
 
@@ -43,99 +136,6 @@ class WebViewForm(string appDataPath, WebView settings) : Form
 //             System.Runtime.InteropServices.Marshal.StructureToPtr(clnRect, m.LParam, true)
 //         m.Result <- 0
 
-//     let webView = new WebView2()
-//     let panel = new Panel()
-
-//     do 
-//         (webView :> ComponentModel.ISupportInitialize).BeginInit()
-//         this.SuspendLayout();
-//         webView.AllowExternalDrop <- true
-//         webView.CreationProperties <- null
-//         settings.BackgroundColorValue 
-//         |> Option.iter (fun c -> webView.DefaultBackgroundColor <- c)
-//         webView.Dock <- DockStyle.Fill
-//         webView.TabIndex <- 0
-//         webView.ZoomFactor <- 1
-
-// #if Windows
-//         settings.OnFormCreatingValue
-//         |> Option.iter (fun f -> f(this))
-// #endif
-
-//         settings.ResourceIconValue 
-//         |> Option.iter (fun i -> 
-//                                 Resources.get i
-//                                 |>Option.iter (fun s -> this.Icon <- new Icon (s)))
-
-//         this.AutoScaleMode <- AutoScaleMode.Font
-
-//         let bounds = Bounds.retrieve settings.AppIdValue
-//         this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
-//         this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
-//         if this.WindowState = FormWindowState.Maximized then
-//             isMaximized <- true
-
-//         if settings.SaveBoundsValue then
-//             this.FormClosing.Add(this.onClosing)
-
-//         this.Load.Add(this.onLoad)
-
-//         this.QueryContinueDrag.Add(this.onDrop);
-
-//         if settings.WithoutNativeTitlebarValue then
-//             this.Resize.Add(this.onResize)
-
-//         this.Text <- settings.TitleValue
-
-//         panel.Dock <- DockStyle.Fill
-//         panel.Controls.Add webView
-//         this.Controls.Add panel
-
-//         (webView :> ComponentModel.ISupportInitialize).EndInit ()
-//         this.ResumeLayout false
-
-//         if settings.ResourceFromHttpValue || settings.RequestsValue |> List.length > 0 then
-//             Server.start settings
-
-//         async {
-//             let! enf = CoreWebView2Environment.CreateAsync(
-//                         null, 
-//                         appDataPath, 
-//                         CoreWebView2EnvironmentOptions(
-//                             customSchemeRegistrations = ResizeArray<CoreWebView2CustomSchemeRegistration> [ 
-//                                 CoreWebView2CustomSchemeRegistration("res")
-//                             ],
-//                             AdditionalBrowserArguments = if settings.WithoutNativeTitlebarValue then "--enable-features=msWebView2EnableDraggableRegions" else ""))
-//                         |> Async.AwaitTask
-//             do! webView.EnsureCoreWebView2Async(enf) |> Async.AwaitTask
-//             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
-//                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All)
-//             webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
-//             webView.CoreWebView2.WebResourceRequested.Add(this.serveRes)
-//             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled <- false
-//             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled <- true
-//             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled <- settings.DefaultContextMenuDisabledValue = false
-//             webView.CoreWebView2.WindowCloseRequested.Add(fun _ -> this.Close())
-//             webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
-//             if settings.OnFilesDropValue.IsSome then
-//                 webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
-
-//             webView.Source <- Uri (settings.GetUrl ())
-//             webView.ExecuteScriptAsync(@"
-//                 const callback = chrome.webview.hostObjects.Callback
-//             ") 
-//                 |> Async.AwaitTask
-//                 |> ignore
-
-//             webView.ExecuteScriptAsync(Script.get settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true settings.OnFilesDropValue.IsSome) 
-//                 |> Async.AwaitTask
-//                 |> ignore
-
-//             this.setMaximized(this.WindowState = FormWindowState.Maximized)
-
-//             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
-//         } 
-//         |> Async.StartWithCurrentContext 
 
 //     member this.WebView = webView
 

@@ -144,21 +144,21 @@ public abstract class WebView
 
     internal string GetUrl() => $"{(Debugger.IsAttached ? debugUrl ?? url : url) ?? "about:blank"}{queryString}";
 
-    protected string appId = "de.uriegel.webwindownetcore";
-    protected int width;
-    protected int height;
-    protected string title = "";
-    protected Color? backgroundColor;
-    protected string? url;
-    protected string? debugUrl;
-    protected bool saveBounds;
-    protected bool devTools;
-    protected bool defaultContextMenuDisabled;
-    protected string? queryString;
-    protected Func<bool>? canClose;
-    protected Action<Request>? request;
+    internal string appId = "de.uriegel.webwindownetcore";
+    internal int width;
+    internal int height;
+    internal string title = "";
+    internal Color? backgroundColor;
+    internal string? url;
+    internal string? debugUrl;
+    internal bool saveBounds;
+    internal bool devTools;
+    internal bool defaultContextMenuDisabled;
+    internal string? queryString;
+    internal Func<bool>? canClose;
+    internal Action<Request>? request;
 #if Windows    
-    protected bool withoutNativeTitlebar;
+    internal bool withoutNativeTitlebar;
 #endif
 #if Linux
     protected Func<BuilderHandle>? builder;

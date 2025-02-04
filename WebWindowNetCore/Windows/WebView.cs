@@ -9,10 +9,6 @@ namespace WebWindowNetCore.Windows;
 
 public class WebView : WebWindowNetCore.WebView
 {
-    public WebView()
-    {
-    }
-
     public override int Run() 
     {
         Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
@@ -26,7 +22,7 @@ public class WebView : WebWindowNetCore.WebView
         var appDataPath = new FileInfo(loader).DirectoryName;
         Api.LoadLibrary(loader);
 
-        var webForm = new WebViewForm(appDataPath, this);
+        var webForm = new WebViewForm(appDataPath!, this);
         Application.Run(webForm);
         return 0;
     }
