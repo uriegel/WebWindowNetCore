@@ -7,17 +7,14 @@ namespace WebWindowNetCore;
 
 public abstract class WebView
 {
-#if Linux
+#if Windows
+    public static WebView Create() => new Windows.WebView();
+#elif Linux
     public static WebView Create() => new Linux.WebView();
 
     public WebView WithBuilder(Func<BuilderHandle> builder)
         => this.SideEffect(w => w.builder = builder);
 #endif    
-
-#if Windows
-
-    public static WebView Create() => new Windows.WebView();
-#endif
 
     /// <summary>
     /// The AppId is necessary for a webview app on Linux, it is the AppId for a GtkApplication. 

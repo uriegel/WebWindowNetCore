@@ -1,20 +1,53 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>11.0.0</Version>
+    <FileVersion>11.0.0.0</FileVersion>
+    <AssemblyVersion>11.0.0.0</AssemblyVersion>
+    <Authors>Uwe Riegel</Authors>
+    <Company>Uwe Riegel</Company>
+    <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
+    <PackageLicenseUrl>
+    </PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/uriegel/WebWindowNetCore</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageTags>CSharp;C#;.NET;Functional;WebView;WebView2;Gtk4;WebKit</PackageTags>
+    <PackageReadmeFile>READMENuget.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>  
+  <PropertyGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
     <DefineConstants>Windows</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
+  <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
+    <PackageReference Include="ClrWinApi" Version="2.4.1" />
+  	<EmbeddedResource Include="./WebView2Loader.dll">
+   		<LogicalName>binaries/webviewloader</LogicalName>
+   	</EmbeddedResource>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
+  </ItemGroup>	  
   <ItemGroup>
+    <None Include="..\READMENuget.md" Pack="true" PackagePath="\" />
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
     <PackageReference Include="CsTools" Version="7.19.0" />
     <PackageReference Include="Gtk4DotNet" Version="6.6.0" />
   </ItemGroup>
