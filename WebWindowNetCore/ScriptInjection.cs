@@ -5,7 +5,13 @@ static class ScriptInjection
     public static string Get() => 
 $@"
 
+#if Linux
 {Linux.ScriptInjection.Get()}
+#elif Windows
+{Windows.ScriptInjection.Get()}
+#endif
+
+const showDevTools = () => fetch('req://showDevTools')    
 
 var webviewrequestsid = 0
 var webviewrequests = new Map()

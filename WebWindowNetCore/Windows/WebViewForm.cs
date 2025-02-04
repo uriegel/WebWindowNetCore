@@ -1,5 +1,7 @@
 #if Windows
+using System.Text;
 using ClrWinApi;
+using CsTools;
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
@@ -19,6 +21,7 @@ class WebViewForm : Form
         saveBounds = settings.saveBounds;
         appId = settings.appId;
         canClose = settings.canClose;
+        devTools = settings.devTools;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -79,6 +82,7 @@ class WebViewForm : Form
             //             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
             if (settings.GetUrl().StartsWith("res://"))
                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
+            webView.CoreWebView2.AddWebResourceRequestedFilter("req:*", CoreWebView2WebResourceContext.All);
             //            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
             webView.CoreWebView2.WebResourceRequested += ServeRes;
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
@@ -120,26 +124,63 @@ class WebViewForm : Form
         SetDarkMode(Theme.IsDark());
     }
 
+    Unit ShowDevtools(CoreWebView2WebResourceResponse response) 
+    {
+        if (devTools)
+            webView.CoreWebView2.OpenDevToolsWindow();
+        return SendOk(response);
+    }
+
+    Unit SendTextResponse(int code, string status, string text, CoreWebView2WebResourceResponse response)
+        => Unit
+            .Value
+            .SideEffect(_ =>
+            {
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+                response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, code,
+                        status, $"Content-Type: text/plain");
+            });
+
+    Unit SendOk(CoreWebView2WebResourceResponse response)
+        => SendTextResponse(200, "OK", "OK", response);
+
+    Unit SendNotFound(CoreWebView2WebResourceResponse response)
+        => SendTextResponse(404, "Not Found", "Resource not found", response);
+
     void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
     {
-        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
-        var stream = Resources.Get(uri);
-
-        if (stream != null)
-            ServeResourceStream(uri, stream);
-
-        void ServeResourceStream(string url, Stream stream)
+        if (e.Request.Uri.StartsWith("req"))
+            ServeRequest(e);
+        else 
         {
-            try
+            var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
+            var stream = Resources.Get(uri);
+
+            if (stream != null)
+                ServeResourceStream(uri, stream);
+
+            void ServeResourceStream(string url, Stream stream)
             {
-                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
-                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
-            }
-            catch
-            {
-                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(null, 404, "Not Found", "");
+                try
+                {
+                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
+                        "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
+                }
+                catch
+                {
+                    SendNotFound(e.Response);
+                }
             }
         }
+    }
+
+    void ServeRequest(CoreWebView2WebResourceRequestedEventArgs e)
+    {
+        var _ = e.Request.Uri switch
+        {
+            "req://showDevTools" => ShowDevtools(e.Response),
+            _ => SendNotFound(e.Response)
+        };
     }
 
     void SetDarkMode(bool dark)
@@ -150,7 +191,8 @@ class WebViewForm : Form
             });
 
     readonly WebView2 webView = new();
-    Panel panel = new();
+    readonly bool devTools;
+    readonly Panel panel = new();
     readonly bool saveBounds; 
     readonly string appId;
     readonly Func<bool>? canClose;
@@ -201,9 +243,6 @@ class WebViewForm : Form
 //     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
 //     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
 //     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
-//     member this.ShowDevtools () = 
-//         if settings.DevToolsValue then
-//             webView.CoreWebView2.OpenDevToolsWindow()
 //     member this.StartDragFiles (fileList: string) = 
 //             this.DoDragDrop(DataObject(DataFormats.FileDrop, (TextJson.deserialize<DragFiles> fileList).Files), DragDropEffects.All)
 //     member this.OnEvents(id: string) = 

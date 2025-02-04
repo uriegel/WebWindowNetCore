@@ -1,4 +1,4 @@
-namespace WebWindowNetCore.Linux;
+namespace WebWindowNetCore.Windows;
 
 static class ScriptInjection
 {

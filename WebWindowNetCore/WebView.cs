@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
 using CsTools.Extensions;
-using GtkDotNet.SafeHandles;
 
 namespace WebWindowNetCore;
 
