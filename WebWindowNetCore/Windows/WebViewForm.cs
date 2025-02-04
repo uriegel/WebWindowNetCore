@@ -1,4 +1,5 @@
 #if Windows
+using ClrWinApi;
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
@@ -49,6 +50,7 @@ class WebViewForm : Form
             FormClosing += OnClose;
         if (settings.canClose != null)
             FormClosing += OnCanClose;
+        HandleCreated += OnHandle;
 
 //         this.Load.Add(this.onLoad)
 
@@ -111,7 +113,20 @@ class WebViewForm : Form
         if (canClose?.Invoke() == false)
             e.Cancel = true;
     }
-   
+
+    void OnHandle(object? _, EventArgs e)
+    {
+        Theme.StartDetection(SetDarkMode);
+        SetDarkMode(Theme.IsDark());
+    }
+
+    void SetDarkMode(bool dark)
+        => Invoke(() =>
+            {
+                Api.DwmSetWindowAttribute(Handle, DwmWindowAttribute.ImmersiveDarkMode, [dark ? 1 : 0], 4);
+                BackColor = dark ? Color.Black : Color.White;
+            });
+
     readonly WebView2 webView = new();
     Panel panel = new();
     readonly bool saveBounds; 
@@ -289,15 +304,7 @@ class WebViewForm : Form
 //             | WM_NCCALCSIZE -> calcSizeNoTitlebar &m 
 //             | _ -> base.WndProc &m 
 
-//     member this.SetDarkMode(dark: bool) =
-//         this.Invoke(fun () -> 
-//                         Api.DwmSetWindowAttribute(this.Handle, DwmWindowAttribute.ImmersiveDarkMode, [| if dark then 1 else 0 |], 4) |> ignore
-//                         this.BackColor <- if dark then Color.Black else Color.White
-//                     )
 
-//     override this.OnHandleCreated(e: EventArgs) =
-//         Theme.startDetection (fun b -> this.SetDarkMode(b))
-//         this.SetDarkMode(Theme.isDark ())
             
 // and [<ComVisible(true)>] Callback(parent: WebViewForm) =
 
