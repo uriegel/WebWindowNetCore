@@ -4,12 +4,7 @@ static class ScriptInjection
 {
     public static string Get() => 
 $@"
-
-#if Linux
-{Linux.ScriptInjection.Get()}
-#elif Windows
-{Windows.ScriptInjection.Get()}
-#endif
+{ScriptInjectionExtended()}
 
 const showDevTools = () => fetch('req://showDevTools')    
 
@@ -53,4 +48,11 @@ var WebView = (() => {{
     }}
 }})()
 ";
+
+    static string ScriptInjectionExtended()
+#if Linux
+        => Linux.ScriptInjection.Get();
+#elif Windows
+        => Windows.ScriptInjection.Get();
+#endif  
 }

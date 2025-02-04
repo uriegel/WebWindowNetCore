@@ -1,5 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using CsTools.Extensions;
+#if Linux
+using GtkDotNet.SafeHandles;
+#endif  
 
 namespace WebWindowNetCore;
 
