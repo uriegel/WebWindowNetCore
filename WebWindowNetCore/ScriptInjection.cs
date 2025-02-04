@@ -47,5 +47,11 @@ var WebView = (() => {{
         startDragFilesBack
     }}
 }})()
+
+try {{
+    if (onWebViewLoaded) 
+        onWebViewLoaded()
+}} catch {{ }}
+
 ";
 }

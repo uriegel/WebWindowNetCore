@@ -76,7 +76,8 @@ class WebViewForm : Form
         {
             var env = await CoreWebView2Environment.CreateAsync(null, appDataPath, new CoreWebView2EnvironmentOptions(
                             customSchemeRegistrations: [ 
-                                new CoreWebView2CustomSchemeRegistration("res")
+                                new CoreWebView2CustomSchemeRegistration("res"),
+                                new CoreWebView2CustomSchemeRegistration("req")
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
             await webView.EnsureCoreWebView2Async(env);
             //             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
@@ -94,6 +95,8 @@ class WebViewForm : Form
 //                 webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
 
             webView.Source = new Uri(settings.GetUrl());
+
+            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true)); 
         }
     }
 
