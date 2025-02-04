@@ -17,6 +17,7 @@ class WebViewForm : Form
     {
         saveBounds = settings.saveBounds;
         appId = settings.appId;
+        canClose = settings.canClose;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -45,7 +46,9 @@ class WebViewForm : Form
         }
 
         if (settings.saveBounds)
-            FormClosing += OnClosing;
+            FormClosing += OnClose;
+        if (settings.canClose != null)
+            FormClosing += OnCanClose;
 
 //         this.Load.Add(this.onLoad)
 
@@ -88,7 +91,7 @@ class WebViewForm : Form
         }
     }
 
-    void OnClosing(object? _, FormClosingEventArgs e)
+    void OnClose(object? _, FormClosingEventArgs e)
     { 
         var bounds = (saveBounds 
             ? WebWindowNetCore.Bounds.Retrieve(appId)
@@ -103,10 +106,17 @@ class WebViewForm : Form
         WebWindowNetCore.Bounds.Save(appId, bounds);
     }
 
+    void OnCanClose(object? _, FormClosingEventArgs e)
+    {
+        if (canClose?.Invoke() == false)
+            e.Cancel = true;
+    }
+   
     readonly WebView2 webView = new();
     Panel panel = new();
     readonly bool saveBounds; 
     readonly string appId;
+    readonly Func<bool>? canClose;
 }
 
 
@@ -270,10 +280,6 @@ class WebViewForm : Form
 //         settings.OnHamburgerValue
 //         |> Option.iter (fun f -> f ratioLeft ratioTop)
 
-//     override this.OnClosing(e: CancelEventArgs) = 
-//         base.OnClosing(e)
-//         settings.CanCloseValue
-//         |> Option.iter (fun cc -> e.Cancel <- cc() = false)
 
 //     override this.WndProc(m: byref<Message>) = 
 //         if this.DesignMode || not settings.WithoutNativeTitlebarValue then
