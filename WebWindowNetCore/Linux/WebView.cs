@@ -81,7 +81,7 @@ public class WebView() : WebWindowNetCore.WebView
     {
         if (load == WebViewLoad.Committed)
         {
-            webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get());
+            webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get(false));
             SetVisible();
             
             async void SetVisible()

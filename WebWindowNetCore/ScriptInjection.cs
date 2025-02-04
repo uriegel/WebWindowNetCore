@@ -1,10 +1,10 @@
 namespace WebWindowNetCore;
 
-static class ScriptInjection
+public static class ScriptInjection
 {
-    public static string Get() => 
+    public static string Get(bool windows) => 
 $@"
-{ScriptInjectionExtended()}
+{(windows ? Windows.ScriptInjection.Get() : Linux.ScriptInjection.Get())}
 
 const showDevTools = () => fetch('req://showDevTools')    
 
@@ -48,11 +48,4 @@ var WebView = (() => {{
     }}
 }})()
 ";
-
-    static string ScriptInjectionExtended()
-#if Linux
-        => Linux.ScriptInjection.Get();
-#elif Windows
-        => Windows.ScriptInjection.Get();
-#endif  
 }
