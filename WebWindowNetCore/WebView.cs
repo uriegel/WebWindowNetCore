@@ -189,7 +189,11 @@ public abstract class WebView
 #endif
 }
 
-// TODO Windows: send droped files back
+// TODO Windows: send droped files back:
+//  onFilesDrop without parameter and callback
+//  no parameters
+//  sendFiles back to javascript, change \ to /
+//  receive files and resolve (single) Promise, change back to \
 // TODO Custom Windows titlebar
 // TODO No port: Requests with req-scheme 
 // TODO Test react debug/release (with img)
