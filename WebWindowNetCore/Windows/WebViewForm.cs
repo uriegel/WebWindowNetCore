@@ -1,7 +1,5 @@
 #if Windows
 using System.Text;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
@@ -19,6 +17,7 @@ class WebViewForm : Form
         canClose = settings.canClose;
         request = settings.request;
         devTools = settings.devTools;
+        onFilesDrop = settings.onFilesDrop;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -87,13 +86,10 @@ class WebViewForm : Form
             webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
             webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
             webView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
-            //webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
-//             if settings.OnFilesDropValue.IsSome then
-//                 webView.CoreWebView2.WebMessageReceived.Add(this.OnFilesDropReceived)
 
             webView.Source = new Uri(settings.GetUrl());
 
-            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true)); 
+            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.OnFilesDrop != null)); 
         }
     }
 
@@ -170,32 +166,37 @@ class WebViewForm : Form
 
     void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e) 
     {
-        var msg = e.TryGetWebMessageAsString();
-        if (request != null && msg?.StartsWith("request") == true)
+        var ao = e.AdditionalObjects;
+        if (ao != null)
         {
-            var req = Request.Create(msg);
-            request(req);
-        }
-        else if (msg == "showDevTools")
-            ShowDevtools();
-        else if (msg?.StartsWith("startDragFiles") == true)
-        {
-            var files = (msg[15..]
-                        .Deserialize<string[]>() ?? [])
-                        .Select(n => n.Replace("/", "\\"))
+            var msg = e.WebMessageAsJson?.Deserialize<WebMsg>(Json.Defaults);
+            var files = ao
+                        .Select(n => (n as CoreWebView2File)?.Path!)
                         .ToArray();
-            DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.All);
-            WebView.RunJavascript($"WebView.startDragFilesBack()");
-        } 
+            onFilesDrop?.Invoke(msg?.Text ?? "", msg?.Move == true, files);
+            return;
+        }
+        else
+        {
+            var msg = e.TryGetWebMessageAsString();
+            if (request != null && msg?.StartsWith("request") == true)
+            {
+                var req = Request.Create(msg);
+                request(req);
+            }
+            else if (msg == "showDevTools")
+                ShowDevtools();
+            else if (msg?.StartsWith("startDragFiles") == true)
+            {
+                var files = (msg[15..]
+                            .Deserialize<string[]>() ?? [])
+                            .Select(n => n.Replace("/", "\\"))
+                            .ToArray();
+                DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.All);
+                WebView.RunJavascript($"WebView.startDragFilesBack()");
+            } 
+        }
     }        
-//         match msg.Msg = 1, settings.OnFilesDropValue with
-//         | true, Some func ->
-//             let filesDropPathes = 
-//                 e.AdditionalObjects
-//                 |> Seq.map (fun n -> (n :?> CoreWebView2File).Path)
-//                 |> Seq.toArray        
-//             func msg.Text msg.Move filesDropPathes
-//         | _ -> ()
 
     void SetDarkMode(bool dark)
         => Invoke(() =>
@@ -211,6 +212,7 @@ class WebViewForm : Form
     readonly string appId;
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
+    readonly Action<string, bool, string[]>? onFilesDrop;
 }
 
 record WebMsg(int Msg, bool Move, string Text);

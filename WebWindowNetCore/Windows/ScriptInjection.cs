@@ -2,8 +2,10 @@ namespace WebWindowNetCore.Windows;
 
 static class ScriptInjection
 {
-    public static string Get() =>
+    public static string Get(bool onFilesDrop) =>
 $@"
+{GetOnFilesDropScript(onFilesDrop)}
+
 const showDevTools = () => window.chrome.webview.postMessage('showDevTools')    
 
 function send_request(data) {{
@@ -24,6 +26,17 @@ function startDragFilesBack() {{
     }}
 }}
 ";
+    static string GetOnFilesDropScript(bool activate) =>
+        activate
+        ? $@"
+function dropFiles(id, move, droppedFiles) {{
+    chrome.webview.postMessageWithAdditionalObjects({{
+        msg: 1,
+        text: id,
+        move
+    }}, droppedFiles)
+}}"
+        : $@"
+function dropFiles() {{}}
+";
 }
-
-
