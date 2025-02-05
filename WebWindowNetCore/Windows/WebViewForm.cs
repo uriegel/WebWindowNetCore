@@ -1,6 +1,5 @@
 #if Windows
 using System.Text;
-using System.Text.Json;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
@@ -16,6 +15,7 @@ class WebViewForm : Form
         saveBounds = settings.saveBounds;
         appId = settings.appId;
         canClose = settings.canClose;
+        request = settings.request;
         devTools = settings.devTools;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
@@ -26,6 +26,7 @@ class WebViewForm : Form
         webView.Dock = DockStyle.Fill;
         webView.TabIndex = 0;
         webView.ZoomFactor = 1;
+        Javascript.Initialize(webView);
 
 //         settings.OnFormCreatingValue
 //         |> Option.iter (fun f -> f(this))
@@ -175,10 +176,13 @@ class WebViewForm : Form
 
     void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e) 
     {
-        var msg = JsonSerializer.Deserialize<WebMsg>(e.WebMessageAsJson, Json.Defaults);
-        var test = 9;
-
-    }
+        var msg = e.TryGetWebMessageAsString();
+        if (request != null && msg?.StartsWith("request") == true)
+        {
+            var req = Request.Create(msg);
+            request(req);
+        }
+    }        
 //         match msg.Msg = 1, settings.OnFilesDropValue with
 //         | true, Some func ->
 //             let filesDropPathes = 
@@ -212,11 +216,10 @@ class WebViewForm : Form
     readonly bool saveBounds; 
     readonly string appId;
     readonly Func<bool>? canClose;
+    readonly Action<Request>? request;
 }
 
 record WebMsg(int Msg, bool Move, string Text);
-
-
 
 
 //             webView.ExecuteScriptAsync(@"
@@ -319,11 +322,6 @@ record WebMsg(int Msg, bool Move, string Text);
             
 
 //     member this.createWebViewAccess () =
-//         let runJavascript str = 
-//             this.Invoke(fun () ->
-//                 webView.ExecuteScriptAsync str
-//                 |> Async.AwaitTask
-//                 |> ignore)
 //         let onEvent (id) (a: obj) = 
 //             try 
 //                 this.Invoke(fun () ->

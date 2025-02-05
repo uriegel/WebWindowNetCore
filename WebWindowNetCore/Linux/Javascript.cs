@@ -1,3 +1,4 @@
+#if Linux
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
@@ -16,3 +17,4 @@ public static class Javascript
     internal static void Initialize(WebViewHandle webView) => Javascript.webView = webView;
     static WebViewHandle? webView;
 }
+#endif
