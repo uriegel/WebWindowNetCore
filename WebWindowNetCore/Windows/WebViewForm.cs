@@ -72,14 +72,12 @@ class WebViewForm : Form
         {
             var env = await CoreWebView2Environment.CreateAsync(null, appDataPath, new CoreWebView2EnvironmentOptions(
                             customSchemeRegistrations: [ 
-                                new CoreWebView2CustomSchemeRegistration("res"),
-                                new CoreWebView2CustomSchemeRegistration("req")
+                                new CoreWebView2CustomSchemeRegistration("res")
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
             await webView.EnsureCoreWebView2Async(env);
             //             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
             if (settings.GetUrl().StartsWith("res://"))
                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
-            webView.CoreWebView2.AddWebResourceRequestedFilter("req:*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.WebResourceRequested += ServeRes;
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
@@ -124,11 +122,10 @@ class WebViewForm : Form
         SetDarkMode(Theme.IsDark());
     }
 
-    Unit ShowDevtools(CoreWebView2WebResourceResponse response) 
+    void ShowDevtools() 
     {
         if (devTools)
             webView.CoreWebView2.OpenDevToolsWindow();
-        return SendOk(response);
     }
 
     Unit SendTextResponse(int code, string status, string text, CoreWebView2WebResourceResponse response)
@@ -149,27 +146,22 @@ class WebViewForm : Form
 
     void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
     {
-        if (e.Request.Uri.StartsWith("req"))
-            ServeRequest(e);
-        else 
+        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
+        var stream = Resources.Get(uri);
+
+        if (stream != null)
+            ServeResourceStream(uri, stream);
+
+        void ServeResourceStream(string url, Stream stream)
         {
-            var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
-            var stream = Resources.Get(uri);
-
-            if (stream != null)
-                ServeResourceStream(uri, stream);
-
-            void ServeResourceStream(string url, Stream stream)
+            try
             {
-                try
-                {
-                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
-                        "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
-                }
-                catch
-                {
-                    SendNotFound(e.Response);
-                }
+                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
+                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
+            }
+            catch
+            {
+                SendNotFound(e.Response);
             }
         }
     }
@@ -182,6 +174,8 @@ class WebViewForm : Form
             var req = Request.Create(msg);
             request(req);
         }
+        else if (msg == "showDevTools")
+            ShowDevtools();
     }        
 //         match msg.Msg = 1, settings.OnFilesDropValue with
 //         | true, Some func ->
@@ -191,17 +185,6 @@ class WebViewForm : Form
 //                 |> Seq.toArray        
 //             func msg.Text msg.Move filesDropPathes
 //         | _ -> ()
-
-
-
-    void ServeRequest(CoreWebView2WebResourceRequestedEventArgs e)
-    {
-        var _ = e.Request.Uri switch
-        {
-            "req://showDevTools" => ShowDevtools(e.Response),
-            _ => SendNotFound(e.Response)
-        };
-    }
 
     void SetDarkMode(bool dark)
         => Invoke(() =>

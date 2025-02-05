@@ -4,6 +4,8 @@ static class ScriptInjection
 {
     public static string Get() =>
 $@"
+const showDevTools = () => window.chrome.webview.postMessage('showDevTools')    
+
 function send_request(data) {{
     window.chrome.webview.postMessage(data)
 }}

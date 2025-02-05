@@ -11,7 +11,6 @@ public class Request(string cmd, string id, string json)
     public void Response<T>(T t)
     {
         var back = $"result,{id},{JsonSerializer.Serialize(t, Json.Defaults)}".Replace("'", "u0027");
-        Javascript.Run($"console.log('Affe')");
         Javascript.Run($"WebView.backtothefuture('{back}')");
     }
 

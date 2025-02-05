@@ -6,8 +6,6 @@ public static class ScriptInjection
 $@"
 {(windows ? Windows.ScriptInjection.Get() : Linux.ScriptInjection.Get())}
 
-const showDevTools = () => fetch('req://showDevTools')    
-
 var webviewrequestsid = 0
 var webviewrequests = new Map()
 
