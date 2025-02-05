@@ -1,5 +1,7 @@
 #if Windows
 using System.Text;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
@@ -176,6 +178,13 @@ class WebViewForm : Form
         }
         else if (msg == "showDevTools")
             ShowDevtools();
+        else if (msg?.StartsWith("startDragFiles") == true)
+        {
+            var files = msg[15..].Deserialize<string[]>() ?? [];
+            var feilen = files.Select(n => n.Replace("/", "\\"));
+            DoDragDrop(new DataObject(DataFormats.FileDrop, files.Select(n => n.Replace("/", "\\")).ToArray()), DragDropEffects.All);
+            var test = 0;
+        } 
     }        
 //         match msg.Msg = 1, settings.OnFilesDropValue with
 //         | true, Some func ->
@@ -233,8 +242,6 @@ record WebMsg(int Msg, bool Move, string Text);
 //     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
 //     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
 //     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
-//     member this.StartDragFiles (fileList: string) = 
-//             this.DoDragDrop(DataObject(DataFormats.FileDrop, (TextJson.deserialize<DragFiles> fileList).Files), DragDropEffects.All)
 //     member this.GetWindowState() = (int)this.WindowState
 
 //     member this.onLoad (_: EventArgs) =

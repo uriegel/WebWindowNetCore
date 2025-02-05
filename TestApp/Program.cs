@@ -28,7 +28,6 @@ void OnRequest(Request request)
         {
             var data = request.Deserialize<Input>();
             request.Response(new Contact("Uwe Riegel", 9865));
-
         }
         break;
         case "cmd2":
@@ -47,7 +46,7 @@ void OnRequest(Request request)
         case "cmd3":
         {
             var data = request.Deserialize<Input>();
-            request.Response(new BaseDirectory(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar));
+            request.Response(new BaseDirectory((Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar).Replace('\\', '/')));
         }
         break;
     }
