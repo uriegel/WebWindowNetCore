@@ -2,6 +2,8 @@
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.WinForms;
 
+namespace WebWindowNetCore.Windows;
+
 /// <summary>
 /// Run Script in WebView
 /// </summary>

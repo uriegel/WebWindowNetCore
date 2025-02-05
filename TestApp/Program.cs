@@ -37,7 +37,7 @@ void OnRequest(Request request)
             
             async void OnRequest()
             {
-                Javascript.Run("console.log('Event from C#')");
+                WebView.RunJavascript("console.log('Event from C#')");
                 await Task.Delay(TimeSpan.FromSeconds(3));
                 request.Response(new Contact2("Uwe Riegel", "0177622111"));
             }

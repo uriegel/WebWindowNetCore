@@ -2,6 +2,8 @@
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
+namespace WebWindowNetCore.Linux;
+
 /// <summary>
 /// Run Script in WebView
 /// </summary>

@@ -11,8 +11,10 @@ public abstract class WebView
 {
 #if Windows
     public static WebView Create() => new Windows.WebView();
+    public static void RunJavascript(string script) => Windows.Javascript.Run(script);
 #elif Linux
     public static WebView Create() => new Linux.WebView();
+    public static void RunJavascript(string script) => Linux.Javascript.Run(script);
 
     public WebView WithBuilder(Func<BuilderHandle> builder)
         => this.SideEffect(w => w.builder = builder);

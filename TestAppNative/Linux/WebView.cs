@@ -12,7 +12,7 @@ public static class WebView
         return Builder
                 .FromDotNetResource("ui")
                 .SideEffect(b => b.GetObject<ButtonHandle>("devtools", b => b
-                    .OnClicked(() => Javascript.Run("WebView.showDevTools()"))));
+                    .OnClicked(() => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"))));
     }
 }
 #endif
