@@ -1,5 +1,6 @@
 #if Windows
 using System.Text;
+using System.Text.Json;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
@@ -7,12 +8,6 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
 namespace WebWindowNetCore.Windows;
-
-// type WebMsg = {
-//     Msg: int
-//     Move: bool
-//     Text: string 
-// }
 
 class WebViewForm : Form
 {
@@ -84,11 +79,12 @@ class WebViewForm : Form
             if (settings.GetUrl().StartsWith("res://"))
                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.AddWebResourceRequestedFilter("req:*", CoreWebView2WebResourceContext.All);
-            //            webView.CoreWebView2.AddHostObjectToScript("Callback", Callback(this))
             webView.CoreWebView2.WebResourceRequested += ServeRes;
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
+            webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
             webView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
             //webView.CoreWebView2.ContainsFullScreenElementChanged.Add(this.onFullscreen)
 //             if settings.OnFilesDropValue.IsSome then
@@ -177,6 +173,23 @@ class WebViewForm : Form
         }
     }
 
+    void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e) 
+    {
+        var msg = JsonSerializer.Deserialize<WebMsg>(e.WebMessageAsJson, Json.Defaults);
+        var test = 9;
+
+    }
+//         match msg.Msg = 1, settings.OnFilesDropValue with
+//         | true, Some func ->
+//             let filesDropPathes = 
+//                 e.AdditionalObjects
+//                 |> Seq.map (fun n -> (n :?> CoreWebView2File).Path)
+//                 |> Seq.toArray        
+//             func msg.Text msg.Move filesDropPathes
+//         | _ -> ()
+
+
+
     void ServeRequest(CoreWebView2WebResourceRequestedEventArgs e)
     {
         var _ = e.Request.Uri switch
@@ -201,6 +214,7 @@ class WebViewForm : Form
     readonly Func<bool>? canClose;
 }
 
+record WebMsg(int Msg, bool Move, string Text);
 
 
 
@@ -293,17 +307,6 @@ class WebViewForm : Form
 //             this.FormBorderStyle <- FormBorderStyle.Sizable
 //             Taskbar.show ()
 
-//     member this.OnFilesDropReceived (e: CoreWebView2WebMessageReceivedEventArgs) =
-//         let msg = JsonSerializer.Deserialize<WebMsg>(e.WebMessageAsJson, TextJson.Default)
-//         match msg.Msg = 1, settings.OnFilesDropValue with
-//         | true, Some func ->
-//             let filesDropPathes = 
-//                 e.AdditionalObjects
-//                 |> Seq.map (fun n -> (n :?> CoreWebView2File).Path)
-//                 |> Seq.toArray        
-//             func msg.Text msg.Move filesDropPathes
-//         | _ -> ()
-
 //     member this.onDrop (e: QueryContinueDragEventArgs) = 
 //         if e.Action = DragAction.Drop then
 //             webView.ExecuteScriptAsync "WebView.setDroppedEvent(true)"
@@ -351,23 +354,6 @@ class WebViewForm : Form
 //             | WM_NCCALCSIZE -> calcSizeNoTitlebar &m 
 //             | _ -> base.WndProc &m 
 
-
-            
-// and [<ComVisible(true)>] Callback(parent: WebViewForm) =
-
-//     member this.ShowDevtools() = parent.ShowDevtools()
-//     member this.StartDragFiles(files: string) = parent.StartDragFiles(files)
-//     member this.OnEvents(id: string) = parent.OnEvents(id)
-//     member this.MaximizeWindow() = parent.MaximizeWindow()
-//     member this.MinimizeWindow() = parent.MinimizeWindow()
-//     member this.RestoreWindow() = parent.RestoreWindow()
-//     member this.OnHamburger(ratioLeft: float, ratioTop: float) = parent.OnHamburger(ratioLeft, ratioTop)
-//     // public Task DragStart(string fileList)
-//     //     => JsonSerializer.Deserialize<FileListType>(fileList, JsonWebDefaults)
-//     //         .Map(flt =>
-//     //             parent.DragStart(flt!.Path, flt!.FileList));
-
-//     // member this.ScriptAction(id: int, msg: string) = parent.ScriptAction(id, msg)
 #endif
 
 

@@ -5,7 +5,7 @@ static class ScriptInjection
     public static string Get() =>
 $@"
 function send_request(data) {{
-    alert(data)
+    window.chrome.webview.postMessage(data)
 }}
 
 let startDragFilesBackRes = null
