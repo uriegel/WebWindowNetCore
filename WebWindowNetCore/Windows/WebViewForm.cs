@@ -222,20 +222,7 @@ class WebViewForm : Form
 record WebMsg(int Msg, bool Move, string Text);
 
 
-//             webView.ExecuteScriptAsync(@"
-//                 const callback = chrome.webview.hostObjects.Callback
-//             ") 
-//                 |> Async.AwaitTask
-//                 |> ignore
-
-//             webView.ExecuteScriptAsync(Script.get settings.WithoutNativeTitlebarValue settings.TitleValue settings.RequestPortValue true settings.OnFilesDropValue.IsSome) 
-//                 |> Async.AwaitTask
-//                 |> ignore
-
 //             this.setMaximized(this.WindowState = FormWindowState.Maximized)
-
-//             settings.OnStartedValue |> Option.iter (fun f -> f (this.createWebViewAccess ()))
-
 
 
 //     let WM_NCCALCSIZE = 0x83
@@ -265,9 +252,6 @@ record WebMsg(int Msg, bool Move, string Text);
 //     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
 //     member this.StartDragFiles (fileList: string) = 
 //             this.DoDragDrop(DataObject(DataFormats.FileDrop, (TextJson.deserialize<DragFiles> fileList).Files), DragDropEffects.All)
-//     member this.OnEvents(id: string) = 
-//         settings.OnEventSinkValue
-//         |> Option.iter (fun action -> action(id, (this.createWebViewAccess ())))
 //     member this.GetWindowState() = (int)this.WindowState
 
 //     member this.onLoad (_: EventArgs) =
@@ -338,11 +322,6 @@ record WebMsg(int Msg, bool Move, string Text);
 //         webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if maximized then "true" else "false") 
 //         |> Async.AwaitTask
 //         |> ignore        
-
-//     member this.OnHamburger(ratioLeft: float, ratioTop: float) =
-//         settings.OnHamburgerValue
-//         |> Option.iter (fun f -> f ratioLeft ratioTop)
-
 
 //     override this.WndProc(m: byref<Message>) = 
 //         if this.DesignMode || not settings.WithoutNativeTitlebarValue then
