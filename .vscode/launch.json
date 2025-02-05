@@ -45,26 +45,6 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
-            "name": ".NET Launch F# (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppFSharp/bin/Debug/net8.0-windows/win-x64/TestAppFSharp.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core F# (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppFSharp/bin/Debug/net8.0/linux-x64/TestAppFSharp.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
             "name": "React test (Windows)",
             "type": "coreclr",
             "request": "launch",
