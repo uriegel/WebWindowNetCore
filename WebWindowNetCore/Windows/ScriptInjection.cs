@@ -13,7 +13,7 @@ function send_request(data) {{
 let startDragFilesBackRes = null
 const startDragFiles = files => {{
     return new Promise(res => {{
-        window.chrome.webview.postMessage('startDragFiles,' + JSON.stringify(files))
+        window.chrome.webview.postMessage('startDragFiles,' + JSON.stringify(files.map(n => n.replace('\\', '/'))))
         startDragFilesBackRes = res
     }})
 }}

@@ -180,10 +180,12 @@ class WebViewForm : Form
             ShowDevtools();
         else if (msg?.StartsWith("startDragFiles") == true)
         {
-            var files = msg[15..].Deserialize<string[]>() ?? [];
-            var feilen = files.Select(n => n.Replace("/", "\\"));
-            DoDragDrop(new DataObject(DataFormats.FileDrop, files.Select(n => n.Replace("/", "\\")).ToArray()), DragDropEffects.All);
-            var test = 0;
+            var files = (msg[15..]
+                        .Deserialize<string[]>() ?? [])
+                        .Select(n => n.Replace("/", "\\"))
+                        .ToArray();
+            DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.All);
+            WebView.RunJavascript($"WebView.startDragFilesBack()");
         } 
     }        
 //         match msg.Msg = 1, settings.OnFilesDropValue with
