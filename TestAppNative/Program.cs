@@ -7,10 +7,11 @@ WebView
     .Title("Web Window Net Core Native 👍")
 #if Linux    
     .WithBuilder(TestAppNative.Linux.WebView.WithBuilder)
-#endif    
+#elif Windows
     .OnFilesDrop((id, move, files) => WebView.RunJavascript("alert(`Id: ${id}, move: ${move}, files: ${files}`)"))
-    .InitialBounds(1200, 800)
     .ResourceIcon("icon")
+#endif        
+    .InitialBounds(1200, 800)
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
