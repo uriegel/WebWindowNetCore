@@ -13,7 +13,6 @@ const initialize = async () => {
     res = await WebView.request("cmd3", {})
     currentDirectory = res.path
     console.log("baseDirectory", currentDirectory)
-    //WebView.setDroppedFilesEventHandler(success => console.log("Files dropped", success))
 }
 try {
     if (WebView)

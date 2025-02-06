@@ -5,6 +5,7 @@ static class ScriptInjection
     public static string Get() =>
 $@"
 function dropFiles() {{}}
+function droppedFilesBack() {{}}
 
 const showDevTools = () => fetch('req://showDevTools')    
 
