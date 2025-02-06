@@ -53,8 +53,6 @@ class WebViewForm : Form
 
 //         this.Load.Add(this.onLoad)
 
-//         this.QueryContinueDrag.Add(this.onDrop);
-
 //         if settings.WithoutNativeTitlebarValue then
 //             this.Resize.Add(this.onResize)
 
@@ -75,7 +73,6 @@ class WebViewForm : Form
                                 new CoreWebView2CustomSchemeRegistration("res")
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
             await webView.EnsureCoreWebView2Async(env);
-            //             if settings.GetUrl () |> String.startsWith "res://" || settings.WithoutNativeTitlebarValue then
             if (settings.GetUrl().StartsWith("res://"))
                 webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.WebResourceRequested += ServeRes;
@@ -277,29 +274,6 @@ class WebViewForm : Form
 //             this.WindowState <- FormWindowState.Normal
 //             this.FormBorderStyle <- FormBorderStyle.Sizable
 //             Taskbar.show ()
-
-//     member this.onDrop (e: QueryContinueDragEventArgs) = 
-//         if e.Action = DragAction.Drop then
-//             webView.ExecuteScriptAsync "WebView.setDroppedEvent(true)"
-//             |> Async.AwaitTask
-//             |> ignore
-//         else if e.Action = DragAction.Cancel then
-//             webView.ExecuteScriptAsync "WebView.setDroppedEvent(false)"
-//             |> Async.AwaitTask
-//             |> ignore
-            
-
-//     member this.createWebViewAccess () =
-//         let onEvent (id) (a: obj) = 
-//             try 
-//                 this.Invoke(fun () ->
-//                     sprintf "webViewEventSinks.get('%s')(%s)" id (JsonSerializer.Serialize(a, TextJson.Default))
-//                     |> webView.ExecuteScriptAsync 
-//                     |> Async.AwaitTask
-//                     |> ignore)
-//             with 
-//             | _ -> ()
-//         WebViewAccess (runJavascript, onEvent)
 
 //     member this.setMaximized maximized = 
 //         panel.Padding <- if maximized then Padding(3, 7, 3, 3) else Padding 0
