@@ -18,7 +18,6 @@ try {
     if (WebView)
         initialize()
 } catch {  }
-
 function onWebViewLoaded() {
     initialize()
 }

@@ -29,10 +29,12 @@ public class WebView : WebWindowNetCore.WebView
 
     string GetWebViewLoader(string appId)
     {
-        var targetFileName = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-                        .AppendPath(@$"{appId}\{Process.GetCurrentProcess().ProcessName}") 
-                        .EnsureDirectoryExists()
-                        .AppendPath("WebView2Loader.dll");
+        var targetFileName = 
+            Environment
+                .GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                .AppendPath(@$"{appId}\{Process.GetCurrentProcess().ProcessName}") 
+                .EnsureDirectoryExists()
+                .AppendPath("WebView2Loader.dll");
         using var targetFile = File.Create(targetFileName);
         Assembly
             .GetExecutingAssembly()

@@ -84,8 +84,7 @@ class WebViewForm : Form
             webView.Source = new Uri(settings.GetUrl());
 
             await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title)); 
-            
-            await Task.Delay(500);
+            await Task.Delay(50);
             WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
             if (settings.withoutNativeTitlebar)
                 Resize += (s, e) => 
@@ -130,7 +129,6 @@ class WebViewForm : Form
                 && bounds.Y.HasValue
                 && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(new Rectangle(bounds.X ?? 0, bounds.Y ?? 0, Size.Width, Size.Height)))) 
             Location = new Point(bounds.X ?? 0, bounds.Y ?? 0);
-            // WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
         Size = new Size(bounds.Width ?? width, bounds.Height ?? height);
     }
 
@@ -303,18 +301,6 @@ class WebViewForm : Form
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
 }
-
-//     member this.onFullscreen _ =
-//         if webView.CoreWebView2.ContainsFullScreenElement then
-//             this.TopMost <- true
-//             this.FormBorderStyle <- FormBorderStyle.None
-//             this.WindowState <- FormWindowState.Maximized
-//             Taskbar.hide ()
-//         else
-//             this.TopMost <- false
-//             this.WindowState <- FormWindowState.Normal
-//             this.FormBorderStyle <- FormBorderStyle.Sizable
-//             Taskbar.show ()
 
 #endif
 

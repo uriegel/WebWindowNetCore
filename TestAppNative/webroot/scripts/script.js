@@ -3,6 +3,18 @@ btnDevTools.onclick = () => WebView.showDevTools()
 
 const dropZone = document.getElementById("dropZone")
 
+const initialize = async () => {
+    WebView.initializeCustomTitlebar()
+}
+try {
+    if (WebView)
+        initialize()
+} catch {  }
+function onWebViewLoaded() {
+    initialize()
+}
+
+
 document.body.addEventListener("dragover", e => {
     e.preventDefault()
     e.stopPropagation()

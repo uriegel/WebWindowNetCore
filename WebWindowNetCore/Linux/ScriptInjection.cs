@@ -6,6 +6,7 @@ static class ScriptInjection
 $@"
 function dropFiles() {{}}
 function droppedFilesBack() {{}}
+function initializeCustomTitlebar {{}}
 
 const showDevTools = () => fetch('req://showDevTools')    
 
