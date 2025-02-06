@@ -17,6 +17,8 @@ class WebViewForm : Form
         canClose = settings.canClose;
         request = settings.request;
         devTools = settings.devTools;
+        width = settings.width;
+        height = settings.height;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -51,7 +53,7 @@ class WebViewForm : Form
             FormClosing += OnCanClose;
         HandleCreated += OnHandle;
 
-//         this.Load.Add(this.onLoad)
+        Load += OnLoad;
 
 //         if settings.WithoutNativeTitlebarValue then
 //             this.Resize.Add(this.onResize)
@@ -102,6 +104,28 @@ class WebViewForm : Form
                 IsMaximized = WindowState == FormWindowState.Maximized 
             };
         WebWindowNetCore.Bounds.Save(appId, bounds);
+    }
+
+    void OnLoad(object? _, EventArgs e)
+    {
+        var bounds = WebWindowNetCore.Bounds.Retrieve(appId);
+        if (bounds.X.HasValue && bounds.Y.HasValue)
+            Location = new Point(bounds.X ?? 0, bounds.Y ?? 0);
+        
+        var screenBounds = Screen.FromRectangle(Bounds).WorkingArea;
+        if (!screenBounds.Contains(Bounds)) 
+        {
+            // Adjust the form's location if it is out of bounds
+            Location = new Point(Math.Max(screenBounds.X, Bounds.X), Math.Max(screenBounds.Y, Bounds.Y));
+            // Ensure the form fits within the screen
+            Size = new Size(Math.Min(screenBounds.Width, Bounds.Width), Math.Min(screenBounds.Height, Bounds.Height));
+        }
+        if (bounds.X.HasValue 
+                && bounds.Y.HasValue
+                && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(new Rectangle(bounds.X ?? 0, bounds.Y ?? 0, Size.Width, Size.Height)))) 
+            Location = new Point(bounds.X ?? 0, bounds.Y ?? 0);
+            // WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
+        Size = new Size(bounds.Width ?? width, bounds.Height ?? height);
     }
 
     void OnCanClose(object? _, FormClosingEventArgs e)
@@ -196,6 +220,8 @@ class WebViewForm : Form
             });
 
     readonly WebView2 webView = new();
+    readonly int width;
+    readonly int height;
     readonly bool devTools;
     readonly Panel panel = new();
     readonly bool saveBounds; 
@@ -235,27 +261,6 @@ class WebViewForm : Form
 //     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
 //     member this.GetWindowState() = (int)this.WindowState
 
-//     member this.onLoad (_: EventArgs) =
-//         let bounds = Bounds.retrieve settings.AppIdValue
-//         if bounds.X.IsSome && bounds.Y.IsSome then
-//             this.Location <- Point(bounds.X |> Option.defaultValue 0, bounds.Y |> Option.defaultValue 0)
-        
-//         // let screenBounds = Screen.FromRectangle(this.Bounds).WorkingArea
-//         // if screenBounds.Contains(this.Bounds) = false then
-//         //     // Adjust the form's location if it is out of bounds
-//         //     this.Location <- Point(Math.Max(screenBounds.X, this.Bounds.X), Math.Max(screenBounds.Y, this.Bounds.Y))
-//         //     // Ensure the form fits within the screen
-//         //     this.Size <- Size(Math.Min(screenBounds.Width, this.Bounds.Width), Math.Min(screenBounds.Height, this.Bounds.Height))
-
-//         if bounds.X.IsSome && bounds.Y.IsSome 
-//             && Screen.AllScreens |> Seq.exists (fun s -> s.WorkingArea.IntersectsWith(Rectangle(
-//                                                                                                              bounds.X |> Option.defaultValue 0, 
-//                                                                                                              bounds.Y |> Option.defaultValue 0, 
-//                                                                                                              this.Size.Width, 
-//                                                                                                              this.Size.Height))) then
-//             this.Location <- Point(bounds.X |> Option.defaultValue 0 , bounds.Y |> Option.defaultValue 0)
-//         //     this.WindowState <- if bounds.IsMaximized then FormWindowState.Maximized else FormWindowState.Normal
-//         this.Size <- Size(bounds.Width |> Option.defaultValue settings.WidthValue, bounds.Height |> Option.defaultValue settings.HeightValue)
 
 
 //     member this.onResize (e: EventArgs) =
