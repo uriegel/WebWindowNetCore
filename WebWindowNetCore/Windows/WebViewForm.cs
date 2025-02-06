@@ -22,7 +22,6 @@ class WebViewForm : Form
         width = settings.width;
         height = settings.height;
         withoutNativeTitlebar = settings.withoutNativeTitlebar;
-        //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
         webView.CreationProperties = null;
@@ -46,8 +45,6 @@ class WebViewForm : Form
                 : null;
             Size = new Size(bounds?.Width ?? settings.width, bounds?.Height ?? settings.height);
             WindowState = bounds?.IsMaximized == true? FormWindowState.Maximized : FormWindowState.Normal;
-            // if (WindowState == FormWindowState.Maximized)
-            //     isMaximized = true;
         }
 
         if (settings.saveBounds)
@@ -55,11 +52,7 @@ class WebViewForm : Form
         if (settings.canClose != null)
             FormClosing += OnCanClose;
         HandleCreated += OnHandle;
-
         Load += OnLoad;
-
-//         if settings.WithoutNativeTitlebarValue then
-//             this.Resize.Add(this.onResize)
 
         Text = settings.title;
 
@@ -67,7 +60,6 @@ class WebViewForm : Form
         panel.Controls.Add(webView);
         Controls.Add(panel);
 
-        // (webView :> ComponentModel.ISupportInitialize).EndInit ()
         ResumeLayout(false);
 
         Init();
@@ -239,11 +231,11 @@ class WebViewForm : Form
 
         void CalcSizeNoTitlebar(ref Message m) 
         {
-            var isZoomedTop = IsZoomed(Handle) ? 7 : 0;
-            var isZoomedAll = IsZoomed(Handle) ? 3 : 0;
+            var isZoomedTop = Api.IsZoomed(Handle) ? 7 : 0;
+            var isZoomedAll = Api.IsZoomed(Handle) ? 3 : 0;
             if (m.WParam != 0) 
             {
-                var nccsp = NcCalcSizeParams.FromIntPtr(m.LParam);
+                var nccsp = NcCalcSizeParams.Fromnint(m.LParam);
                 nccsp.Rgrc0.Top += 1 + isZoomedTop;
                 nccsp.Rgrc0.Bottom -= 5 + isZoomedAll;
                 nccsp.Rgrc0.Left += 5 + isZoomedAll;
@@ -262,11 +254,6 @@ class WebViewForm : Form
             m.Result = 0;
         }
     }
-    [DllImport("user32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-	public static extern bool IsZoomed(IntPtr hWnd);
-
-
 
     const int WM_NCCALCSIZE = 0x83;
     readonly WebView2 webView = new();
@@ -282,21 +269,10 @@ class WebViewForm : Form
 }
 
 
-//             this.setMaximized(this.WindowState = FormWindowState.Maximized)
-
-//     let mutable isMaximized = false
-
 //     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
 //     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
 //     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
 //     member this.GetWindowState() = (int)this.WindowState
-
-
-
-//     member this.onResize (e: EventArgs) =
-//         if this.WindowState = FormWindowState.Maximized <> isMaximized then
-//             isMaximized <- this.WindowState = FormWindowState.Maximized
-//             this.setMaximized isMaximized
 
 //     member this.onFullscreen _ =
 //         if webView.CoreWebView2.ContainsFullScreenElement then
@@ -309,13 +285,6 @@ class WebViewForm : Form
 //             this.WindowState <- FormWindowState.Normal
 //             this.FormBorderStyle <- FormBorderStyle.Sizable
 //             Taskbar.show ()
-
-//     member this.setMaximized maximized = 
-//         panel.Padding <- if maximized then Padding(3, 7, 3, 3) else Padding 0
-//         webView.ExecuteScriptAsync(sprintf "WEBVIEWsetMaximized(%s)" <| if maximized then "true" else "false") 
-//         |> Async.AwaitTask
-//         |> ignore        
-
 
 #endif
 

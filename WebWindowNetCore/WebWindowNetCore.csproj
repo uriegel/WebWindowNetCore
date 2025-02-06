@@ -37,7 +37,7 @@
     <DefineConstants>Linux</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
-    <PackageReference Include="ClrWinApi" Version="2.4.1" />
+    <PackageReference Include="ClrWinApi" Version="2.5.0" />
   	<EmbeddedResource Include="./WebView2Loader.dll">
    		<LogicalName>binaries/webviewloader</LogicalName>
    	</EmbeddedResource>
