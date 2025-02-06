@@ -78,13 +78,14 @@ class WebViewForm : Form
             webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
             webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
             webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+            webView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
             webView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
 
             webView.Source = new Uri(settings.GetUrl());
 
             await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title)); 
             
-            await Task.Delay(100);
+            await Task.Delay(500);
             WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
             if (settings.withoutNativeTitlebar)
                 Resize += (s, e) => 
@@ -221,6 +222,24 @@ class WebViewForm : Form
             WindowState = FormWindowState.Minimized;
         else if (msg == "restore")            
             WindowState = FormWindowState.Normal;
+    }
+
+    void OnFullscreen(object? s, object _)
+    {
+        if (webView.CoreWebView2.ContainsFullScreenElement)
+        {
+            TopMost = true;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+            //Taskbar.hide()
+        }
+        else
+        {
+            TopMost = false;
+            WindowState = FormWindowState.Normal;
+            FormBorderStyle = FormBorderStyle.Sizable;
+            //Taskbar.show ()
+        }
     }
 
     void SetDarkMode(bool dark)

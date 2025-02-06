@@ -179,7 +179,7 @@ public abstract class WebView
 #endif
 }
 
+// TODO Especially when maximized initial script not working, but exchange of Restore/Maximize btn
 // TODO OnFormCreating
-// TODO onFullscreen
 // TODO Test react debug/release (with img)
 
