@@ -2,9 +2,9 @@ namespace WebWindowNetCore;
 
 public static class ScriptInjection
 {
-    public static string Get(bool windows) => 
+    public static string Get(bool windows, string title) => 
 $@"
-{(windows ? Windows.ScriptInjection.Get() : Linux.ScriptInjection.Get())}
+{(windows ? Windows.ScriptInjection.Get(title) : Linux.ScriptInjection.Get())}
 
 var webviewrequestsid = 0
 var webviewrequests = new Map()

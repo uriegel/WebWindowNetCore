@@ -8,7 +8,6 @@ WebView
 #if Linux    
     .WithBuilder(TestAppNative.Linux.WebView.WithBuilder)
 #elif Windows
-    .OnFilesDrop((id, move, files) => WebView.RunJavascript("alert(`Id: ${id}, move: ${move}, files: ${files}`)"))
     .ResourceIcon("icon")
     .WithoutNativeTitlebar()
 #endif        
@@ -23,6 +22,5 @@ WebView
 //     //.Url($"file://{Directory.GetCurrentDirectory()}/TestAppNative/webroot/index.html")
 // #elif Windows
 //     .OnFormCreating(WindowsExtensions.FormCreation)
-//     .OnHamburger(WindowsExtensions.OnHamburger)
 
 

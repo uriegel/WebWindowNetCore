@@ -5,21 +5,22 @@ body {
     border-width: 1px;
     border-color: yellow;
     border-style: solid;
-    background-color: rgb(150, 11, 11);
+    background-color: beige;
 }
 
 h1 {
     display: flex;
     margin-top: 0px;
+    font-size: large;
 }
 h1>div {
-    -webkit-app-region: drag;
     background-color: aqua;
     flex-grow: 1;
     display: flex;
 }
 h1 img {
     object-fit: contain;
+    width: 24px;
 }
 
 .dropZone {
@@ -29,6 +30,9 @@ h1 img {
     background-color: aqua;
 }
 
-.blurry {
-    opacity:0.4;
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(56, 56, 56);
+        color: lightgray;
+    }
 }

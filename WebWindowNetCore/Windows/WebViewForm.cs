@@ -85,7 +85,7 @@ class WebViewForm : Form
 
             webView.Source = new Uri(settings.GetUrl());
 
-            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true)); 
+            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title)); 
         }
     }
 

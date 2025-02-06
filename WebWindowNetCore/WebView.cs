@@ -147,15 +147,6 @@ public abstract class WebView
     public WebView ResourceIcon(string icon)
         => this.SideEffect(w => w.resourceIcon = icon);
 
-    /// <summary>
-    /// Enable dropping windows files to a drop zone.
-    /// When a file/directory or multiple files/directories are dropped to a certain drag zone, this callback is being called from javascript
-    /// </summary>
-    /// <param name="action">Callback which is called from javascript when dropping files. First parameter is the id of the drag zone, second if the files are moved (true) or copied (false), the third parameter is the array with the complete filenames</param>
-    /// <returns>WebView for chaining (fluent Syntax)</returns>
-    public WebView OnFilesDrop(Action<string, bool, string[]> onFilesDrop) 
-        => this.SideEffect(w => w.onFilesDrop = onFilesDrop);
-
 #endif
 
     /// <summary>
@@ -182,7 +173,6 @@ public abstract class WebView
 #if Windows    
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
-    internal Action<string, bool, string[]>? onFilesDrop;
 #endif
 #if Linux
     protected Func<BuilderHandle>? builder;

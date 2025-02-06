@@ -1,7 +1,7 @@
 # WebWindowNetCore
-A .NET 8 Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. It has an integrated Asp.NET (Kestrel) server which can be used to host the app and to communicate between the .NET application and the web app. The web site can be hosted as .NET resource, of course alternatively via HTTP(s):// or file://.
+A .NET 8 Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. To communicate between the .NET application and the web app there is a Javascript request interface. The web site can be hosted as .NET resource, of course alternatively via HTTP(s):// or file://.
 
-WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#, so that it is "F# friendly". Of course C# is supported as well. Unlike the older versions, there is no other Nuget packet required other than this. 
+WebWindowNetCore > version 11.0.0 is redesigned and has dropped included HTTP Server
 
 > WebViewNetCore.Linux and WebViewNetCore.Windows are now obsolete!
 
@@ -15,7 +15,7 @@ WebWindowNetCore includes following features:
 * Can serve the web site via .NET resources (single file approach)
 * Optional save and restore of window bounds
 * Has an integrated event sink mechanismen, so you can retrieve javascript events from the .NET app
-* Has an integrated .NET Kestrel Server (optional) to serve requests from .NET app to javascript
+* Has an integrated Javascript WebView interface to serve requests from javascript to .NET app
 * You can expand the Gtk Window (on Linux) with a custom header bar
 * You can alternatively disable the Windows titlebar and borders, and you can build a title bar in HTML with standard Windows logic for closing, maximizing, restoring resizing, snap to dock, ...
 

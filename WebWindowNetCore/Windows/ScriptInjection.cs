@@ -2,7 +2,7 @@ namespace WebWindowNetCore.Windows;
 
 static class ScriptInjection
 {
-    public static string Get() =>
+    public static string Get(string title) =>
 $@"
 const showDevTools = () => window.chrome.webview.postMessage('showDevTools')    
 
@@ -38,5 +38,22 @@ function dropFiles(droppedFiles) {{
         chrome.webview.postMessageWithAdditionalObjects('droppedFiles', droppedFiles)
     }})
 }}
+
+const dragRegion = document.getElementById('$DRAG_REGION$')
+if (dragRegion) {{
+    dragRegion.style.setProperty('-webkit-app-region', 'drag')
+    let activeElement = null
+    dragRegion.onmousedown = e => {{
+        activeElement = document.activeElement
+    }}
+    dragRegion.onmouseup = e => activeElement.focus()
+}}
+
+const title = document.getElementById('$TITLE$')
+if (title)
+    title.innerText = '{title}'
+const close = document.getElementById('$CLOSE$')
+if (close)
+    close.onclick = () => window.close()
 ";
 }

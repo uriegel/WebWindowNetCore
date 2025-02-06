@@ -1,16 +1,7 @@
 const btnDevTools = document.getElementById("buttonDevTools")
-const dropZone = document.getElementById("dropZone")
-const dragZone = document.getElementById("dragZone")
-
-const onDragStart = async evt => { 
-    dragZone.classList.add("blurry")
-    evt.preventDefault()
-    dragZone.classList.remove("blurry")
-}
-
 btnDevTools.onclick = () => WebView.showDevTools()
 
-dragZone.ondragstart = onDragStart    
+const dropZone = document.getElementById("dropZone")
 
 document.body.addEventListener("dragover", e => {
     e.preventDefault()
