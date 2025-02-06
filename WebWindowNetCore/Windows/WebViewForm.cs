@@ -1,8 +1,10 @@
 #if Windows
+using System.Runtime.InteropServices;
 using System.Text;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
+using CsTools.Functional;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
@@ -19,6 +21,7 @@ class WebViewForm : Form
         devTools = settings.devTools;
         width = settings.width;
         height = settings.height;
+        withoutNativeTitlebar = settings.withoutNativeTitlebar;
         //(this as ComponentModel.ISupportInitialize).BeginInit();
         SuspendLayout();
         webView.AllowExternalDrop = true;
@@ -215,10 +218,57 @@ class WebViewForm : Form
     void SetDarkMode(bool dark)
         => Invoke(() =>
             {
-                Api.DwmSetWindowAttribute(Handle, DwmWindowAttribute.ImmersiveDarkMode, [dark ? 1 : 0], 4);
+                var _ = Api.DwmSetWindowAttribute(Handle, DwmWindowAttribute.ImmersiveDarkMode, [dark ? 1 : 0], 4);
                 BackColor = dark ? Color.Black : Color.White;
             });
 
+    protected override void WndProc(ref Message m)
+    {
+        if (DesignMode || !withoutNativeTitlebar)
+            base.WndProc(ref m);
+        else 
+            switch (m.Msg)
+            {
+                case WM_NCCALCSIZE:
+                    CalcSizeNoTitlebar(ref m);
+                    break;
+                default:
+                    base.WndProc(ref m);
+                    break;
+            }
+
+        void CalcSizeNoTitlebar(ref Message m) 
+        {
+            var isZoomedTop = IsZoomed(Handle) ? 7 : 0;
+            var isZoomedAll = IsZoomed(Handle) ? 3 : 0;
+            if (m.WParam != 0) 
+            {
+                var nccsp = NcCalcSizeParams.FromIntPtr(m.LParam);
+                nccsp.Rgrc0.Top += 1 + isZoomedTop;
+                nccsp.Rgrc0.Bottom -= 5 + isZoomedAll;
+                nccsp.Rgrc0.Left += 5 + isZoomedAll;
+                nccsp.Rgrc0.Right -= 5 + isZoomedAll;
+                Marshal.StructureToPtr(nccsp, m.LParam, true);
+            }
+            else
+            {
+                var clnRect = Marshal.PtrToStructure<Rect>(m.LParam);
+                clnRect.Top += 1 + isZoomedTop;
+                clnRect.Bottom -= 5 + isZoomedAll;
+                clnRect.Left += 5 + isZoomedAll;
+                clnRect.Right -= 5 + isZoomedAll;
+                Marshal.StructureToPtr(clnRect, m.LParam, true);
+            }
+            m.Result = 0;
+        }
+    }
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+	public static extern bool IsZoomed(IntPtr hWnd);
+
+
+
+    const int WM_NCCALCSIZE = 0x83;
     readonly WebView2 webView = new();
     readonly int width;
     readonly int height;
@@ -226,6 +276,7 @@ class WebViewForm : Form
     readonly Panel panel = new();
     readonly bool saveBounds; 
     readonly string appId;
+    readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
 }
@@ -233,28 +284,7 @@ class WebViewForm : Form
 
 //             this.setMaximized(this.WindowState = FormWindowState.Maximized)
 
-
-//     let WM_NCCALCSIZE = 0x83
-
 //     let mutable isMaximized = false
-
-//     let calcSizeNoTitlebar (m: byref<Message>) =
-//         if m.WParam <> 0 then    
-//             let nccsp = NcCalcSizeParams.FromIntPtr(m.LParam)
-//             nccsp.Rgrc0.Top <- nccsp.Rgrc0.Top + 1
-//             nccsp.Rgrc0.Bottom <- nccsp.Rgrc0.Bottom - 5
-//             nccsp.Rgrc0.Left <- nccsp.Rgrc0.Left + 5  
-//             nccsp.Rgrc0.Right <- nccsp.Rgrc0.Right - 5 
-//             System.Runtime.InteropServices.Marshal.StructureToPtr(nccsp, m.LParam, true)
-//         else
-//             let mutable clnRect = System.Runtime.InteropServices.Marshal.PtrToStructure(m.LParam, typedefof<Rect>) :?> Rect
-//             clnRect.Top <- clnRect.Top + 1
-//             clnRect.Bottom <- clnRect.Bottom - 5
-//             clnRect.Left <- clnRect.Left + 5  
-//             clnRect.Right <- clnRect.Right - 5 
-//             System.Runtime.InteropServices.Marshal.StructureToPtr(clnRect, m.LParam, true)
-//         m.Result <- 0
-
 
 //     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
 //     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
@@ -286,13 +316,6 @@ class WebViewForm : Form
 //         |> Async.AwaitTask
 //         |> ignore        
 
-//     override this.WndProc(m: byref<Message>) = 
-//         if this.DesignMode || not settings.WithoutNativeTitlebarValue then
-//             base.WndProc &m
-//         else
-//             match m.Msg with
-//             | WM_NCCALCSIZE -> calcSizeNoTitlebar &m 
-//             | _ -> base.WndProc &m 
 
 #endif
 
