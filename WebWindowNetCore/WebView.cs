@@ -179,7 +179,6 @@ public abstract class WebView
 #endif
 }
 
-// TODO Custom Windows titlebar
 // TODO OnFormCreating
 // TODO onFullscreen
 // TODO Test react debug/release (with img)

@@ -46,6 +46,7 @@ class WebViewForm : Form
             Size = new Size(bounds?.Width ?? settings.width, bounds?.Height ?? settings.height);
             WindowState = bounds?.IsMaximized == true? FormWindowState.Maximized : FormWindowState.Normal;
         }
+        isMaximized = WindowState == FormWindowState.Maximized;
 
         if (settings.saveBounds)
             FormClosing += OnClose;
@@ -53,7 +54,6 @@ class WebViewForm : Form
             FormClosing += OnCanClose;
         HandleCreated += OnHandle;
         Load += OnLoad;
-
         Text = settings.title;
 
         panel.Dock = DockStyle.Fill;
@@ -83,6 +83,16 @@ class WebViewForm : Form
             webView.Source = new Uri(settings.GetUrl());
 
             await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title)); 
+            
+            await Task.Delay(100);
+            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
+            if (settings.withoutNativeTitlebar)
+                Resize += (s, e) => 
+                    {
+                        if (WindowState == FormWindowState.Maximized != isMaximized)
+                            isMaximized = WindowState == FormWindowState.Maximized;
+                            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
+                    };
         }
     }
 
@@ -205,6 +215,12 @@ class WebViewForm : Form
                         .ToArray();
             WebView.RunJavascript($"WebView.droppedFilesBack({files.Serialize(Json.Defaults)})");
         }
+        else if (msg == "maximize")
+            WindowState = FormWindowState.Maximized;
+        else if (msg == "minimize")
+            WindowState = FormWindowState.Minimized;
+        else if (msg == "restore")            
+            WindowState = FormWindowState.Normal;
     }
 
     void SetDarkMode(bool dark)
@@ -255,6 +271,7 @@ class WebViewForm : Form
         }
     }
 
+    bool isMaximized;
     const int WM_NCCALCSIZE = 0x83;
     readonly WebView2 webView = new();
     readonly int width;
@@ -267,12 +284,6 @@ class WebViewForm : Form
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
 }
-
-
-//     member this.MaximizeWindow () = this.WindowState <- FormWindowState.Maximized
-//     member this.MinimizeWindow() = this.WindowState <- FormWindowState.Minimized
-//     member this.RestoreWindow() = this.WindowState <- FormWindowState.Normal
-//     member this.GetWindowState() = (int)this.WindowState
 
 //     member this.onFullscreen _ =
 //         if webView.CoreWebView2.ContainsFullScreenElement then
