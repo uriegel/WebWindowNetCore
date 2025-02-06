@@ -35,4 +35,7 @@ h1 img {
         background-color: rgb(56, 56, 56);
         color: lightgray;
     }
+    h1>div, .dropZone {
+        color: blue;
+    }
 }

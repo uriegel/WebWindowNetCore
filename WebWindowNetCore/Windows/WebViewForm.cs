@@ -31,11 +31,10 @@ class WebViewForm : Form
         webView.TabIndex = 0;
         webView.ZoomFactor = 1;
         Javascript.Initialize(webView);
+        settings.onformCreate?.Invoke(this);
 
-//         settings.OnFormCreatingValue
-//         |> Option.iter (fun f -> f(this))
         if (settings.resourceIcon != null)
-        Icon = new Icon(Resources.Get(settings.resourceIcon)!);
+            Icon = new Icon(Resources.Get(settings.resourceIcon)!);
         AutoScaleMode = AutoScaleMode.Font;
 
         if (settings.saveBounds)

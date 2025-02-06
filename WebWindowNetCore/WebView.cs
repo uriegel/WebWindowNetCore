@@ -132,6 +132,9 @@ public abstract class WebView
         => this.SideEffect(w => w.request = request);
 
 #if Windows    
+    public WebView OnFormCreating(Action<Form> onformCreate) 
+        => this.SideEffect(w => w.onformCreate = onformCreate);
+
     /// <summary>
     /// Hides the Windows Titlebar
     /// </summary>
@@ -173,12 +176,12 @@ public abstract class WebView
 #if Windows    
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
+    internal Action<Form>? onformCreate;
 #endif
 #if Linux
     protected Func<BuilderHandle>? builder;
 #endif
 }
 
-// TODO OnFormCreating
 // TODO Test react debug/release (with img)
 
