@@ -39,6 +39,9 @@
     <EmbeddedResource Include="./public/react.svg">
       <LogicalName>webroot/react.svg</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="../webroot/images/image.jpg">
+      <LogicalName>webroot/images/image.jpg</LogicalName>
+    </EmbeddedResource>
   </ItemGroup> 
 
 </Project>

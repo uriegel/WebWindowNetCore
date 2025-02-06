@@ -47,7 +47,7 @@ public class WebView() : WebWindowNetCore.WebView
                 .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
                 .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
                 .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-                .SideEffectIf(GetUrl().StartsWith("res://"), EnableResourceScheme)
+                .SideEffect(EnableResourceScheme)
                 .SideEffectIf(request != null, EnableRequests)
                 .SideEffect(EnableRequestScheme)
                 .SideEffect(Javascript.Initialize)

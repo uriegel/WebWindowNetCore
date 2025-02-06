@@ -1,33 +1,43 @@
-﻿// open WebWindowNetCore
-// open System
-// open System.IO
-// open Requests
+﻿using System.Drawing;
+using WebWindowNetCore;
 
-// type Input = { Text: string; Id: int }
-// type Contact = { Name: string; Id: int }
-// let getContact (text: Input) =
-//     task { return { Name = "Uwe Riegel"; Id = 9865 } }  
+WebView
+    .Create()
+    .AppId("de.uriegel.test")
+    .Title("React WebView 👍")
+    .InitialBounds(600, 800)
+    .SaveBounds()
+    .DevTools()
+    .DefaultContextMenuDisabled()
+    .BackgroundColor(Color.Transparent)
+#if Windows    
+    .ResourceIcon("icon")
+#endif    
+    .DebugUrl("http://localhost:5173")
+    .Url("res://webroot/index.html")
+    .QueryString("?param1=123&param2=456")
+    .OnRequest(OnRequest)
+    .CanClose(() => true)
+    .Run();
 
-// let onRequest (method: string) (input: Stream) =
-//     task {   
-//         return! 
-//             match method with
-//             | "cmd1" -> input |> GetInput |> getContact |> AsTask
-//             | _ -> task { return obj() }
-//     }
+void OnRequest(Request request)
+{
+    switch (request.Cmd)
+    {
+        case "cmd1":
+            {
+                var data = request.Deserialize<Input>();
+                request.Response(new Contact("Uwe Riegel", 9865));
+            }
+            break;
+    }
+}
 
-// WebView()
-//     .AppId("de.uriegel.test")
-//     .Title("React WebView")
-//     .ResourceFromHttp()
-//     .DebugUrl("http://localhost:5173")
-//     .SaveBounds()
+record Input(string Text, int Id);
+record Contact(string Name, int Id);
+
 //     //.Url("res://webroot/index.html")
-//     .DefaultContextMenuDisabled()
 //     .CorsDomains([|"http://localhost:5173"|])
 //     .CorsCache(TimeSpan.FromSeconds(20))
 //     .AddRequest<Input, Contact>("cmd1", getContact)
 //     .DevTools()
-//     .Run()
-//     |> ignore
-System.Console.WriteLine("");
