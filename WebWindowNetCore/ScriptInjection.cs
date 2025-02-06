@@ -2,9 +2,9 @@ namespace WebWindowNetCore;
 
 public static class ScriptInjection
 {
-    public static string Get(bool windows, bool dropFiles) => 
+    public static string Get(bool windows) => 
 $@"
-{(windows ? Windows.ScriptInjection.Get(dropFiles) : Linux.ScriptInjection.Get())}
+{(windows ? Windows.ScriptInjection.Get() : Linux.ScriptInjection.Get())}
 
 var webviewrequestsid = 0
 var webviewrequests = new Map()
@@ -31,18 +31,16 @@ const request = (method, data) => new Promise(res => {{
 
 var WebView = (() => {{
     return {{
-//        initializeNoTitlebar,
         showDevTools,
         startDragFiles,
         request,
-        dropFiles,
-        // filesDropped,
-        // setDroppedFilesEventHandler,
-        // setDroppedEvent,
-        // closeWindow,
         backtothefuture,
-        // additionalObjectsBack,
-        startDragFilesBack
+        startDragFilesBack,
+        dropFiles,
+        droppedFilesBack,
+//        initializeNoTitlebar,
+        // closeWindow,
+        // additionalObjectsBack
     }}
 }})()
 

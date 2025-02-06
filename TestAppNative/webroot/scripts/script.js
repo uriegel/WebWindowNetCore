@@ -24,9 +24,10 @@ dropZone.addEventListener("dragover", e => {
     e.dataTransfer.dropEffect = e.shiftKey ? "move" : "copy"
 })
 
-dropZone.addEventListener("drop", e => {
+dropZone.addEventListener("drop", async e => {
     e.preventDefault()
     e.stopPropagation()
-    WebView.dropFiles("dropZone", e.shiftKey, e.dataTransfer.files)
+    const res = await WebView.dropFiles(e.dataTransfer.files)
+    console.log("files dropped", res)
 })
 
