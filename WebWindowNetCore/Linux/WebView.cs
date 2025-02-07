@@ -92,17 +92,38 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-    void OnResRequest(WebkitUriSchemeRequestHandle request)
+    async void OnResRequest(WebkitUriSchemeRequestHandle request)
     {
-        var uri = request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
-        var res = Resources.Get(uri);
-        if (res != null) 
+        try 
         {
-            var bytes = new byte[res.Length];
-            res.Read(bytes, 0, bytes.Length);
-            using var gbytes = GBytes.New(bytes);
-            using var gstream = MemoryInputStream.New(gbytes);
-            request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
+            var uri = request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
+            var res = Resources.Get(uri);
+            if (res != null) 
+            {
+                var bytes = new byte[res.Length];
+                res.Read(bytes, 0, bytes.Length);
+                using var gbytes = GBytes.New(bytes);
+                using var gstream = MemoryInputStream.New(gbytes);
+                request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
+            } else if (resourceRequest != null) {
+                var stream = await resourceRequest(uri);
+                if (stream != null)
+                {
+                    var bytes = new byte[stream.Length];
+                    stream.Read(bytes, 0, bytes.Length);
+                    using var gbytes = GBytes.New(bytes);
+                    using var gstream = MemoryInputStream.New(gbytes);
+                    request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
+                }
+                else
+                    SendNotFound(request);
+            }
+            else
+                SendNotFound(request);
+        }
+        catch 
+        {
+            SendNotFound(request);
         }
     }
 
@@ -157,16 +178,21 @@ public class WebView() : WebWindowNetCore.WebView
     }
 
     static Unit SendOk(WebkitUriSchemeRequestHandle request)
+        => SendResponse(request, 200, "OK", "OK");
+
+    static Unit SendNotFound(WebkitUriSchemeRequestHandle request)
+        => SendResponse(request, 404, "Not Found", "I can't find what you're looking for!");
+
+    static Unit SendResponse(WebkitUriSchemeRequestHandle request, int code, string status, string text)
     {
-        var ok = "OK";
-        using var bytes = GBytes.New(Encoding.UTF8.GetBytes(ok));
+        using var bytes = GBytes.New(Encoding.UTF8.GetBytes(text));
         using var stream = MemoryInputStream.New(bytes);
-        using var response = WebKitUriSchemeResponse.New(stream, ok.Length);
+        using var response = WebKitUriSchemeResponse.New(stream, text.Length);
         using var respondHeaders = SoupMessageHeaders.New(SoupMessageHeaderType.Response);
         respondHeaders.Set([new("Access-Control-Allow-Origin", "*")]);
         response
             .HttpHeaders(respondHeaders)
-            .Status(200, "OK");
+            .Status(code, status);
         request.Finish(response);
         return Unit.Value;
     }

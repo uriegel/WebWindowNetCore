@@ -43,7 +43,7 @@
       <LogicalName>react.svg</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../webroot/images/image.jpg">
-      <LogicalName>webroot/images/image.jpg</LogicalName>
+      <LogicalName>images/image.jpg</LogicalName>
     </EmbeddedResource>
   </ItemGroup> 
 

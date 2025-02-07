@@ -1,5 +1,8 @@
 ﻿using System.Drawing;
+using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using CsTools.Extensions;
 using WebWindowNetCore;
 
 var names = Assembly.GetEntryAssembly().GetManifestResourceNames();
@@ -20,6 +23,7 @@ WebView
     .Url("res://react.test/index.html")
     .QueryString("?param1=123&param2=456")
     .OnRequest(OnRequest)
+    .OnResourceRequest(OnResource)
     .CanClose(() => true)
     .Run();
 
@@ -35,6 +39,9 @@ void OnRequest(Request request)
             break;
     }
 }
+
+Task<Stream> OnResource(string uri)
+    => Resources.Get(uri[7..]).ToAsync();
 
 record Input(string Text, int Id);
 record Contact(string Name, int Id);

@@ -37,7 +37,7 @@ public abstract class WebView
     /// <param name="width">The initial width of the window</param>
     /// <param name="height">The initial height of the window</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView InitialBounds(int width, int height) 
+    public WebView InitialBounds(int width, int height)
     {
         this.width = width;
         this.height = height;
@@ -59,7 +59,7 @@ public abstract class WebView
     /// </summary>
     /// <param name="color">Background color</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView BackgroundColor(Color color)  
+    public WebView BackgroundColor(Color color)
         => this.SideEffect(w => w.backgroundColor = color);
 
     /// <summary>
@@ -68,7 +68,7 @@ public abstract class WebView
     /// </summary>
     /// <param name="url">The webview's url</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView Url(string url) 
+    public WebView Url(string url)
         => this.SideEffect(w => w.url = url);
 
     /// <summary>
@@ -79,7 +79,7 @@ public abstract class WebView
     /// </summary>
     /// <param name="url">The url for a web app being debugged</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView DebugUrl(string url) 
+    public WebView DebugUrl(string url)
         => this.SideEffect(w => w.debugUrl = url);
 
     /// <summary>
@@ -103,7 +103,7 @@ public abstract class WebView
     /// When called the web view's default context menu is not being displayed when you right click the mouse.
     /// </summary>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView DefaultContextMenuDisabled() 
+    public WebView DefaultContextMenuDisabled()
         => this.SideEffect(w => defaultContextMenuDisabled = true);
 
     /// <summary>
@@ -130,6 +130,14 @@ public abstract class WebView
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
     public WebView OnRequest(Action<Request> request)
         => this.SideEffect(w => w.request = request);
+
+    /// <summary>
+    /// Requests from custom resource scheme which are not automatically handled by included resources
+    /// </summary>
+    /// <param name="request">Callback receiving resource requests, parameter is request url</param>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
+    public WebView OnResourceRequest(Func<string, Task<Stream>> request)
+        => this.SideEffect(w => w.resourceRequest = request);
 
 #if Windows    
     public WebView OnFormCreating(Action<Form> onformCreate) 
@@ -173,7 +181,8 @@ public abstract class WebView
     internal string? queryString;
     internal Func<bool>? canClose;
     internal Action<Request>? request;
-#if Windows    
+    internal Func<string, Task<Stream>>? resourceRequest;
+#if Windows
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
     internal Action<Form>? onformCreate;
