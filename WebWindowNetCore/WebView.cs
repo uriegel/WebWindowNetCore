@@ -136,7 +136,7 @@ public abstract class WebView
     /// </summary>
     /// <param name="request">Callback receiving resource requests, parameter is request url</param>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView OnResourceRequest(Func<string, Task<Stream>> request)
+    public WebView OnResourceRequest(Func<string, Task<Stream?>> request)
         => this.SideEffect(w => w.resourceRequest = request);
 
 #if Windows    
@@ -181,7 +181,7 @@ public abstract class WebView
     internal string? queryString;
     internal Func<bool>? canClose;
     internal Action<Request>? request;
-    internal Func<string, Task<Stream>>? resourceRequest;
+    internal Func<string, Task<Stream?>>? resourceRequest;
 #if Windows
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
