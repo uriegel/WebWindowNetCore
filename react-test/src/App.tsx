@@ -30,7 +30,7 @@ function App() {
   return (
     <>
       <div>
-        <img src="res://webroot/images/image.jpg"/>
+        <img src="webroot/images/image.jpg"/>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>

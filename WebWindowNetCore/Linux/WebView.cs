@@ -94,7 +94,7 @@ public class WebView() : WebWindowNetCore.WebView
 
     void OnResRequest(WebkitUriSchemeRequestHandle request)
     {
-        var uri = request.GetUri()[6..].SubstringUntil('?');
+        var uri = request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
         var res = Resources.Get(uri);
         if (res != null) 
         {

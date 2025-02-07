@@ -26,20 +26,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="./resources/assets/script.js">
+    <EmbeddedResource Include="./dist/index.html">
+      <LogicalName>index.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./dist/assets/*.js">
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(7).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="./dist/assets/*.css">
+      <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(7).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <!-- <EmbeddedResource Include="./resources/assets/script.js">
       <LogicalName>webroot/assets/script.js</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./resources/assets/style.css">
       <LogicalName>webroot/assets/style.css</LogicalName>
+    </EmbeddedResource> -->
+    <EmbeddedResource Include="./dist/vite.svg">
+      <LogicalName>vite.svg</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="./resources/index.html">
-      <LogicalName>webroot/index.html</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="./public/vite.svg">
-      <LogicalName>webroot/vite.svg</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="./public/react.svg">
-      <LogicalName>webroot/react.svg</LogicalName>
+    <EmbeddedResource Include="./dist/react.svg">
+      <LogicalName>react.svg</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="../webroot/images/image.jpg">
       <LogicalName>webroot/images/image.jpg</LogicalName>
