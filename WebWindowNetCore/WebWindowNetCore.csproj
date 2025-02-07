@@ -52,7 +52,8 @@
       </PackagePath>
     </None>
   </ItemGroup>	      
-  <ItemGroup Condition="'$(IsLinux)'=='true'">
+  <ItemGroup>
+    <PackageReference Include="CsTools" Version="7.19.0" />
     <PackageReference Include="Gtk4DotNet" Version="6.6.0" />
   </ItemGroup>
 
