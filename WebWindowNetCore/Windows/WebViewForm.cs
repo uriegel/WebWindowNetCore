@@ -18,6 +18,7 @@ class WebViewForm : Form
         appId = settings.appId;
         canClose = settings.canClose;
         request = settings.request;
+        resourceRequest = settings.resourceRequest;
         devTools = settings.devTools;
         width = settings.width;
         height = settings.height;
@@ -39,11 +40,11 @@ class WebViewForm : Form
 
         if (settings.saveBounds)
         {
-            var bounds = settings.saveBounds 
+            var bounds = settings.saveBounds
                 ? WebWindowNetCore.Bounds.Retrieve(settings.appId)
                 : null;
             Size = new Size(bounds?.Width ?? settings.width, bounds?.Height ?? settings.height);
-            WindowState = bounds?.IsMaximized == true? FormWindowState.Maximized : FormWindowState.Normal;
+            WindowState = bounds?.IsMaximized == true ? FormWindowState.Maximized : FormWindowState.Normal;
         }
         isMaximized = WindowState == FormWindowState.Maximized;
 
@@ -85,31 +86,31 @@ class WebViewForm : Form
 
             webView.Source = new Uri(settings.GetUrl());
 
-            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title)); 
+            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title));
             await Task.Delay(50);
-            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
+            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
             if (settings.withoutNativeTitlebar)
-                Resize += (s, e) => 
+                Resize += (s, e) =>
                     {
                         if (WindowState == FormWindowState.Maximized != isMaximized)
                             isMaximized = WindowState == FormWindowState.Maximized;
-                            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})"); 
+                        WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
                     };
         }
     }
 
     void OnClose(object? _, FormClosingEventArgs e)
-    { 
-        var bounds = (saveBounds 
+    {
+        var bounds = (saveBounds
             ? WebWindowNetCore.Bounds.Retrieve(appId)
             : new Bounds(null, null, null, null, false))
             with {
-                X = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.X : Location.X,
-                Y = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.Y : Location.Y,
-                Width = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Width : Size.Width,
-                Height = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Height : Size.Height,
-                IsMaximized = WindowState == FormWindowState.Maximized 
-            };
+            X = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.X : Location.X,
+            Y = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.Y : Location.Y,
+            Width = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Width : Size.Width,
+            Height = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Height : Size.Height,
+            IsMaximized = WindowState == FormWindowState.Maximized
+        };
         WebWindowNetCore.Bounds.Save(appId, bounds);
     }
 
@@ -118,18 +119,18 @@ class WebViewForm : Form
         var bounds = WebWindowNetCore.Bounds.Retrieve(appId);
         if (bounds.X.HasValue && bounds.Y.HasValue)
             Location = new Point(bounds.X ?? 0, bounds.Y ?? 0);
-        
+
         var screenBounds = Screen.FromRectangle(Bounds).WorkingArea;
-        if (!screenBounds.Contains(Bounds)) 
+        if (!screenBounds.Contains(Bounds))
         {
             // Adjust the form's location if it is out of bounds
             Location = new Point(Math.Max(screenBounds.X, Bounds.X), Math.Max(screenBounds.Y, Bounds.Y));
             // Ensure the form fits within the screen
             Size = new Size(Math.Min(screenBounds.Width, Bounds.Width), Math.Min(screenBounds.Height, Bounds.Height));
         }
-        if (bounds.X.HasValue 
+        if (bounds.X.HasValue
                 && bounds.Y.HasValue
-                && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(new Rectangle(bounds.X ?? 0, bounds.Y ?? 0, Size.Width, Size.Height)))) 
+                && Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(new Rectangle(bounds.X ?? 0, bounds.Y ?? 0, Size.Width, Size.Height))))
             Location = new Point(bounds.X ?? 0, bounds.Y ?? 0);
         Size = new Size(bounds.Width ?? width, bounds.Height ?? height);
     }
@@ -146,7 +147,7 @@ class WebViewForm : Form
         SetDarkMode(Theme.IsDark());
     }
 
-    void ShowDevtools() 
+    void ShowDevtools()
     {
         if (devTools)
             webView.CoreWebView2.OpenDevToolsWindow();
@@ -168,29 +169,46 @@ class WebViewForm : Form
     Unit SendNotFound(CoreWebView2WebResourceResponse response)
         => SendTextResponse(404, "Not Found", "Resource not found", response);
 
-    void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
+    async void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
     {
-        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringAfter('/').SubstringUntil('?');
-        var stream = Resources.Get(uri);
-
-        if (stream != null)
-            ServeResourceStream(uri, stream);
-
-        void ServeResourceStream(string url, Stream stream)
+        try
         {
-            try
+            var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringAfter('/').SubstringUntil('?');
+            var stream = Resources.Get(uri);
+
+            if (stream != null)
+                ServeResourceStream(uri, stream);
+            else if (resourceRequest != null)
             {
-                e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
-                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
+                var resStream = await resourceRequest(uri);
+                if (ServeResourceStream != null)
+                {
+                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(resStream, 200,
+                        "OK", $"Content-Type: {uri.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
+                }
+                else SendNotFound(e.Response);
             }
-            catch
+
+            void ServeResourceStream(string url, Stream stream)
             {
-                SendNotFound(e.Response);
+                try
+                {
+                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
+                        "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
+                }
+                catch
+                {
+                    SendNotFound(e.Response);
+                }
             }
+        }
+        catch
+        {
+            SendNotFound(e.Response);
         }
     }
 
-    void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e) 
+    void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
     {
         var msg = e.TryGetWebMessageAsString();
         if (request != null && msg?.StartsWith("request") == true)
@@ -204,12 +222,12 @@ class WebViewForm : Form
         {
             var files = (msg[15..]
                         .Deserialize<string[]>() ?? [])
-                        .Select(n => n.Replace("/", "\\"))  
+                        .Select(n => n.Replace("/", "\\"))
                         .ToArray();
             DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.All);
             WebView.RunJavascript($"WebView.startDragFilesBack()");
-        } 
-        else if (msg =="droppedFiles" && e.AdditionalObjects != null)
+        }
+        else if (msg == "droppedFiles" && e.AdditionalObjects != null)
         {
             var files = e.AdditionalObjects
                         .Select(n => (n as CoreWebView2File)?.Path)
@@ -220,7 +238,7 @@ class WebViewForm : Form
             WindowState = FormWindowState.Maximized;
         else if (msg == "minimize")
             WindowState = FormWindowState.Minimized;
-        else if (msg == "restore")            
+        else if (msg == "restore")
             WindowState = FormWindowState.Normal;
     }
 
@@ -253,7 +271,7 @@ class WebViewForm : Form
     {
         if (DesignMode || !withoutNativeTitlebar)
             base.WndProc(ref m);
-        else 
+        else
             switch (m.Msg)
             {
                 case WM_NCCALCSIZE:
@@ -264,11 +282,11 @@ class WebViewForm : Form
                     break;
             }
 
-        void CalcSizeNoTitlebar(ref Message m) 
+        void CalcSizeNoTitlebar(ref Message m)
         {
             var isZoomedTop = Api.IsZoomed(Handle) ? 7 : 0;
             var isZoomedAll = Api.IsZoomed(Handle) ? 3 : 0;
-            if (m.WParam != 0) 
+            if (m.WParam != 0)
             {
                 var nccsp = NcCalcSizeParams.Fromnint(m.LParam);
                 nccsp.Rgrc0.Top += 1 + isZoomedTop;
@@ -297,11 +315,12 @@ class WebViewForm : Form
     readonly int height;
     readonly bool devTools;
     readonly Panel panel = new();
-    readonly bool saveBounds; 
+    readonly bool saveBounds;
     readonly string appId;
     readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
+    internal Func<string, Task<Stream>>? resourceRequest;
 }
 
 #endif
