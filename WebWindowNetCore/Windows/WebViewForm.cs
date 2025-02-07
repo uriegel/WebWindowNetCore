@@ -65,12 +65,15 @@ class WebViewForm : Form
         async void Init()
         {
             var env = await CoreWebView2Environment.CreateAsync(null, appDataPath, new CoreWebView2EnvironmentOptions(
-                            customSchemeRegistrations: [ 
+                            customSchemeRegistrations: [
                                 new CoreWebView2CustomSchemeRegistration("res")
+                                {
+                                    //TreatAsSecure = true,
+                                    HasAuthorityComponent = true
+                                }
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
             await webView.EnsureCoreWebView2Async(env);
-            if (settings.GetUrl().StartsWith("res://"))
-                webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
+            webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
             webView.CoreWebView2.WebResourceRequested += ServeRes;
             webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
             webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
@@ -178,7 +181,7 @@ class WebViewForm : Form
             try
             {
                 e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
-                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}");
+                    "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
             }
             catch
             {

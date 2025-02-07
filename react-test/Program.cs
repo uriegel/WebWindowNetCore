@@ -8,12 +8,12 @@ WebView
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-    .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
 #if Windows    
     .ResourceIcon("icon")
 #endif    
-    .DebugUrl("http://localhost:5173")
+    //.DebugUrl("http://localhost:5173")
     .Url("res://webroot/index.html")
     .QueryString("?param1=123&param2=456")
     .OnRequest(OnRequest)

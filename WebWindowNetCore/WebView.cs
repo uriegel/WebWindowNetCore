@@ -183,5 +183,4 @@ public abstract class WebView
 #endif
 }
 
-// TODO Test react debug/release (with img)
 
