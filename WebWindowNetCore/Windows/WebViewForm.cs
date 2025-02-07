@@ -170,7 +170,7 @@ class WebViewForm : Form
 
     void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
     {
-        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringUntil('?');
+        var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringAfter('/').SubstringUntil('?');
         var stream = Resources.Get(uri);
 
         if (stream != null)

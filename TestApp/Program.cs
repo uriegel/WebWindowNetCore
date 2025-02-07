@@ -8,13 +8,13 @@ WebView
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-   // .DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
 #if Windows    
     .ResourceIcon("icon")
 #endif    
     //.DebugUrl("https://github.com/uriegel/WebWindowNetCore")
-    .Url("res://webroot/index.html")
+    .Url("res://testapp/index.html")
     .QueryString("?param1=123&param2=456")
     .OnRequest(OnRequest)
     .CanClose(() => true)

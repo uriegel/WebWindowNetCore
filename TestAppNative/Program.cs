@@ -16,11 +16,8 @@ WebView
     .DevTools()
     .DefaultContextMenuDisabled()
     .BackgroundColor(Color.Transparent)
-    .Url("res://webroot/index.html")
+    .Url("res://test.app.native/index.html")
     .CanClose(() => true)
     .Run();
-//     //.Url($"file://{Directory.GetCurrentDirectory()}/TestAppNative/webroot/index.html")
-// #elif Windows
-//     .OnFormCreating(WindowsExtensions.FormCreation)
 
 
