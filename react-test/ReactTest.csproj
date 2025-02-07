@@ -17,6 +17,7 @@
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
+    <SelfContained>false</SelfContained>
     <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup> 
@@ -35,12 +36,6 @@
     <EmbeddedResource Include="./dist/assets/*.css">
       <LogicalName>$([System.String]::new('%(RelativeDir)').SubString(7).Replace('\','/'))%(FileName)%(Extension)</LogicalName>
     </EmbeddedResource>
-    <!-- <EmbeddedResource Include="./resources/assets/script.js">
-      <LogicalName>webroot/assets/script.js</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="./resources/assets/style.css">
-      <LogicalName>webroot/assets/style.css</LogicalName>
-    </EmbeddedResource> -->
     <EmbeddedResource Include="./dist/vite.svg">
       <LogicalName>vite.svg</LogicalName>
     </EmbeddedResource>
