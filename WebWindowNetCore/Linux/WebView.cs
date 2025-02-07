@@ -28,7 +28,7 @@ public class WebView() : WebWindowNetCore.WebView
                 .GrabFocus();
         else
             builder
-                .Invoke()
+                .Invoke(app)
                 .GetObject<WindowHandle>("window", w => w
                     .Title(title)
                     .SetApplication(app)

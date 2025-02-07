@@ -7,7 +7,7 @@ namespace TestAppNative.Linux;
 
 public static class WebView
 {
-    public static BuilderHandle WithBuilder()
+    public static BuilderHandle WithBuilder(ApplicationHandle _)
     {
         return Builder
                 .FromDotNetResource("ui")
