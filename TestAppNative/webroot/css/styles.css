@@ -18,6 +18,11 @@ h1>div {
     flex-grow: 1;
     display: flex;
 }
+body:focus-within h1>div {
+    background-color: red;
+    color: white;
+}
+
 h1 img {
     object-fit: contain;
     width: 24px;

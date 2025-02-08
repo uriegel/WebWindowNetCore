@@ -9,7 +9,6 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-    .BackgroundColor(Color.Transparent)
 #if Windows    
     .ResourceIcon("icon")
 #endif    

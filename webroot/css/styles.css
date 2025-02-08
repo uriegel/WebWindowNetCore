@@ -9,6 +9,10 @@ body {
     height: 100px;
 }
 
+body:focus-within h1 {
+    background-color: chartreuse;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         background-color: rgb(56, 56, 56);

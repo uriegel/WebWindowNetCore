@@ -16,28 +16,16 @@ public class WebView() : WebWindowNetCore.WebView
             .Run(0, 0);
 
     void OnActivate(ApplicationHandle app)
-    {
-        if (builder == null)
-            app
-                .NewWindow()
-                .Title(title)
-                .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
-                .Child(GetWebKit())
-                .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
-                .Show()
-                .GrabFocus();
-        else
-            builder
-                .Invoke(app)
-                .GetObject<WindowHandle>("window", w => w
-                    .Title(title)
-                    .SetApplication(app)
-                    .Child(GetWebKit())
-                    .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
-                    .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
-                    .Show()
-                    .GrabFocus());
-    }
+        => app
+            .NewWindow()
+            .Title(title)
+            .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
+            .Child(GetWebKit())
+            .SideEffectIf(builder != null, window => window.Titlebar(builder!(app, window)))
+            .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
+            .Show()
+            .GetChild()
+            .GrabFocus();
 
     WebViewHandle GetWebKit()
         => WebKit
@@ -52,7 +40,7 @@ public class WebView() : WebWindowNetCore.WebView
                 .SideEffect(EnableRequestScheme)
                 .SideEffect(Javascript.Initialize)
                 .SideEffect(w => w.OnLoadChanged(OnLoad))
-                .LoadUri(GetUrl());        
+                .LoadUri(GetUrl());
 
     void WithSaveBounds(WindowHandle window)
         => Bounds
@@ -83,7 +71,7 @@ public class WebView() : WebWindowNetCore.WebView
         {
             webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get(false, title));
             SetVisible();
-            
+
             async void SetVisible()
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(20));

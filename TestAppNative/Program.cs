@@ -6,7 +6,7 @@ WebView
     .AppId("de.uriegel.test")
     .Title("Web Window Net Core Native 👍")
 #if Linux    
-    .WithBuilder(TestAppNative.Linux.WebView.WithBuilder)
+    .WithHeaderbar(TestAppNative.Linux.WebView.WithHeaderbar)
 #elif Windows
     .ResourceIcon("icon")
     .WithoutNativeTitlebar()
@@ -15,7 +15,6 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-    .BackgroundColor(Color.Transparent)
     .Url("res://test.app.native/index.html")
     .CanClose(() => true)
     .Run();

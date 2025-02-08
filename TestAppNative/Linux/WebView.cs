@@ -7,12 +7,10 @@ namespace TestAppNative.Linux;
 
 public static class WebView
 {
-    public static BuilderHandle WithBuilder(ApplicationHandle _)
-    {
-        return Builder
-                .FromDotNetResource("ui")
-                .SideEffect(b => b.GetObject<ButtonHandle>("devtools", b => b
-                    .OnClicked(() => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"))));
-    }
+    public static WidgetHandle WithHeaderbar(ApplicationHandle _, WindowHandle __)
+        => Builder
+                .FromDotNetResource("headerbar")
+                .SideEffect(b => b.GetButton("devtools").OnClicked(() => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"))                )
+                .GetWidget("headerBar");
 }
 #endif

@@ -14,6 +14,7 @@ function onWebViewLoaded() {
     initialize()
 }
 
+btnDevTools.focus()
 
 document.body.addEventListener("dragover", e => {
     e.preventDefault()

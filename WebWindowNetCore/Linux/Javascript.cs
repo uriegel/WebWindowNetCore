@@ -10,7 +10,7 @@ namespace WebWindowNetCore.Linux;
 public static class Javascript
 {
     /// <summary>
-    /// /// Run Script in WebView
+    /// Run Script in WebView
     /// </summary>
     /// <param name="script">Script, which should be run in WebView</param>
     public static void Run(string script)

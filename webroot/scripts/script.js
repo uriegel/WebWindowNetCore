@@ -6,6 +6,7 @@ const btnDevTools = document.getElementById("buttonDevTools")
 const dragzone = document.getElementById("dragzone")
 
 btnDevTools.onclick = () => WebView.showDevTools()
+btn1.focus()
 
 let currentDirectory = ""
 
@@ -20,6 +21,10 @@ try {
 } catch {  }
 function onWebViewLoaded() {
     initialize()
+}
+
+window.onload = function() {
+    btn1.focus()
 }
 
 btn1.onclick = async () => {
