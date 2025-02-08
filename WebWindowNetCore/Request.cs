@@ -11,11 +11,7 @@ public class Request(string cmd, string id, string json)
     public void Response<T>(T t)
     {
         var back = $"result,{id},{JsonSerializer.Serialize(t, Json.Defaults)}".Replace("'", "u0027");
-#if Windows
         WebView.RunJavascript($"WebView.backtothefuture('{back}')");
-#elif Linux
-        WebView.RunJavascript($"WebView.backtothefuture('{back}')");
-#endif        
     }
 
     internal static Request Create(string msg)

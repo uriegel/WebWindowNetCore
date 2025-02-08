@@ -320,7 +320,7 @@ class WebViewForm : Form
     readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
     readonly Action<Request>? request;
-    internal Func<string, Task<Stream>>? resourceRequest;
+    internal Func<string, Task<Stream?>>? resourceRequest;
 }
 
 #endif

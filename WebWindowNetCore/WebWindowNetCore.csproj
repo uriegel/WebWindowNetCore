@@ -4,16 +4,23 @@
     <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
     <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
-    <Nullable>enable</Nullable>
-    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
-    <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+    <DefineConstants>Windows</DefineConstants>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <DefineConstants>Linux</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>11.0.3-beta-3</Version>
-    <FileVersion>11.0.3.0</FileVersion>
-    <AssemblyVersion>11.0.3.0</AssemblyVersion>
+    <Version>11.0.4-beta-4</Version>
+    <FileVersion>11.0.4.0</FileVersion>
+    <AssemblyVersion>11.0.4.0</AssemblyVersion>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -27,16 +34,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>  
-  <PropertyGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
-    <UseWindowsForms>true</UseWindowsForms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
-    <DefineConstants>Windows</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
-    <DefineConstants>Linux</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(IsWindows)'=='true' And '$(TargetFramework)' == 'net8.0-windows'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="ClrWinApi" Version="2.5.0" />
   	<EmbeddedResource Include="./WebView2Loader.dll">
    		<LogicalName>binaries/webviewloader</LogicalName>
@@ -52,8 +50,7 @@
       </PackagePath>
     </None>
   </ItemGroup>	      
-  <ItemGroup>
-    <PackageReference Include="CsTools" Version="7.19.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Gtk4DotNet" Version="6.6.0" />
   </ItemGroup>
 
