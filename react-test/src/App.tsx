@@ -30,7 +30,10 @@ function App() {
   return (
     <>
       <div>
-        <img src="res://react.test/custom/images/image.jpg"/>
+        <img src="res://react.test/custom/images/image.jpg" />
+        <div>
+        <video controls autoPlay src="http://roxy:8080/media/video/Ali.mkv" />        
+        </div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
