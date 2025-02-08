@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using CsTools.Extensions;
 
@@ -10,7 +11,7 @@ public class Request(string cmd, string id, string json)
 
     public void Response<T>(T t)
     {
-        var back = $"result,{id},{JsonSerializer.Serialize(t, Json.Defaults)}".Replace("'", "u0027");
+        var back = Convert.ToBase64String(Encoding.UTF8.GetBytes($"result,{id},{JsonSerializer.Serialize(t, Json.Defaults)}"));
         WebView.RunJavascript($"WebView.backtothefuture('{back}')");
     }
 

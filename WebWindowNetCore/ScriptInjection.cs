@@ -10,11 +10,17 @@ var webviewrequestsid = 0
 var webviewrequests = new Map()
 
 const backtothefuture = (data) => {{
+    function fromBase64(base64) {{
+        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0)); // Convert Base64 to bytes
+        return new TextDecoder().decode(bytes); // Decode UTF-8
+    }}
+
+    data = fromBase64(data)
     if (data.startsWith('result,')) {{
         const msg = data.substring(7)
         const idx = msg.indexOf(',')
         const id = msg.substring(0, idx)
-        const back = msg.substring(idx + 1).replace('u0027', ""'"")
+        const back = msg.substring(idx + 1)
         const json = JSON.parse(back)
         const res = webviewrequests.get(id)    
         webviewrequests.delete(id)

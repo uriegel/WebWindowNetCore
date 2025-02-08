@@ -27,6 +27,10 @@ btn1.onclick = async () => {
         text: "Text",
         id: 123
     })
+
+    const text = document.getElementById("text")
+    text.innerText = res.name
+
     console.log("cmd1", res)
 }
 

@@ -27,7 +27,7 @@ void OnRequest(Request request)
         case "cmd1":
         {
             var data = request.Deserialize<Input>();
-            request.Response(new Contact("Uwe Riegel", 9865));
+            request.Response(new Contact(@"Uwe 'UR' Riegel\intern😁😁", 986588));
         }
         break;
         case "cmd2":
