@@ -79,21 +79,24 @@ public class WebView() : WebWindowNetCore.WebView
             }
         }
     }
-
+    
     async void OnResRequest(WebkitUriSchemeRequestHandle request)
     {
-        try 
+        try
         {
-            var uri = request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
+            var uri = "/" + request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
+            uri = uri != "/" ? uri : "/index.html";
             var res = Resources.Get(uri);
-            if (res != null) 
+            if (res != null)
             {
                 var bytes = new byte[res.Length];
                 res.Read(bytes, 0, bytes.Length);
                 using var gbytes = GBytes.New(bytes);
                 using var gstream = MemoryInputStream.New(gbytes);
                 request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
-            } else if (resourceRequest != null) {
+            }
+            else if (resourceRequest != null)
+            {
                 var stream = await resourceRequest(uri);
                 if (stream != null)
                 {
@@ -109,7 +112,7 @@ public class WebView() : WebWindowNetCore.WebView
             else
                 SendNotFound(request);
         }
-        catch 
+        catch
         {
             SendNotFound(request);
         }

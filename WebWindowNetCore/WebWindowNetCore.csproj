@@ -39,7 +39,7 @@
   	<EmbeddedResource Include="./WebView2Loader.dll">
    		<LogicalName>binaries/webviewloader</LogicalName>
    	</EmbeddedResource>
-    <PackageReference Include="CsTools" Version="7.19.0" />
+    <PackageReference Include="CsTools" Version="7.21.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
   </ItemGroup>	  
   <ItemGroup>
@@ -52,6 +52,7 @@
   </ItemGroup>	      
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Gtk4DotNet" Version="6.7.1" />
+    <PackageReference Include="CsTools" Version="7.21.0" />
   </ItemGroup>
 
 </Project>

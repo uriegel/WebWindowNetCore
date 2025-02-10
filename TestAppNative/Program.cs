@@ -15,7 +15,7 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-    .Url("res://test.app.native/index.html")
+    .Url("res://test.app.native")
     .CanClose(() => true)
     .Run();
 

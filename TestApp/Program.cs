@@ -9,11 +9,11 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-#if Windows    
+#if Windows
     .ResourceIcon("icon")
-#endif    
+#endif
     //.DebugUrl("https://github.com/uriegel/WebWindowNetCore")
-    .Url("res://testapp/index.html")
+    .Url("res://testapp")
     .QueryString("?param1=123&param2=456")
     .OnRequest(OnRequest)
     .CanClose(() => true)
