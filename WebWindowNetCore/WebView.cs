@@ -16,7 +16,7 @@ public abstract class WebView
     public static WebView Create() => new Linux.WebView();
     public static void RunJavascript(string script) => Linux.Javascript.Run(script);
 
-    public WebView WithHeaderbar(Func<ApplicationHandle, WindowHandle, WidgetHandle> builder)
+    public WebView WithHeaderbar(Action<ApplicationHandle, WindowHandle> builder)
         => this.SideEffect(w => w.builder = builder);
 #endif    
 
@@ -188,7 +188,7 @@ public abstract class WebView
     internal Action<Form>? onformCreate;
 #endif
 #if Linux
-    protected Func<ApplicationHandle, WindowHandle, WidgetHandle>? builder;
+    protected Action<ApplicationHandle, WindowHandle>? builder;
 #endif
 }
 

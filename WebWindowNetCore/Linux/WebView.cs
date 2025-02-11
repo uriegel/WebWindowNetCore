@@ -21,7 +21,7 @@ public class WebView() : WebWindowNetCore.WebView
             .Title(title)
             .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
             .Child(GetWebKit())
-            .SideEffectIf(builder != null, window => window.Titlebar(builder!(app, window)))
+            .SideEffectIf(builder != null, window => builder!(app, window))
             .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
             .Show()
             .GetChild()
