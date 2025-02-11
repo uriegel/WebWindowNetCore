@@ -1,5 +1,4 @@
 #if Linux
-using CsTools.Extensions;
 using GtkDotNet;
 using GtkDotNet.SafeHandles;
 
