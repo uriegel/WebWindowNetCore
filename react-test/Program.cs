@@ -25,22 +25,6 @@ WebView
     .CanClose(() => true)
     .Run();
 
-void OnRequest(Request request)
-{
-    switch (request.Cmd)
-    {
-        case "cmd1":
-            {
-                var data = request.Deserialize<Input>();
-                request.Response(new Contact("Uwe Riegel", 9865));
-            }
-            break;
-    }
-}
-
-Task<Stream> OnResource(string uri)
-    => Resources.Get(uri[7..]).ToAsync();
-
 record Input(string Text, int Id);
 record Contact(string Name, int Id);
 

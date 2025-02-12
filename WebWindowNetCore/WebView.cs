@@ -175,9 +175,9 @@ public abstract class WebView
 }
 
 // TODO showDevTools,
-
+// TODO Enable Resource Scheme in Builder
+// TODO Windows Javascript injection for Windows custom html Titlebar
 // TODO startDragFiles,
 // TODO dropFiles
 // TODO initializeCustomTitlebar,
-// TODO Linux Enable Resource Scheme to switch on
 // TODO Linux: Enable Resource Scheme (disposing error)

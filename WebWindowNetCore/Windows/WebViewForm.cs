@@ -17,8 +17,6 @@ class WebViewForm : Form
         saveBounds = settings.saveBounds;
         appId = settings.appId;
         canClose = settings.canClose;
-        request = settings.request;
-        resourceRequest = settings.resourceRequest;
         devTools = settings.devTools;
         width = settings.width;
         height = settings.height;
@@ -86,7 +84,7 @@ class WebViewForm : Form
 
             webView.Source = new Uri(settings.GetUrl());
 
-            await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title));
+            // TODO await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title));
             await Task.Delay(50);
             WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
             if (settings.withoutNativeTitlebar)
@@ -169,7 +167,7 @@ class WebViewForm : Form
     Unit SendNotFound(CoreWebView2WebResourceResponse response)
         => SendTextResponse(404, "Not Found", "Resource not found", response);
 
-    async void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
+    void ServeRes(object? _, CoreWebView2WebResourceRequestedEventArgs e)
     {
         try
         {
@@ -178,24 +176,11 @@ class WebViewForm : Form
             var stream = Resources.Get(uri);
 
             if (stream != null)
-                ServeResourceStream(uri, stream);
-            else if (resourceRequest != null)
-            {
-                var resStream = await resourceRequest(uri);
-                if (ServeResourceStream != null)
-                {
-                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(resStream, 200,
-                        "OK", $"Content-Type: {uri.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
-                }
-                else SendNotFound(e.Response);
-            }
-
-            void ServeResourceStream(string url, Stream stream)
             {
                 try
                 {
                     e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
-                        "OK", $"Content-Type: {url.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
+                        "OK", $"Content-Type: {uri.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
                 }
                 catch
                 {
@@ -212,30 +197,7 @@ class WebViewForm : Form
     void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
     {
         var msg = e.TryGetWebMessageAsString();
-        if (request != null && msg?.StartsWith("request") == true)
-        {
-            var req = Request.Create(msg);
-            request(req);
-        }
-        else if (msg == "showDevTools")
-            ShowDevtools();
-        else if (msg?.StartsWith("startDragFiles") == true)
-        {
-            var files = (msg[15..]
-                        .Deserialize<string[]>() ?? [])
-                        .Select(n => n.Replace("/", "\\"))
-                        .ToArray();
-            DoDragDrop(new DataObject(DataFormats.FileDrop, files), DragDropEffects.All);
-            WebView.RunJavascript($"WebView.startDragFilesBack()");
-        }
-        else if (msg == "droppedFiles" && e.AdditionalObjects != null)
-        {
-            var files = e.AdditionalObjects
-                        .Select(n => (n as CoreWebView2File)?.Path)
-                        .ToArray();
-            WebView.RunJavascript($"WebView.droppedFilesBack({files.Serialize(Json.Defaults)})");
-        }
-        else if (msg == "maximize")
+        if (msg == "maximize")
             WindowState = FormWindowState.Maximized;
         else if (msg == "minimize")
             WindowState = FormWindowState.Minimized;
@@ -320,8 +282,6 @@ class WebViewForm : Form
     readonly string appId;
     readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
-    readonly Action<Request>? request;
-    internal Func<string, Task<Stream?>>? resourceRequest;
 }
 
 #endif
