@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using WebWindowNetCore;
+﻿using WebWindowNetCore;
 
 WebView
     .Create()
@@ -15,7 +14,8 @@ WebView
     .SaveBounds()
     .DevTools()
     .DefaultContextMenuDisabled()
-    .Url("res://test.app.native")
+    .DebugUrl("https://github.com/uriegel/WebWindowNetCore")
+    .Url("https://github.com")
     .CanClose(() => true)
     .Run();
 

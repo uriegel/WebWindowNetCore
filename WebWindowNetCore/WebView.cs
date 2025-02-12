@@ -123,22 +123,6 @@ public abstract class WebView
     public WebView CanClose(Func<bool> canClose)
         => this.SideEffect(w => w.canClose = canClose);
 
-    /// <summary>
-    /// Requests from Javascript call this installed Action 
-    /// </summary>
-    /// <param name="request">Callback receiving requests</param>
-    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView OnRequest(Action<Request> request)
-        => this.SideEffect(w => w.request = request);
-
-    /// <summary>
-    /// Requests from custom resource scheme which are not automatically handled by included resources
-    /// </summary>
-    /// <param name="request">Callback receiving resource requests, parameter is request url</param>
-    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
-    public WebView OnResourceRequest(Func<string, Task<Stream?>> request)
-        => this.SideEffect(w => w.resourceRequest = request);
-
 #if Windows    
     public WebView OnFormCreating(Action<Form> onformCreate) 
         => this.SideEffect(w => w.onformCreate = onformCreate);
@@ -180,8 +164,6 @@ public abstract class WebView
     internal bool defaultContextMenuDisabled;
     internal string? queryString;
     internal Func<bool>? canClose;
-    internal Action<Request>? request;
-    internal Func<string, Task<Stream?>>? resourceRequest;
 #if Windows
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
@@ -192,7 +174,10 @@ public abstract class WebView
 #endif
 }
 
-// TODO Linux Request => alert
+// TODO showDevTools,
+
+// TODO startDragFiles,
+// TODO dropFiles
+// TODO initializeCustomTitlebar,
 // TODO Linux Enable Resource Scheme to switch on
-// TODO Linux: Enable Request Scheme (disposing error)
 // TODO Linux: Enable Resource Scheme (disposing error)

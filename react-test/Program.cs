@@ -22,8 +22,6 @@ WebView
     //.DebugUrl("http://localhost:5173")
     .Url("res://react.test")
     .QueryString("?param1=123&param2=456")
-    .OnRequest(OnRequest)
-    .OnResourceRequest(OnResource)
     .CanClose(() => true)
     .Run();
 

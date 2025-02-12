@@ -36,8 +36,6 @@ public class WebView() : WebWindowNetCore.WebView
                 .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
                 .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
                 //.SideEffect(EnableResourceScheme)
-                .SideEffectIf(request != null, EnableRequests)
-                //.SideEffect(EnableRequestScheme)
                 .SideEffect(Javascript.Initialize)
                 .SideEffect(w => w.OnLoadChanged(OnLoad))
                 .LoadUri(GetUrl());
@@ -62,14 +60,10 @@ public class WebView() : WebWindowNetCore.WebView
     void EnableResourceScheme(WebViewHandle webView)
         => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
 
-    void EnableRequestScheme(WebViewHandle webView)
-        => WebKitWebContext.GetDefault().RegisterUriScheme("req", OnReqRequest);
-
     void OnLoad(WebViewHandle webView, WebViewLoad load)
     {
         if (load == WebViewLoad.Committed)
         {
-            webView.RunJavascript(WebWindowNetCore.ScriptInjection.Get(false, title));
             SetVisible();
 
             async void SetVisible()
@@ -79,8 +73,8 @@ public class WebView() : WebWindowNetCore.WebView
             }
         }
     }
-    
-    async void OnResRequest(WebkitUriSchemeRequestHandle request)
+
+    void OnResRequest(WebkitUriSchemeRequestHandle request)
     {
         try
         {
@@ -95,20 +89,6 @@ public class WebView() : WebWindowNetCore.WebView
                 using var gstream = MemoryInputStream.New(gbytes);
                 request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
             }
-            else if (resourceRequest != null)
-            {
-                var stream = await resourceRequest(uri);
-                if (stream != null)
-                {
-                    var bytes = new byte[stream.Length];
-                    stream.Read(bytes, 0, bytes.Length);
-                    using var gbytes = GBytes.New(bytes);
-                    using var gstream = MemoryInputStream.New(gbytes);
-                    request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
-                }
-                else
-                    SendNotFound(request);
-            }
             else
                 SendNotFound(request);
         }
@@ -118,15 +98,7 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-    void OnReqRequest(WebkitUriSchemeRequestHandle request)
-    {
-        var _ = request.GetUri()[6..] switch
-        {
-            "showDevTools" => ShowDevTools(request),
-            "startDragFiles" => StartDragFiles(request),
-            _ => SendOk(request)
-        };
-    }
+
 
     Unit ShowDevTools(WebkitUriSchemeRequestHandle request)
     {
@@ -186,18 +158,6 @@ public class WebView() : WebWindowNetCore.WebView
             .Status(code, status);
         request.Finish(response);
         return Unit.Value;
-    }
-
-    void EnableRequests(WebViewHandle webView)
-        => webView.OnAlert(OnRequest);
-
-    void OnRequest(WebViewHandle webView, string? msg)        
-    {
-        if (request != null && msg?.StartsWith("request") == true)
-        {
-            var req = Request.Create(msg);
-            request(req);
-        }
     }
 
     readonly ObjectRef<WebViewHandle> webViewRef = new();
