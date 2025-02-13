@@ -24,6 +24,26 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
+        },         {
+            "name": ".NET Core Resource (Windows)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppRes/bin/Debug/net8.0-windows/win-x64/TestAppRes.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
+            "name": ".NET Core Resource (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppRes/bin/Debug/net8.0/linux-x64/TestAppRes.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
         }, {
             "name": ".NET Core Native (Windows)",
             "type": "coreclr",

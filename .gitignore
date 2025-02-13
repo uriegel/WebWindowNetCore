@@ -12,7 +12,5 @@ TestAppWindows/bin/
 TestAppWindows/obj/
 TestAppNative/bin
 TestAppNative/obj
-react-test/package-lock.json
-react-test/bin
-react-test/obj
-
+TestAppRes/bin
+TestAppRes/obj
