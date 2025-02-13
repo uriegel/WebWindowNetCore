@@ -5,7 +5,7 @@ public static class ScriptInjection
 {
     public static string Get(string title) => 
 $@"
-//-Windows
+
 function send_request(data) {{
     window.chrome.webview.postMessage(data)
 }}
@@ -51,8 +51,6 @@ function initializeCustomTitlebar() {{
 
 var WebView = (() => {{
     return {{
-        request,
-        backtothefuture,
         initializeCustomTitlebar,
     }}
 }})()

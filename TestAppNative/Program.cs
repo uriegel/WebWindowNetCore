@@ -12,10 +12,9 @@ WebView
 #endif        
     .InitialBounds(1200, 800)
     .SaveBounds()
+    .FromResource()
     .DevTools()
-    .DefaultContextMenuDisabled()
-    .DebugUrl("https://github.com/uriegel/WebWindowNetCore")
-    .Url("https://github.com")
+    //.DefaultContextMenuDisabled()
     .CanClose(() => true)
     .Run();
 

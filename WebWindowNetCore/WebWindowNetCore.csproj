@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
     <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
@@ -18,9 +18,9 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>11.0.10-beta-10</Version>
-    <FileVersion>11.0.10.0</FileVersion>
-    <AssemblyVersion>11.0.10.0</AssemblyVersion>
+    <Version>11.0.11-beta-11</Version>
+    <FileVersion>11.0.11.0</FileVersion>
+    <AssemblyVersion>11.0.11.0</AssemblyVersion>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
