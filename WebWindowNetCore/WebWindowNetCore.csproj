@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
   </PropertyGroup>
 
@@ -39,7 +39,7 @@
   	<EmbeddedResource Include="./WebView2Loader.dll">
    		<LogicalName>binaries/webviewloader</LogicalName>
    	</EmbeddedResource>
-    <PackageReference Include="CsTools" Version="7.21.0" />
+    <PackageReference Include="CsTools" Version="7.22.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
   </ItemGroup>	  
   <ItemGroup>

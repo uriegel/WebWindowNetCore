@@ -11,13 +11,12 @@ public abstract class WebView
 {
 #if Windows
     public static WebView Create() => new Windows.WebView();
-    public static void RunJavascript(string script) => Windows.Javascript.Run(script);
 #elif Linux
     public static WebView Create() => new Linux.WebView();
-    public static void RunJavascript(string script) => Linux.Javascript.Run(script);
 
-    public WebView WithHeaderbar(Action<ApplicationHandle, WindowHandle> builder)
+    public WebView WithHeaderbar(Action<WebView, ApplicationHandle, WindowHandle> builder)
         => this.SideEffect(w => w.builder = builder);
+
 #endif    
 
     /// <summary>
@@ -123,6 +122,12 @@ public abstract class WebView
     public WebView CanClose(Func<bool> canClose)
         => this.SideEffect(w => w.canClose = canClose);
 
+    public abstract void ShowDevTools();
+
+    public abstract void StartDragFiles(string[] dragFiles);
+
+    public abstract void RunJavascript(string script);
+
 #if Windows    
     public WebView OnFormCreating(Action<Form> onformCreate) 
         => this.SideEffect(w => w.onformCreate = onformCreate);
@@ -170,14 +175,15 @@ public abstract class WebView
     internal Action<Form>? onformCreate;
 #endif
 #if Linux
-    protected Action<ApplicationHandle, WindowHandle>? builder;
+    protected Action<WebView, ApplicationHandle, WindowHandle>? builder;
 #endif
 }
 
-// TODO showDevTools,
 // TODO Enable Resource Scheme in Builder
+// TODO showDevTools Windows,
+// TODO Test Apps: 1.TestApp, 2. TestResApp, 3. TestNativeApp (res), 4.TestAppWebServer
 // TODO Windows Javascript injection for Windows custom html Titlebar
-// TODO startDragFiles,
-// TODO dropFiles
-// TODO initializeCustomTitlebar,
+// TODO startDragFiles, TestResApp
+// TODO dropFiles TestResApp
+// TODO initializeCustomTitlebar, 
 // TODO Linux: Enable Resource Scheme (disposing error)

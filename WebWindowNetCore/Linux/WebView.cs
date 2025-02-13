@@ -15,30 +15,63 @@ public class WebView() : WebWindowNetCore.WebView
             .OnActivate(OnActivate)
             .Run(0, 0);
 
+    public override void ShowDevTools()
+    {
+        var inspector = webView!.GetInspector();
+        inspector.Show();
+        webView!.GrabFocus();
+        DetachInspector();
+
+        async void DetachInspector()
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(600));
+            inspector.Detach();
+        }
+    }
+
+    public override void StartDragFiles(string[] dragFiles)
+    {
+        var device = webView!.GetDisplay().GetDefaultSeat().GetDevice();
+        using var provider = ContentProvider.NewFileUris(dragFiles);
+        var surface = webView!.GetNative().GetSurface();
+        var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
+        drag.DragAndDropFinished(OnFinished);
+        drag.DragAndDropCancelled(_ => OnFinished(false));
+
+        void OnFinished(bool success)
+        {
+            webView!.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
+            drag.Dispose();
+        }
+    }
+
+    public override void RunJavascript(string script)
+        => webView!.RunJavascript(script);
+
     void OnActivate(ApplicationHandle app)
         => app
             .NewWindow()
             .Title(title)
             .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
             .Child(GetWebKit())
-            .SideEffectIf(builder != null, window => builder!(app, window))
+            .SideEffectIf(builder != null, window => builder!(this, app, window))
             .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
             .Show()
             .GetChild()
             .GrabFocus();
 
     WebViewHandle GetWebKit()
-        => WebKit
-                .New()
-                .Ref(webViewRef)
-                .SideEffect(w => w.Visible(false))
-                .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
-                .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
-                .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-                //.SideEffect(EnableResourceScheme)
-                .SideEffect(Javascript.Initialize)
-                .SideEffect(w => w.OnLoadChanged(OnLoad))
-                .LoadUri(GetUrl());
+        => CreateWebKit()
+            .SideEffect(w => w.Visible(false))
+            .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
+            .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
+            .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
+            //.SideEffect(EnableResourceScheme)
+            .SideEffect(w => w.OnLoadChanged(OnLoad))
+            .LoadUri(GetUrl());
+
+    WebViewHandle CreateWebKit()
+        => webView = WebKit.New();
 
     void WithSaveBounds(WindowHandle window)
         => Bounds
@@ -98,48 +131,6 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-
-
-    Unit ShowDevTools(WebkitUriSchemeRequestHandle request)
-    {
-        var inspector = webViewRef.Ref.GetInspector();
-        inspector.Show();
-        webViewRef.Ref.GrabFocus();
-        DetachInspector();
-        SendOk(request);
-        return Unit.Value;
-
-        async void DetachInspector()
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(600));
-            inspector.Detach();
-        }
-    }
-
-    Unit StartDragFiles(WebkitUriSchemeRequestHandle request)
-    {
-        var files = JsonSerializer.Deserialize<DragFiles>(request.GetHttpBody(), Json.Defaults);
-        if (files != null)
-        {
-            var device = webViewRef.Ref.GetDisplay().GetDefaultSeat().GetDevice();
-            using var provider = ContentProvider.NewFileUris(files.Files);
-            var surface = webViewRef.Ref.GetNative().GetSurface();
-            var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
-            drag.DragAndDropFinished(OnFinished);
-            drag.DragAndDropCancelled(_ => OnFinished(false));
-            SendOk(request);
-            return Unit.Value;
-
-            void OnFinished(bool success)
-            {
-                webViewRef.Ref.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
-                drag.Dispose();
-            }
-        }
-        SendOk(request);
-        return Unit.Value;
-    }
-
     static Unit SendOk(WebkitUriSchemeRequestHandle request)
         => SendResponse(request, 200, "OK", "OK");
 
@@ -160,9 +151,7 @@ public class WebView() : WebWindowNetCore.WebView
         return Unit.Value;
     }
 
-    readonly ObjectRef<WebViewHandle> webViewRef = new();
+    WebViewHandle? webView;
 }
-
-record DragFiles(string[] Files);
 
 #endif

@@ -44,26 +44,6 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
-        }, {
-            "name": "React test (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/react-test/bin/Debug/net8.0-windows/win-x64/ReactTest.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": "React test (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/react-test/bin/Debug/net8.0/linux-x64/ReactTest.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
         }
     ]
 }

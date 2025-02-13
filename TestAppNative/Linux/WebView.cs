@@ -6,10 +6,10 @@ namespace TestAppNative.Linux;
 
 public static class WebView
 {
-    public static void WithHeaderbar(ApplicationHandle _, WindowHandle win)
+    public static void WithHeaderbar(WebWindowNetCore.WebView webView, ApplicationHandle _, WindowHandle win)
     {
         using var builder = Builder.FromDotNetResource("headerbar");
-        builder.GetButton("devtools").OnClicked(() => WebWindowNetCore.WebView.RunJavascript("WebView.showDevTools()"));
+        builder.GetButton("devtools").OnClicked(webView.ShowDevTools);
         win.Titlebar(builder.GetWidget("headerBar"));
     }
 }
