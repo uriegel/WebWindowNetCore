@@ -81,6 +81,11 @@ public abstract class WebView
     public WebView DebugUrl(string url)
         => this.SideEffect(w => w.debugUrl = url);
 
+    public WebView FromResource()
+        => this
+                .SideEffect(w => w.fromResource = true)
+                .SideEffect(w => w.url = "res://webwindownetcore");
+
     /// <summary>
     /// When you call "SaveBounds", then windows location and width and height and normal/maximized state is saved on close. 
     /// After restarting the app the webview is displayed at these settings again.
@@ -167,6 +172,7 @@ public abstract class WebView
     internal bool saveBounds;
     internal bool devTools;
     internal bool defaultContextMenuDisabled;
+    internal bool fromResource;
     internal string? queryString;
     internal Func<bool>? canClose;
 #if Windows
@@ -179,7 +185,7 @@ public abstract class WebView
 #endif
 }
 
-// TODO Enable Resource Scheme in Builder
+// TODO Windows Enable Resource Scheme in Builder
 // TODO showDevTools Windows,
 // TODO Test Apps: 1.TestApp, 2. TestResApp, 3. TestNativeApp (res), 4.TestAppWebServer
 // TODO Windows Javascript injection for Windows custom html Titlebar

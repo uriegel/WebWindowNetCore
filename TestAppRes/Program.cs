@@ -10,8 +10,7 @@ WebView
 #if Windows
     .ResourceIcon("icon")
 #endif
-    .DebugUrl("https://github.com/uriegel/WebWindowNetCore")
-    .Url("https://github.com")
+    .FromResource()
     .QueryString("?param1=123&param2=456")
     .CanClose(() => true)
     .Run();

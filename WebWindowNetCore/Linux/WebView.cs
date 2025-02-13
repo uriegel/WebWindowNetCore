@@ -66,7 +66,7 @@ public class WebView() : WebWindowNetCore.WebView
             .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
             .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
             .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-            //.SideEffect(EnableResourceScheme)
+            .SideEffectIf(fromResource, EnableResourceScheme)
             .SideEffect(w => w.OnLoadChanged(OnLoad))
             .LoadUri(GetUrl());
 
