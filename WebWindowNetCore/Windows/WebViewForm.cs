@@ -4,7 +4,6 @@ using System.Text;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
-using CsTools.Functional;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 

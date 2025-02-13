@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using CsTools.Extensions;
+using CsTools.HttpRequest;
 #if Linux
 using GtkDotNet.SafeHandles;
 #endif  
@@ -82,9 +83,7 @@ public abstract class WebView
         => this.SideEffect(w => w.debugUrl = url);
 
     public WebView FromResource()
-        => this
-                .SideEffect(w => w.fromResource = true)
-                .SideEffect(w => w.url = "res://webwindownetcore");
+        => this.SideEffect(w => w.fromResource = true);
 
     /// <summary>
     /// When you call "SaveBounds", then windows location and width and height and normal/maximized state is saved on close. 
@@ -160,8 +159,7 @@ public abstract class WebView
     /// <returns>Exit code</returns>
     public abstract int Run();
 
-    internal string GetUrl() => $"{(Debugger.IsAttached ? debugUrl ?? url : url) ?? "about:blank"}{queryString}";
-
+    internal string GetUrl() => $"{(Debugger.IsAttached ? debugUrl ?? GetUrlOrResUrl() : GetUrlOrResUrl()) ?? "about:blank"}{queryString}";
     internal string appId = "de.uriegel.webwindownetcore";
     internal int width;
     internal int height;
@@ -183,6 +181,7 @@ public abstract class WebView
 #if Linux
     protected Action<WebView, ApplicationHandle, WindowHandle>? builder;
 #endif
+    string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }
 
 // TODO Windows Enable Resource Scheme in Builder
