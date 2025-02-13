@@ -21,6 +21,7 @@ class WebViewForm : Form
         width = settings.width;
         height = settings.height;
         withoutNativeTitlebar = settings.withoutNativeTitlebar;
+        settings.Initialize(webView);
         SuspendLayout();
         webView.AllowExternalDrop = true;
         webView.CreationProperties = null;
@@ -29,7 +30,6 @@ class WebViewForm : Form
         webView.Dock = DockStyle.Fill;
         webView.TabIndex = 0;
         webView.ZoomFactor = 1;
-        Javascript.Initialize(webView);
         settings.onformCreate?.Invoke(this);
 
         if (settings.resourceIcon != null)
@@ -86,13 +86,13 @@ class WebViewForm : Form
 
             // TODO await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title));
             await Task.Delay(50);
-            WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
+            settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
             if (settings.withoutNativeTitlebar)
                 Resize += (s, e) =>
                     {
                         if (WindowState == FormWindowState.Maximized != isMaximized)
                             isMaximized = WindowState == FormWindowState.Maximized;
-                        WebView.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
+                        settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
                     };
         }
     }

@@ -4,6 +4,7 @@ using System.Reflection;
 using CsTools;
 using CsTools.Extensions;
 using ClrWinApi;
+using Microsoft.Web.WebView2.WinForms;
 
 namespace WebWindowNetCore.Windows;
 
@@ -27,6 +28,30 @@ public class WebView : WebWindowNetCore.WebView
         return 0;
     }
 
+    public override void ShowDevTools()
+    {
+    }
+
+    public override void StartDragFiles(string[] dragFiles)
+    {
+    }
+
+    public override void RunJavascript(string script)
+    {
+        Run();
+        async void Run()
+        {
+            try 
+            {
+                await (webView?.ExecuteScriptAsync(script) ?? "".ToAsync());
+            }
+            catch (Exception ex)    
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }        
+    }
+
     string GetWebViewLoader(string appId)
     {
         var targetFileName = 
@@ -42,6 +67,10 @@ public class WebView : WebWindowNetCore.WebView
             ?.CopyTo(targetFile);
         return targetFileName;
     }
+
+    internal void Initialize(WebView2 webView) => this.webView = webView;
+
+    WebView2? webView;
 }
 
 #endif
