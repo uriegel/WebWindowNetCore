@@ -83,7 +83,7 @@ class WebViewForm : Form
 
             webView.Source = new Uri(settings.GetUrl());
 
-            // TODO await webView.ExecuteScriptAsync(WebWindowNetCore.ScriptInjection.Get(true, settings.title));
+            await webView.ExecuteScriptAsync(WebWindowNetCore.Windows.ScriptInjection.Get(settings.title));
             await Task.Delay(50);
             settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
             if (settings.withoutNativeTitlebar)
@@ -144,12 +144,6 @@ class WebViewForm : Form
         SetDarkMode(Theme.IsDark());
     }
 
-    void ShowDevtools()
-    {
-        if (devTools)
-            webView.CoreWebView2.OpenDevToolsWindow();
-    }
-
     Unit SendTextResponse(int code, string status, string text, CoreWebView2WebResourceResponse response)
         => Unit
             .Value
@@ -159,9 +153,6 @@ class WebViewForm : Form
                 response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, code,
                         status, $"Content-Type: text/plain");
             });
-
-    Unit SendOk(CoreWebView2WebResourceResponse response)
-        => SendTextResponse(200, "OK", "OK", response);
 
     Unit SendNotFound(CoreWebView2WebResourceResponse response)
         => SendTextResponse(404, "Not Found", "Resource not found", response);

@@ -184,11 +184,10 @@ public abstract class WebView
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }
 
-// TODO Windows Enable Resource Scheme in Builder
+// TODO Windows Javascript injection for Windows custom html Titlebar
+// TODO initializeCustomTitlebar, 
 // TODO showDevTools Windows,
 // TODO Test Apps: 1.TestApp, 2. TestResApp, 3. TestNativeApp (res), 4.TestAppWebServer
-// TODO Windows Javascript injection for Windows custom html Titlebar
 // TODO startDragFiles, TestResApp
 // TODO dropFiles TestResApp
-// TODO initializeCustomTitlebar, 
 // TODO Linux: Enable Resource Scheme (disposing error)

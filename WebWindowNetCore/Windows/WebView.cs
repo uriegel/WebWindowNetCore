@@ -30,6 +30,8 @@ public class WebView : WebWindowNetCore.WebView
 
     public override void ShowDevTools()
     {
+        if (devTools)
+            webView?.CoreWebView2.OpenDevToolsWindow();
     }
 
     public override void StartDragFiles(string[] dragFiles)
