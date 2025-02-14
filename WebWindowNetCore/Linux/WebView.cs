@@ -15,17 +15,27 @@ public class WebView() : WebWindowNetCore.WebView
             .OnActivate(OnActivate)
             .Run(0, 0);
 
-    public override void ShowDevTools()
+    public override async void ShowDevTools()
     {
-        var inspector = webView!.GetInspector();
-        inspector.Show();
-        webView!.GrabFocus();
-        DetachInspector();
-
-        async void DetachInspector()
+        try
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(600));
-            inspector.Detach();
+            await Gtk.Dispatch(() =>
+            {
+                var inspector = webView!.GetInspector();
+                inspector.Show();
+                webView!.GrabFocus();
+                DetachInspector();
+
+                async void DetachInspector()
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(600));
+                    inspector.Detach();
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not show devtools: {e}");
         }
     }
 
