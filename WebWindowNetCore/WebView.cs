@@ -184,6 +184,6 @@ public abstract class WebView
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }
 
-// TODO startDragFiles
+// TODO startDragFiles await till dropped or finished
 // TODO dropFiles 
 // TODO Linux: Enable Resource Scheme (disposing error)

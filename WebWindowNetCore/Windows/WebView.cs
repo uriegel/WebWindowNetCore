@@ -33,8 +33,11 @@ public class WebView : WebWindowNetCore.WebView
             webViewForm?.BeginInvoke(() => webViewForm?.WebView.CoreWebView2.OpenDevToolsWindow());
     }
 
-    public override async Task StartDragFiles(string[] dragFiles)
-    {
+    public override async Task StartDragFiles(string[] fileList)
+    {   
+        webViewForm?.BeginInvoke(() => 
+            webViewForm?.DoDragDrop(new DataObject(DataFormats.FileDrop, fileList), DragDropEffects.All)
+        );
     }
 
     public override void RunJavascript(string script)
