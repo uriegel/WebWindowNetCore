@@ -128,8 +128,8 @@ public abstract class WebView
 
     public abstract void ShowDevTools();
 
-    public abstract void StartDragFiles(string[] dragFiles);
-
+    public abstract Task StartDragFiles(string[] dragFiles);
+    
     public abstract void RunJavascript(string script);
 
 #if Windows    
@@ -184,8 +184,6 @@ public abstract class WebView
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }
 
-// TODO showDevTools Windows,
-// TODO Test Apps: 4.TestAppWebServer
-// TODO startDragFiles, TestResApp
-// TODO dropFiles TestResApp
+// TODO startDragFiles
+// TODO dropFiles 
 // TODO Linux: Enable Resource Scheme (disposing error)

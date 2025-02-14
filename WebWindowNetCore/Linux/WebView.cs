@@ -39,19 +39,30 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-    public override void StartDragFiles(string[] dragFiles)
+    public override async Task StartDragFiles(string[] dragFiles)
     {
-        var device = webView!.GetDisplay().GetDefaultSeat().GetDevice();
-        using var provider = ContentProvider.NewFileUris(dragFiles);
-        var surface = webView!.GetNative().GetSurface();
-        var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
-        drag.DragAndDropFinished(OnFinished);
-        drag.DragAndDropCancelled(_ => OnFinished(false));
-
-        void OnFinished(bool success)
+        try
         {
-            webView!.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
-            drag.Dispose();
+            await Gtk.Dispatch(() =>
+            {
+                var device = webView!.GetDisplay().GetDefaultSeat().GetDevice();
+                using var provider = ContentProvider.NewFileUris(dragFiles);
+                var surface = webView!.GetNative().GetSurface();
+                var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
+                drag.DragAndDropFinished(OnFinished);
+                drag.DragAndDropCancelled(_ => OnFinished(false));
+
+                void OnFinished(bool success)
+                {
+                    // TODO TaskCompletionSource: return StartDragFiles
+                    webView!.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
+                    drag.Dispose();
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not show devtools: {e}");
         }
     }
 

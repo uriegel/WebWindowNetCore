@@ -5,7 +5,6 @@ const btn3 = document.getElementById("button3")
 const btnDevTools = document.getElementById("buttonDevTools")
 const dragzone = document.getElementById("dragzone")
 
-btnDevTools.onclick = () => WebView.showDevTools()
 btn1.focus()
 
 let currentDirectory = ""
@@ -44,14 +43,31 @@ btn2.onclick = async () => {
     console.log("cmd2", res)
 }
 
-btn3.onclick = () => alert("A message from javascript")
+btnDevTools.onclick = () => webViewRequest("showdevtools")
 
 dragzone.onmousedown = async () => {
-    await WebView.startDragFiles([
+    await webViewRequest("startdragfiles", [
             "README.md",
             "LICENSE"
         ]
         .map(n => `${currentDirectory}${n}`))
     console.log("Drag finished")
 }
+
+const webViewRequest = async (method, payload) => {
+
+    const msg = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }
+
+    const response = await fetch(`http://localhost:8080/json/${method}`, msg) 
+    const res = await response.json() 
+    if (res.err)
+        throw new RequestError(res.err.status, res.err.statusText)
+    return res.ok 
+}
+
+
 
