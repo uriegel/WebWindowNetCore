@@ -4,7 +4,6 @@ using System.Reflection;
 using CsTools;
 using CsTools.Extensions;
 using ClrWinApi;
-using Microsoft.Web.WebView2.WinForms;
 
 namespace WebWindowNetCore.Windows;
 
@@ -31,11 +30,14 @@ public class WebView : WebWindowNetCore.WebView
     public override void ShowDevTools()
     {
         if (devTools)
-            webView?.CoreWebView2.OpenDevToolsWindow();
+            webViewForm?.BeginInvoke(() => webViewForm?.WebView.CoreWebView2.OpenDevToolsWindow());
     }
 
-    public override void StartDragFiles(string[] dragFiles)
-    {
+    public override async Task StartDragFiles(string[] fileList)
+    {   
+        webViewForm?.BeginInvoke(() => 
+            webViewForm?.DoDragDrop(new DataObject(DataFormats.FileDrop, fileList), DragDropEffects.All)
+        );
     }
 
     public override void RunJavascript(string script)
@@ -45,7 +47,7 @@ public class WebView : WebWindowNetCore.WebView
         {
             try 
             {
-                await (webView?.ExecuteScriptAsync(script) ?? "".ToAsync());
+                await (webViewForm?.WebView.ExecuteScriptAsync(script) ?? "".ToAsync());
             }
             catch (Exception ex)    
             {
@@ -70,9 +72,9 @@ public class WebView : WebWindowNetCore.WebView
         return targetFileName;
     }
 
-    internal void Initialize(WebView2 webView) => this.webView = webView;
+    internal void Initialize(WebViewForm webViewForm) => this.webViewForm = webViewForm;
 
-    WebView2? webView;
+    WebViewForm? webViewForm;
 }
 
 #endif

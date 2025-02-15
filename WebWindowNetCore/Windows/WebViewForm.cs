@@ -11,6 +11,8 @@ namespace WebWindowNetCore.Windows;
 
 class WebViewForm : Form
 {
+    public WebView2 WebView { get; } = new();
+
     public WebViewForm(string appDataPath, WebView settings)
     {
         saveBounds = settings.saveBounds;
@@ -20,15 +22,15 @@ class WebViewForm : Form
         width = settings.width;
         height = settings.height;
         withoutNativeTitlebar = settings.withoutNativeTitlebar;
-        settings.Initialize(webView);
+        settings.Initialize(this);
         SuspendLayout();
-        webView.AllowExternalDrop = true;
-        webView.CreationProperties = null;
+        WebView.AllowExternalDrop = true;
+        WebView.CreationProperties = null;
         if (settings.backgroundColor.HasValue)
-            webView.DefaultBackgroundColor = settings.backgroundColor.Value;
-        webView.Dock = DockStyle.Fill;
-        webView.TabIndex = 0;
-        webView.ZoomFactor = 1;
+            WebView.DefaultBackgroundColor = settings.backgroundColor.Value;
+        WebView.Dock = DockStyle.Fill;
+        WebView.TabIndex = 0;
+        WebView.ZoomFactor = 1;
         settings.onformCreate?.Invoke(this);
 
         if (settings.resourceIcon != null)
@@ -54,7 +56,7 @@ class WebViewForm : Form
         Text = settings.title;
 
         panel.Dock = DockStyle.Fill;
-        panel.Controls.Add(webView);
+        panel.Controls.Add(WebView);
         Controls.Add(panel);
 
         ResumeLayout(false);
@@ -70,20 +72,20 @@ class WebViewForm : Form
                                     HasAuthorityComponent = true
                                 }
                             ], additionalBrowserArguments: settings.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
-            await webView.EnsureCoreWebView2Async(env);
-            webView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
-            webView.CoreWebView2.WebResourceRequested += ServeRes;
-            webView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
-            webView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
-            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
-            webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
-            webView.CoreWebView2.WebMessageReceived += WebMessageReceived;
-            webView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
-            webView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
+            await WebView.EnsureCoreWebView2Async(env);
+            WebView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
+            WebView.CoreWebView2.WebResourceRequested += ServeRes;
+            WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+            WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
+            WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
+            WebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+            WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
+            WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
 
-            webView.Source = new Uri(settings.GetUrl());
+            WebView.Source = new Uri(settings.GetUrl());
 
-            await webView.ExecuteScriptAsync(WebWindowNetCore.Windows.ScriptInjection.Get(settings.title));
+            await WebView.ExecuteScriptAsync(WebWindowNetCore.Windows.ScriptInjection.Get(settings.title));
             await Task.Delay(50);
             settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
             if (settings.withoutNativeTitlebar)
@@ -150,7 +152,7 @@ class WebViewForm : Form
             .SideEffect(_ =>
             {
                 var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-                response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, code,
+                response = WebView.CoreWebView2.Environment.CreateWebResourceResponse(stream, code,
                         status, $"Content-Type: text/plain");
             });
 
@@ -169,7 +171,7 @@ class WebViewForm : Form
             {
                 try
                 {
-                    e.Response = webView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
+                    e.Response = WebView.CoreWebView2.Environment.CreateWebResourceResponse(stream, 200,
                         "OK", $"Content-Type: {uri.GetFileExtension()?.ToMimeType() ?? "text/html"}\nAccess-Control-Allow-Origin: *");
                 }
                 catch
@@ -197,7 +199,7 @@ class WebViewForm : Form
 
     void OnFullscreen(object? s, object _)
     {
-        if (webView.CoreWebView2.ContainsFullScreenElement)
+        if (WebView.CoreWebView2.ContainsFullScreenElement)
         {
             TopMost = true;
             FormBorderStyle = FormBorderStyle.None;
@@ -263,7 +265,6 @@ class WebViewForm : Form
 
     bool isMaximized;
     const int WM_NCCALCSIZE = 0x83;
-    readonly WebView2 webView = new();
     readonly int width;
     readonly int height;
     readonly bool devTools;
