@@ -35,7 +35,7 @@ function initializeCustomTitlebar() {{
         title.innerText = '{title}'
     const close = document.getElementById('$CLOSE$')
     if (close)
-        close.onclick = () => window.close()
+        close.onclick = () => window.chrome.webview.postMessage('close')
     const maximize = document.getElementById('$MAXIMIZE$')
     if (maximize) 
         maximize.onclick = () => window.chrome.webview.postMessage('maximize')

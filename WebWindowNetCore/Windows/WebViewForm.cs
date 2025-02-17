@@ -195,6 +195,8 @@ class WebViewForm : Form
             WindowState = FormWindowState.Minimized;
         else if (msg == "restore")
             WindowState = FormWindowState.Normal;
+        else if (msg == "close")
+            Close();
     }
 
     void OnFullscreen(object? s, object _)
