@@ -9,8 +9,8 @@ public static class WebView
     public static void WithHeaderbar(WebWindowNetCore.WebView webView, ApplicationHandle _, WindowHandle win)
     {
         using var builder = Builder.FromDotNetResource("headerbar");
-        builder.GetButton("devtools").OnClicked(webView.ShowDevTools);
-        win.Titlebar(builder.GetWidget("headerBar"));
+        builder.GetWidget<ButtonHandle>("devtools").OnClicked(webView.ShowDevTools);
+        win.Titlebar(builder.GetWidget<HeaderBarHandle>("headerBar"));
     }
 }
 #endif
