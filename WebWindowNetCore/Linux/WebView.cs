@@ -1,6 +1,5 @@
 #if Linux
 using System.Text;
-using System.Text.Json;
 using CsTools;
 using CsTools.Extensions;
 using GtkDotNet;
@@ -71,18 +70,17 @@ public class WebView() : WebWindowNetCore.WebView
 
     void OnActivate(ApplicationHandle app)
         => app
-            .NewWindow()
+            .SideEffect(app => onActivate?.Invoke(app, this, resourceTemplate!))
+            .CreateWindow(resourceTemplate)
             .Title(title)
             .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
-            .Child(GetWebKit())
-            .SideEffectIf(builder != null, window => builder!(this, app, window))
+            .Pipe(w => w.Child(GetWebKit(w)))
             .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
             .Show()
-            .GetChild()
+            .GetChild<WidgetHandle>()
             .GrabFocus();
-
-    WebViewHandle GetWebKit()
-        => CreateWebKit()
+    WebViewHandle GetWebKit(ApplicationWindowHandle window)
+        => CreateWebKit(window)
             .SideEffect(w => w.Visible(false))
             .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
             .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
@@ -91,8 +89,10 @@ public class WebView() : WebWindowNetCore.WebView
             .SideEffect(w => w.OnLoadChanged(OnLoad))
             .LoadUri(GetUrl());
 
-    WebViewHandle CreateWebKit()
-        => webView = WebKit.New();
+    WebViewHandle CreateWebKit(ApplicationWindowHandle window)
+        => webView = resourceTemplate == null
+            ? WebKit.New()
+            : window.GetTemplateChild<WebViewHandle, ApplicationWindowHandle>("webview") ?? WebKit.New();
 
     void WithSaveBounds(WindowHandle window)
         => Bounds
@@ -175,4 +175,14 @@ public class WebView() : WebWindowNetCore.WebView
     WebViewHandle? webView;
 }
 
+static class WebViewExtensions
+{
+    public static ApplicationWindowHandle CreateWindow(this ApplicationHandle app, string? resourceTemplate)
+        => resourceTemplate == null
+            ? app.NewWindow()
+            : app.CustomWindow("CustomWindow");
+}
+
 #endif
+
+

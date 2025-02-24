@@ -1,27 +1,31 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.92.1 -->
 <interface>
-  <!-- interface-name ui.ui -->
-  <requires lib="gtk" version="4.6"/>
-  <object class="AdwHeaderBar" id="headerBar">
-    <child type="end">
-      <object class="GtkMenuButton" id="menu_button">
-        <property name="icon-name">open-menu-symbolic</property>
-        <property name="menu-model">main-menu</property>
+  <template class="CustomWindow" parent="GtkApplicationWindow">
+    <property name="titlebar">
+      <object class="AdwHeaderBar" id="headerBar">
+        <child type="end">
+          <object class="GtkMenuButton" id="menu_button">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="menu-model">main-menu</property>
+          </object>
+        </child>      
+        <child type="end">
+          <object class="GtkToggleButton">
+            <property name="icon-name">x-office-presentation</property>
+            <property name="action-name">app.showpreview</property>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton" id="devtools">
+            <property name="label">Devtools</property>
+          </object>
+        </child>        
       </object>
-    </child>      
-    <child type="end">
-      <object class="GtkToggleButton">
-        <property name="icon-name">x-office-presentation</property>
-        <property name="action-name">app.showpreview</property>
-      </object>
-    </child>
-    <child type="end">
-      <object class="GtkButton" id="devtools">
-        <property name="label">Devtools</property>
-      </object>
-    </child>        
-  </object>
+      </property>
+    <child>
+      <object class="WebKitWebView" id="webview"/>
+    </child>    
+  </template>
   <menu id="main-menu">
     <section>
       <item>
@@ -70,6 +74,12 @@
             <attribute name="action">app.createfolder</attribute>
           </item>
         </section>
+        <section>
+          <item>
+            <attribute name="label">_Beenden</attribute>
+            <attribute name="action">win.quit</attribute>
+          </item>
+        </section>
       </submenu>
       <submenu>
         <attribute name="label">_Navigation</attribute>
@@ -114,10 +124,11 @@
         <section>
           <item>
             <attribute name="label">_Entwicklerwerkzeuge</attribute>
-            <attribute name="action">app.devtools</attribute>
+            <attribute name="action">win.devtools</attribute>
           </item>
         </section>
       </submenu>
     </section>
   </menu>  
 </interface>
+

@@ -5,7 +5,7 @@ WebView
     .AppId("de.uriegel.test")
     .Title("Web Window Net Core Native 👍")
 #if Linux    
-    .WithHeaderbar(TestAppNative.Linux.WebView.WithHeaderbar)
+    .FromResourceTemplate("template", TestAppNative.Linux.Window.Register)
 #elif Windows
     .ResourceIcon("icon")
     .WithoutNativeTitlebar()

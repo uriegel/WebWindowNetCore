@@ -36,8 +36,8 @@
   </PropertyGroup> 
 
   <ItemGroup>
-    <EmbeddedResource Include="./Resources/headerbar.ui">
-      <LogicalName>headerbar</LogicalName>
+    <EmbeddedResource Include="./Resources/template.ui">
+      <LogicalName>template</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="./webroot/index.html">
       <LogicalName>/$([System.String]::new('%(RelativeDir)').SubString(10).Replace('\','/'))%(FileName)%(Extension)</LogicalName>

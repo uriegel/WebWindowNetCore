@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using CsTools.Extensions;
-using CsTools.HttpRequest;
 #if Linux
 using GtkDotNet.SafeHandles;
 #endif  
@@ -15,10 +14,22 @@ public abstract class WebView
 #elif Linux
     public static WebView Create() => new Linux.WebView();
 
-    public WebView WithHeaderbar(Action<WebView, ApplicationHandle, WindowHandle> builder)
-        => this.SideEffect(w => w.builder = builder);
+    /// <summary>
+    /// Creates a window from a template.ui in .Net resource. The custom window type name has to be "CustomWindow".
+    /// The template has to contain a webkit webView with the Id "webview".
+    /// Registering of the custom window class should be done in the callback "onActivate"
+    /// </summary>
+    /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
+    /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the class registering should be done. Parameters: GtkApplication, WebView and resourceTemplate</param>
+    /// <returns></returns>
+    public WebView FromResourceTemplate(string template, Action<ApplicationHandle, WebView, string> onActivate)
+    {
+        resourceTemplate = template;
+        this.onActivate = onActivate;
+        return this;
+    }
 
-#endif    
+#endif
 
     /// <summary>
     /// The AppId is necessary for a webview app on Linux, it is the AppId for a GtkApplication. 
@@ -179,7 +190,8 @@ public abstract class WebView
     internal Action<Form>? onformCreate;
 #endif
 #if Linux
-    protected Action<WebView, ApplicationHandle, WindowHandle>? builder;
+    protected string? resourceTemplate;
+    protected Action<ApplicationHandle, WebView, string>? onActivate;
 #endif
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }
