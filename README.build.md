@@ -7,9 +7,9 @@ In WebWindowNetCore.csproj change
 
 ```
 <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <!-- <TargetFrameworks>net10.0</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net10.0-windows</TargetFrameworks> -->
 </PropertyGroup>
   ```
 
@@ -17,9 +17,9 @@ In WebWindowNetCore.csproj change
 
 ```
 <PropertyGroup>
-    <!-- <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks> -->
-    <TargetFrameworks>net8.0</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <!-- <TargetFrameworks>net10.0-windows</TargetFrameworks> -->
 </PropertyGroup>
   ```
 
@@ -28,9 +28,9 @@ In WebWindowNetCore.csproj change
 
 ```
 <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <!-- <TargetFrameworks>net10.0</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net10.0-windows</TargetFrameworks> -->
 </PropertyGroup>
   ```
 
@@ -38,9 +38,9 @@ In WebWindowNetCore.csproj change
 
 ```
 <PropertyGroup>
-    <!-- <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks> -->
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <!-- <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net10.0</TargetFrameworks> -->
+    <TargetFrameworks>net10.0-windows</TargetFrameworks>
 </PropertyGroup>
   ```
 
@@ -50,9 +50,9 @@ This is only possible in Windows! Change WebWindowNetCore.csproj back to
 
 ```
 <PropertyGroup>
-    <TargetFrameworks>net8.0;net8.0-windows</TargetFrameworks>
-    <!-- <TargetFrameworks>net8.0</TargetFrameworks> -->
-    <!-- <TargetFrameworks>net8.0-windows</TargetFrameworks> -->
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+    <!-- <TargetFrameworks>net10.0</TargetFrameworks> -->
+    <!-- <TargetFrameworks>net10.0-windows</TargetFrameworks> -->
 </PropertyGroup>
   ```
 

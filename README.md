@@ -1,10 +1,8 @@
 # WebWindowNetCore
-A .NET 8 Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. It has an integrated Asp.NET (Kestrel) server which can be used to host the app and to communicate between the .NET application and the web app. The web site can be hosted as .NET resource, of course alternatively via HTTP(s):// or file://.
+A .NET 10 Webview Application for Windows and Linux similar to Electron. It uses a functional builder pattern to set up the application. The web site can be hosted as .NET resource, of course alternatively via HTTP(s):// or file://.
 
 Sample WebWindowNetCore app:
 ![Sample WebView app](readme/sampleapp.png)
-
-WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#, so that it is "F# friendly". Of course C# is supported as well. Unlike the older versions, there is no other Nuget packet required other than this. 
 
 > WebViewNetCore.Linux and WebViewNetCore.Windows are now obsolete!
 
@@ -56,7 +54,7 @@ WebWindowNetCore > version 10.0.0 is completely redesigned and programmed in F#,
 ## Features <a name="features"></a>
 
 WebWindowNetCore includes following features:
-* Is built on .NET 8
+* Is built on .NET 10
 * Functional approach with a builder pattern
 * (almost) the same setup for Windows and Linux version
 * Uses WebView2 on Windows and WebKitGtk-6.0 (with [Gtk4DotNet](https://github.com/uriegel/Gtk4DotNet) P/Invoke bindings) on Linux
@@ -150,14 +148,14 @@ In this tutoriual I am using Visula Studio Code, but of course you can also use 
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <OutputType>WinExe</OutputType>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
   </PropertyGroup> 
 
   <PropertyGroup Condition="'$(IsLinux)'=='true'">
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
   </PropertyGroup> 
