@@ -26,19 +26,21 @@ public static class Window
 
     class CustomWindow(nint obj, WebView webView) : SubClassInst<ApplicationWindowHandle>(obj)
     {
-        protected override void OnCreate() => Handle.InitTemplate();
-
-        protected override void Initialize()
+        protected override async void OnCreate()
         {
+            Handle.InitTemplate();
+
             Handle
                 .GetTemplateChild<ButtonHandle, ApplicationWindowHandle>("devtools")
                 ?.OnClicked(webView.ShowDevTools);
+            await Task.Delay(50);
             Handle.AddActions(
                 [
-                    new("quit", Handle.CloseWindow, "<Ctrl>Q"),
-                    new("devtools", webView.ShowDevTools, "<Ctrl><Shift>I"),
+                    new("quit", Handle.CloseWindow, "<Ctrl>R"),
+                    new("devtools", webView.ShowDevTools, "<Ctrl><Shift>U"),
                 ]);
-        }
+        } 
+
         
         protected override void OnFinalize() => Console.WriteLine("Window finalized");
         protected override ApplicationWindowHandle CreateHandle(nint obj) => new(obj);
