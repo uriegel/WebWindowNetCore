@@ -245,7 +245,7 @@ class WebViewForm : Form
             var isZoomedAll = Api.IsZoomed(Handle) ? 3 : 0;
             if (m.WParam != 0)
             {
-                var nccsp = NcCalcSizeParams.Fromnint(m.LParam);
+                var nccsp = NcCalcSizeParams.FromIntPtr(m.LParam);
                 nccsp.Rgrc0.Top += 1 + isZoomedTop;
                 nccsp.Rgrc0.Bottom -= 5 + isZoomedAll;
                 nccsp.Rgrc0.Left += 5 + isZoomedAll;
