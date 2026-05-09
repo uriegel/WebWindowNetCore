@@ -46,11 +46,9 @@ btn2.onclick = async () => {
 btnDevTools.onclick = () => webViewRequest("showdevtools")
 
 dragzone.onmousedown = async () => {
-    await webViewRequest("startdragfiles", [
-            "README.md",
-            "LICENSE"
-        ]
-        .map(n => `${currentDirectory}${n}`))
+    const path = "C:\\Projekte\\WebWindowNetCore"
+    const fileList = ["README.md", "LICENSE"]
+    await chrome.webview.hostObjects.Callback.DragStart(JSON.stringify({path, fileList})) 
     console.log("Drag finished")
 }
 

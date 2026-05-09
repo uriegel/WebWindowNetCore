@@ -9,7 +9,7 @@ using Microsoft.Web.WebView2.WinForms;
 
 namespace WebWindowNetCore.Windows;
 
-class WebViewForm : Form
+public class WebViewForm : Form
 {
     public WebView2 WebView { get; } = new();
 
@@ -79,25 +79,24 @@ class WebViewForm : Form
             WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
             WebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            WebView.CoreWebView2.AddHostObjectToScript("Callback", new Callback(this));
             WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
             WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
             WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
-
+            
             WebView.Source = new Uri(settings.GetUrl());
-
-            await WebView.ExecuteScriptAsync(WebWindowNetCore.Windows.ScriptInjection.Get(settings.title));
-            await Task.Delay(50);
-            settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
-            if (settings.withoutNativeTitlebar)
-                Resize += (s, e) =>
-                    {
-                        if (WindowState == FormWindowState.Maximized != isMaximized)
-                            isMaximized = WindowState == FormWindowState.Maximized;
-                        settings.RunJavascript($"WEBVIEWsetMaximized({(isMaximized ? "true" : "false")})");
-                    };
         }
     }
 
+
+    internal Task DragStart(string path, string[] fileList)
+    {
+        DoDragDrop(new DataObject(DataFormats.FileDrop, fileList
+                                                            .Select(f => path.AppendPath(f))
+                                                            .ToArray()), DragDropEffects.All);
+        return Task.CompletedTask;
+    }
+    
     void OnClose(object? _, FormClosingEventArgs e)
     {
         var bounds = (saveBounds
