@@ -202,11 +202,11 @@ public class WebViewForm : Form
 
     async void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
     {
-        var json = JsonSerializer.Deserialize<MessageWithAdditionalObjects>(e.WebMessageAsJson, Json.Defaults);
-        if (json?.Msg == "ondrop")
+        var msg = e.TryGetWebMessageAsString();
+        if (msg == "ondrop")
         {
             var fileList = e.AdditionalObjects.SelectFilterNull(n => (n as CoreWebView2File)?.Path).Serialize();
-            await WebView.ExecuteScriptAsync($"webViewFilesDropped({fileList})");
+            WebView.CoreWebView2.PostWebMessageAsJson(fileList);
         }
     }
 
@@ -287,10 +287,8 @@ public class WebViewForm : Form
     readonly Subject<bool> dropFinishedSubject = new();
 }
 
-record MessageWithAdditionalObjects(string Msg, bool Move);
-
 #endif
 
 
-    
+
 

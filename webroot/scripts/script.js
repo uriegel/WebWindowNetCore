@@ -75,15 +75,29 @@ dropzone.ondragover = e => {
     e.stopPropagation()
 }
 
-dropzone.ondrop = e => {
+dropzone.ondrop = async e => {
     e.preventDefault()
     const files = Array.from(e.dataTransfer.files)
-    chrome.webview.postMessageWithAdditionalObjects({
-        msg: "ondrop",
-        move: e.dataTransfer.dropEffect == "move"
-    }, files)
+    const resFiles = await getFiles(files)
+    console.log("on drop", resFiles, e.dataTransfer.dropEffect == "move")
 }
 
-function webViewFilesDropped(fileList) {
-    console.log("filesDropped", fileList)
+const getFiles = files => new Promise(res => {
+    const handler = registerHostMessages(files => {
+        handler()
+        res(files)
+    })
+
+    chrome.webview.postMessageWithAdditionalObjects("ondrop", files)
+})
+
+
+function registerHostMessages(callback) {
+    const handler = e => callback(e.data)
+
+    window.chrome?.webview?.addEventListener("message", handler)
+    return () => {
+       window.chrome?.webview?.removeEventListener("message", handler);
+    }
 }
+
