@@ -84,3 +84,6 @@ dropzone.ondrop = e => {
     }, files)
 }
 
+function webViewFilesDropped(fileList) {
+    console.log("filesDropped", fileList)
+}

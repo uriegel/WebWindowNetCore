@@ -9,7 +9,6 @@ using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 using System.Text.Json;
-using Microsoft.VisualBasic;
 
 namespace WebWindowNetCore.Windows;
 
@@ -22,7 +21,6 @@ public class WebViewForm : Form
         saveBounds = settings.saveBounds;
         appId = settings.appId;
         canClose = settings.canClose;
-        devTools = settings.devTools;
         width = settings.width;
         height = settings.height;
         withoutNativeTitlebar = settings.withoutNativeTitlebar;
@@ -202,12 +200,13 @@ public class WebViewForm : Form
         }
     }
 
-    void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
+    async void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
     {
         var json = JsonSerializer.Deserialize<MessageWithAdditionalObjects>(e.WebMessageAsJson, Json.Defaults);
         if (json?.Msg == "ondrop")
         {
-            var additionalObjects = e.AdditionalObjects;    
+            var fileList = e.AdditionalObjects.SelectFilterNull(n => (n as CoreWebView2File)?.Path).Serialize();
+            await WebView.ExecuteScriptAsync($"webViewFilesDropped({fileList})");
         }
     }
 
@@ -280,7 +279,6 @@ public class WebViewForm : Form
     const int WM_NCCALCSIZE = 0x83;
     readonly int width;
     readonly int height;
-    readonly bool devTools;
     readonly Panel panel = new();
     readonly bool saveBounds;
     readonly string appId;
