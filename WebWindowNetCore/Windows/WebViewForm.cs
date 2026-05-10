@@ -8,6 +8,8 @@ using CsTools;
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
+using System.Text.Json;
+using Microsoft.VisualBasic;
 
 namespace WebWindowNetCore.Windows;
 
@@ -86,11 +88,10 @@ public class WebViewForm : Form
             WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
             WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
             WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
-            
+
             WebView.Source = new Uri(settings.GetUrl());
         }
     }
-
 
     public Task<bool> DragStart(string path, string[] fileList)
     {
@@ -103,13 +104,14 @@ public class WebViewForm : Form
                                                             .ToArray()), DragDropEffects.All);
         return tcs.Task;
     }
-    
+
     void OnClose(object? _, FormClosingEventArgs e)
     {
         var bounds = (saveBounds
             ? WebWindowNetCore.Bounds.Retrieve(appId)
             : new Bounds(null, null, null, null, false))
-            with {
+            with
+        {
             X = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.X : Location.X,
             Y = WindowState == FormWindowState.Maximized ? RestoreBounds.Location.Y : Location.Y,
             Width = WindowState == FormWindowState.Maximized ? RestoreBounds.Size.Width : Size.Width,
@@ -202,15 +204,11 @@ public class WebViewForm : Form
 
     void WebMessageReceived(object? _, CoreWebView2WebMessageReceivedEventArgs e)
     {
-        var msg = e.TryGetWebMessageAsString();
-        if (msg == "maximize")
-            WindowState = FormWindowState.Maximized;
-        else if (msg == "minimize")
-            WindowState = FormWindowState.Minimized;
-        else if (msg == "restore")
-            WindowState = FormWindowState.Normal;
-        else if (msg == "close")
-            Close();
+        var json = JsonSerializer.Deserialize<MessageWithAdditionalObjects>(e.WebMessageAsJson, Json.Defaults);
+        if (json?.Msg == "ondrop")
+        {
+            var additionalObjects = e.AdditionalObjects;    
+        }
     }
 
     void OnFullscreen(object? s, object _)
@@ -290,6 +288,8 @@ public class WebViewForm : Form
     readonly Func<bool>? canClose;
     readonly Subject<bool> dropFinishedSubject = new();
 }
+
+record MessageWithAdditionalObjects(string Msg, bool Move);
 
 #endif
 

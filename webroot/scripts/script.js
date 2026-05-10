@@ -4,6 +4,7 @@ const btn2 = document.getElementById("button2")
 const btn3 = document.getElementById("button3")
 const btnDevTools = document.getElementById("buttonDevTools")
 const dragzone = document.getElementById("dragzone")
+const dropzone = document.getElementById("dropzone")
 
 btn1.focus()
 
@@ -68,4 +69,18 @@ const webViewRequest = async (method, payload) => {
 }
 
 
+dropzone.ondragover = e => {
+    e.dataTransfer.dropEffect = e.shiftKey ? "move" : "copy"
+    e.preventDefault()
+    e.stopPropagation()
+}
+
+dropzone.ondrop = e => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files)
+    chrome.webview.postMessageWithAdditionalObjects({
+        msg: "ondrop",
+        move: e.dataTransfer.dropEffect == "move"
+    }, files)
+}
 

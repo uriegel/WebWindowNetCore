@@ -9,6 +9,14 @@ body {
     height: 100px;
 }
 
+#dropzone {
+    background-color: chartreuse;
+    color: black;
+    margin-top: 20px;
+    width: 200px;
+    height: 100px;
+}
+
 body:focus-within h1 {
     background-color: chartreuse;
 }
