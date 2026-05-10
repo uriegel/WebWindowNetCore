@@ -6,7 +6,7 @@ WebView
     .Title("Web Window Net Core from Resource 👍")
     .InitialBounds(600, 800)
     .SaveBounds()
-    .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
 #if Windows
     .ResourceIcon("icon")
 #endif

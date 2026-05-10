@@ -1,6 +1,8 @@
 #if Windows
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
 using ClrWinApi;
 using CsTools;
 using CsTools.Extensions;
@@ -45,7 +47,6 @@ public class WebViewForm : Form
             Size = new Size(bounds?.Width ?? settings.width, bounds?.Height ?? settings.height);
             WindowState = bounds?.IsMaximized == true ? FormWindowState.Maximized : FormWindowState.Normal;
         }
-        isMaximized = WindowState == FormWindowState.Maximized;
 
         if (settings.saveBounds)
             FormClosing += OnClose;
@@ -53,6 +54,8 @@ public class WebViewForm : Form
             FormClosing += OnCanClose;
         HandleCreated += OnHandle;
         Load += OnLoad;
+        QueryContinueDrag += OnQueryContinueDrag;
+
         Text = settings.title;
 
         panel.Dock = DockStyle.Fill;
@@ -89,12 +92,16 @@ public class WebViewForm : Form
     }
 
 
-    internal Task DragStart(string path, string[] fileList)
+    public Task<bool> DragStart(string path, string[] fileList)
     {
+        var tcs = new TaskCompletionSource<bool>();
+        dropFinishedSubject
+            .Take(1)
+            .Subscribe(tcs.SetResult);
         DoDragDrop(new DataObject(DataFormats.FileDrop, fileList
                                                             .Select(f => path.AppendPath(f))
                                                             .ToArray()), DragDropEffects.All);
-        return Task.CompletedTask;
+        return tcs.Task;
     }
     
     void OnClose(object? _, FormClosingEventArgs e)
@@ -137,6 +144,14 @@ public class WebViewForm : Form
     {
         if (canClose?.Invoke() == false)
             e.Cancel = true;
+    }
+
+    void OnQueryContinueDrag(object? _, QueryContinueDragEventArgs e)
+    {
+        if (e.Action == DragAction.Drop)
+            dropFinishedSubject.OnNext(true);
+        else if (e.Action == DragAction.Cancel)
+            dropFinishedSubject.OnNext(false);
     }
 
     void OnHandle(object? _, EventArgs e)
@@ -264,7 +279,6 @@ public class WebViewForm : Form
         }
     }
 
-    bool isMaximized;
     const int WM_NCCALCSIZE = 0x83;
     readonly int width;
     readonly int height;
@@ -274,6 +288,7 @@ public class WebViewForm : Form
     readonly string appId;
     readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
+    readonly Subject<bool> dropFinishedSubject = new();
 }
 
 #endif

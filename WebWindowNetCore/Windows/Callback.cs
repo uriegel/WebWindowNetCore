@@ -8,12 +8,12 @@ namespace WebWindowNetCore.Windows;
 [ComVisible(true)]
 public class Callback(WebViewForm parent)
 {
-    public Task DragStart(string fileList)
+    public Task<bool> DragStart(string fileList)
     {
         var flt = JsonSerializer.Deserialize<FileListType>(fileList, jsonOptions);
         return flt != null
             ? parent.DragStart(flt.Path, flt.FileList)
-            : Task.CompletedTask;
+            : Task.FromResult(false);
     }
 
     static readonly JsonSerializerOptions jsonOptions = new()
