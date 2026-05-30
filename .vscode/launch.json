@@ -65,6 +65,16 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
+            "name": ".NET Adwaita (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TestAppNativeAdw/bin/Debug/net10.0/linux-x64/TestAppNativeAdw.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
             "name": ".NET Core Web Server (Windows)",
             "type": "coreclr",
             "request": "launch",

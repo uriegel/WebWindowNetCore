@@ -71,7 +71,7 @@ public class WebView() : WebWindowNetCore.WebView
     void OnActivate(ApplicationHandle app)
         => app
             .SideEffect(app => onActivate?.Invoke(app, this, resourceTemplate!))
-            .CreateWindow(resourceTemplate)
+            .CreateWindow(adwResource, resourceTemplate)
             .Title(title)
             .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
             .Pipe(w => w.Child(GetWebKit(w)))
@@ -177,9 +177,11 @@ public class WebView() : WebWindowNetCore.WebView
 
 static class WebViewExtensions
 {
-    public static ApplicationWindowHandle CreateWindow(this ApplicationHandle app, string? resourceTemplate)
+    public static ApplicationWindowHandle CreateWindow(this ApplicationHandle app, bool adw, string? resourceTemplate)
         => resourceTemplate == null
             ? app.NewWindow()
+            : adw
+            ? app.CustomAdwWindow("CustomWindow")
             : app.CustomWindow("CustomWindow");
 }
 
