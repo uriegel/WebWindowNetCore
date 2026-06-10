@@ -44,9 +44,18 @@ public class WebView() : WebWindowNetCore.WebView
 
     public override void RunJavascript(string script) => webView?.RunJavascript(script);
 
+    public override void Close() => window?.CloseWindow();
+    public override bool IsMaximized { get => window?.IsMaximized == true; }
+    public override void Minimize() { }
+    public override void Maximize() => window?.IsMaximized = true;
+    public override void Restore() => window?.IsMaximized = false;
+    public override void BeginInvoke(Action action) => Gtk.BeginInvoke(200, action);
+    //public override Task<T> BeginInvoke<T>(Func<T> func) => Gtk.Inv
+    public override void SetFocus() => webView?.GrabFocus();
+
     void OnActivate(Application app)
     {
-        var window = resourceTemplate != null && onActivate != null
+        window = resourceTemplate != null && onActivate != null
             ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
             {
                 var window = onActivate(app, builder);
@@ -152,6 +161,7 @@ public class WebView() : WebWindowNetCore.WebView
     }
 
     Gtk4DotNet.WebView? webView;
+    ApplicationWindow? window;
 }
 
 #endif

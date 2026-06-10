@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using CsTools.Extensions;
+#if Windows
 using Microsoft.Web.WebView2.WinForms;
-#if Linux
+#else
 using System.Drawing;
 using Gtk4DotNet;
 #endif
