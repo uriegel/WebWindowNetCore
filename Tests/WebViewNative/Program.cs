@@ -19,7 +19,7 @@ WebView
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-   // .DefaultContextMenuDisabled()
+    //.DefaultContextMenuDisabled()
     .FromResource()
     .CanClose(() => true)
     .Run();
