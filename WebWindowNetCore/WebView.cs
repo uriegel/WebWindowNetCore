@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
 using CsTools.Extensions;
-using Gtk4DotNet;
-
 #if Linux
-namespace WebWindowNetCore;
+using System.Drawing;
+using Gtk4DotNet;
 #endif
+
+namespace WebWindowNetCore;
+
 public abstract class WebView
 {
 #if Windows
@@ -166,7 +167,7 @@ public abstract class WebView
     public abstract void RunJavascript(string script);
 
 #if Windows    
-    public WebView OnFormCreating(Action<Form> onformCreate) 
+    public WebView OnFormCreating(Action<Form> onformCreate)
         => this.SideEffect(w => w.onformCreate = onformCreate);
 
     /// <summary>
