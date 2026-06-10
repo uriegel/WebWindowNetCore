@@ -13,3 +13,25 @@ const restore = document.getElementById("restore")
 restore.onclick = () => alert("restore")
 const close = document.getElementById("close")
 close.onclick = () => window.close()
+const devtools = document.getElementById("devtools")
+devtools.onclick = () => alert("devtools")
+
+function onMaximized(value) 
+{
+    console.log("Maximized", value)
+    if (isMaximized != value) {
+        isMaximized = value
+        if (isMaximized) {
+            maximize.classList.add("hidden")
+            restore.classList.remove("hidden")
+        } else {
+            maximize.classList.remove("hidden")
+            restore.classList.add("hidden")
+        }
+
+    }
+}
+
+alert("ready")
+
+var isMaximized

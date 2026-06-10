@@ -23,13 +23,14 @@ webView
     .DevTools()
     .DefaultContextMenuDisabled()
     .FromResource()
+    .OnStateChange(OnStateChange)
     .CanClose(() => true);
 
 webView.Run();
 
 void OnMessage(string msg)
 {
-    switch(msg)
+    switch (msg)
     {
         case "maximize":
             webView.Maximize();
@@ -40,5 +41,16 @@ void OnMessage(string msg)
         case "restore":
             webView.Restore();
             break;
+        case "devtools":
+            webView.ShowDevTools();
+            break;
+        case "ready": 
+            OnStateChange();
+            break;
     }
+}
+
+void OnStateChange()
+{
+    webView.RunJavascript($"onMaximized({(webView.IsMaximized ? "true" : "false")})");
 }

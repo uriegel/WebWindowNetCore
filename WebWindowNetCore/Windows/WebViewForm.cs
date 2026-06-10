@@ -47,6 +47,8 @@ public class WebViewForm : Form
             WindowState = bounds?.IsMaximized == true ? FormWindowState.Maximized : FormWindowState.Normal;
         }
 
+        isMaximized = WindowState == FormWindowState.Maximized;
+
         if (settings.saveBounds)
             FormClosing += OnClose;
         if (settings.canClose != null)
@@ -54,6 +56,16 @@ public class WebViewForm : Form
         HandleCreated += OnHandle;
         Load += OnLoad;
         QueryContinueDrag += OnQueryContinueDrag;
+
+        if (settings.onStateChanged != null)
+            SizeChanged += (_, e) =>
+            {
+                if (isMaximized != (WindowState == FormWindowState.Maximized))
+                {
+                    settings.onStateChanged();
+                    isMaximized = WindowState == FormWindowState.Maximized;
+                }
+            };
 
         Text = settings.title;
 
@@ -290,6 +302,7 @@ public class WebViewForm : Form
     readonly bool withoutNativeTitlebar;
     readonly Func<bool>? canClose;
     readonly Subject<bool> dropFinishedSubject = new();
+    bool isMaximized;
 }
 
 #endif

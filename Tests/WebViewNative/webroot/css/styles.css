@@ -8,7 +8,7 @@ h1 {
     color: darkblue;
 }
 
-.titlebar.hidden {
+.titlebar.hidden, .control.hidden{
     display: none;
 } 
 

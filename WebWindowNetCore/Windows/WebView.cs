@@ -9,6 +9,8 @@ namespace WebWindowNetCore.Windows;
 
 public class WebView : WebWindowNetCore.WebView
 {
+    public override bool IsMaximized { get => webViewForm?.WindowState == FormWindowState.Maximized; }
+    
     public override int Run() 
     {
         Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);

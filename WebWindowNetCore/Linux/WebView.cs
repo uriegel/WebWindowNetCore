@@ -160,7 +160,6 @@ public class WebView() : WebWindowNetCore.WebView
 // TODO Close
 // TODO InvokeOnMainThread probably InvokeAsync
 // TODO Focus(): Windows SetFocus function from Commander
-// TODO Titlebar controlling
 // TODO Titlebar: Linux: buttons in content for controlling
 
 // TODO Check Commander

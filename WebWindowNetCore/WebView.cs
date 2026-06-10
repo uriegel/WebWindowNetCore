@@ -33,6 +33,8 @@ public abstract class WebView
 
 #endif
 
+    public abstract bool IsMaximized { get; }
+
     /// <summary>
     /// The AppId is necessary for a webview app on Linux, it is the AppId for a GtkApplication. 
     /// It is a reverse domain name, like "de.uriegel.webapp"
@@ -122,6 +124,9 @@ public abstract class WebView
     public WebView DevTools()
         => this.SideEffect(w => devTools = true);
 
+    public WebView OnStateChange(Action onStateChanged)
+        => this.SideEffect(w => w.onStateChanged = onStateChanged);
+
     /// <summary>
     /// When called the web view's default context menu is not being displayed when you right click the mouse.
     /// </summary>
@@ -159,9 +164,8 @@ public abstract class WebView
     public abstract void BeginInvoke(Action action);
     public abstract Task<T> BeginInvoke<T>(Func<T> func);
     public abstract void SetFocus();
-    
 
-#if Windows    
+#if Windows
     public WebView OnCreating(Action<Form, WebView2> onCreate)
         => this.SideEffect(w => w.onCreate = onCreate);
 
@@ -204,6 +208,8 @@ public abstract class WebView
     internal string? queryString;
     internal Action<string>? onAlert;
     internal Func<bool>? canClose;
+    internal Action? onStateChanged;
+    
 #if Windows
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
