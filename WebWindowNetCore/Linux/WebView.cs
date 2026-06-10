@@ -156,9 +156,20 @@ public class WebView() : WebWindowNetCore.WebView
 
 #endif
 
+// TODO with WebServerLight
+// TODO Windows OnCreate Form A N D  webView
+// TODO BeginInvoke(Action) for Linux and Windows
+// TODO Close
+// TODO Minimize
+// TODO Maximize
+// TODO Restore
+// TODO Restore
+// TODO InvokeOnMainThread probably InvokeAsync
+// TODO Focus(): Windows SetFocus function from Commander
+// TODO Titlebar controlling
+// TODO Titlebar: Linux: buttons in content for controlling
 
-// TODO CheckDiagnostics: FromResource 1 delegate remaining
-// TODO UnregisterUriScheme
 // TODO Check Commander
 // TODO First beta
-// TODO with WebServerLight
+// TODO CheckDiagnostics: FromResource 1 delegate remaining
+// TODO UnregisterUriScheme
