@@ -69,6 +69,8 @@ public class WebView() : WebWindowNetCore.WebView
             WithSaveBounds(window);
         else
             window.DefaultSize(width, height);
+        if (onStateChanged != null)
+            window.OnNotify("maximized", onStateChanged);
         webView ??= Gtk4DotNet.WebView.New();
         window.Child(webView);
         if (canClose != null)
@@ -83,6 +85,9 @@ public class WebView() : WebWindowNetCore.WebView
             webView.BackgroundColor(backgroundColor.Value);
         if (fromResource)
             WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
+        if (onAlert != null)
+            webView.OnAlert((w, s) => onAlert(s ?? ""));
+
         webView.OnLoadChanged(OnLoad);
         webView.LoadUri(GetUrl());
 
@@ -166,9 +171,6 @@ public class WebView() : WebWindowNetCore.WebView
 
 #endif
 
-// TODO Alert in Linux
-// TODO State changed in Linux
-// TODO Focus(): Windows SetFocus function from Commander
 // TODO Titlebar: Linux: buttons in content for controlling
 
 // TODO Check Commander
