@@ -3,7 +3,8 @@
 WebView
     .Create()
     .AppId("de.uriegel.test")
-    .Title("Web Window Net Core 👍")
+    .Title("Hello Web Window👍")
+    .WithDiagnostics()
     .InitialBounds(600, 800)
     .SaveBounds()
     .DefaultContextMenuDisabled()

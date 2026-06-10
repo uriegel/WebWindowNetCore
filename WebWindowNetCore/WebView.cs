@@ -121,6 +121,13 @@ public abstract class WebView
         => this.SideEffect(w => w.saveBounds = true);
 
     /// <summary>
+    ///Enumerable diagnostics logging in Console. Works only for Linux
+    /// </summary>
+    /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
+    public WebView WithDiagnostics()
+        => this.SideEffect(w => w.withDiagnostics = true);
+
+    /// <summary>
     /// Used to enable (not to show) the developer tools. If not called, it is not possible to open these tools.
     /// The developer tools can be shown by default context menu or by calling the javascript method WebView.showDevtools()
     /// </summary>
@@ -194,6 +201,7 @@ public abstract class WebView
     internal string? url;
     internal string? debugUrl;
     internal bool saveBounds;
+    internal bool withDiagnostics;
     internal bool devTools;
     internal bool defaultContextMenuDisabled;
     internal bool fromResource;

@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Tests/">
-    <Project Path="Tests/TestApp/TestApp.csproj" />
+    <Project Path="Tests/HelloWebView/HelloWebView.csproj" />
+    <Project Path="Tests/WebViewFromResource/WebViewFromResource.csproj" />
   </Folder>
   <Project Path="WebWindowNetCore/WebWindowNetCore.csproj" />
 </Solution>

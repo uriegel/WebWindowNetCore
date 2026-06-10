@@ -3,10 +3,11 @@
 WebView
     .Create()
     .AppId("de.uriegel.test")
-    .Title("Web Window Net Core from Resource 👍")
+    .WithDiagnostics()
+    .Title("Web Window from Resource 👍")
     .InitialBounds(600, 800)
     .SaveBounds()
-    //.DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
 #if Windows
     .ResourceIcon("icon")
 #endif

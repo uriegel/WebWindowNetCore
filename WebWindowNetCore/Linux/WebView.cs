@@ -1,4 +1,5 @@
 #if Linux
+using System.Text;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
@@ -7,7 +8,8 @@ namespace WebWindowNetCore.Linux;
 public class WebView() : WebWindowNetCore.WebView
 {
     public override int Run() =>
-        Application.NewAdwaita(appId)
+        Application.New(appId)
+            .SideEffectIf(withDiagnostics, app => app.WithDiagnostics())
             .OnActivate(OnActivate)
             .Run(0, 0);
 
@@ -62,6 +64,7 @@ public class WebView() : WebWindowNetCore.WebView
             .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
             .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
             .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
+            .SideEffectIf(fromResource, EnableResourceScheme)
             .SideEffect(w => w.OnLoadChanged(OnLoad))
             .LoadUri(GetUrl());
 
@@ -89,6 +92,9 @@ public class WebView() : WebWindowNetCore.WebView
                         IsMaximized = window.IsMaximized
                     }));
 
+    void EnableResourceScheme(Gtk4DotNet.WebView _)
+        => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
+
     void OnLoad(Gtk4DotNet.WebView webView, WebViewLoad load)
     {
         if (load == WebViewLoad.Committed)
@@ -101,6 +107,45 @@ public class WebView() : WebWindowNetCore.WebView
                 webView.Visible(true);
             }
         }
+    }
+
+    void OnResRequest(WebkitUriSchemeRequest request)
+    {
+        try
+        {
+            var uri = "/" + request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
+            uri = uri != "/" ? uri : "/index.html";
+            var res = Resources.Get(uri);
+            if (res != null)
+            {
+                var bytes = new byte[res.Length];
+                var read = res.Read(bytes, 0, bytes.Length);
+                using var gbytes = GBytes.New(bytes);
+                using var gstream = MemoryInputStream.New(gbytes);
+                request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
+            }
+            else
+                SendNotFound(request);
+        }
+        catch
+        {
+            SendNotFound(request);
+        }
+    }
+
+    static void SendNotFound(WebkitUriSchemeRequest request)
+        => SendResponse(request, 404, "Not Found", "I can't find what you're looking for!");
+
+    static void SendResponse(WebkitUriSchemeRequest request, int code, string status, string text)
+    {
+        using var bytes = GBytes.New(Encoding.UTF8.GetBytes(text));
+        using var stream = MemoryInputStream.New(bytes);
+        using var response = WebKitUriSchemeResponse.New(stream, text.Length);
+        using var respondHeaders = SoupMessageHeaders.New(SoupMessageHeaderType.Response);
+        respondHeaders.Set([new("Access-Control-Allow-Origin", "*")]);
+        response.HttpHeaders(respondHeaders);
+        response.Status(code, status);
+        request.Finish(response);
     }
 
     Gtk4DotNet.WebView? webView;
@@ -120,6 +165,7 @@ static class WebViewExtensions
 #endif
 
 
-// TODO From Resource
+// TODO CheckDiagnostics: FromResource 1 delegate remaining
+// TODO UnregisterUriScheme
 // TODO Native chrome
 // TODO with WebServerLight
