@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CsTools.Extensions;
+using Microsoft.Web.WebView2.WinForms;
 #if Linux
 using System.Drawing;
 using Gtk4DotNet;
@@ -136,6 +137,9 @@ public abstract class WebView
     public WebView QueryString(string queryString)
         => this.SideEffect(w => w.queryString = queryString);
 
+    public WebView ScriptDialog(Action<string> onAlert)
+        => this.SideEffect(w => w.onAlert = onAlert);
+
     /// <summary>
     /// Here you can set a callback function which is called when the window is about to close. 
     /// In the callback you can prevent the close request by returning false.
@@ -146,14 +150,20 @@ public abstract class WebView
         => this.SideEffect(w => w.canClose = canClose);
 
     public abstract void ShowDevTools();
-
     public abstract Task StartDragFiles(string[] dragFiles);
-
     public abstract void RunJavascript(string script);
+    public abstract void Close();
+    public abstract void Minimize();
+    public abstract void Maximize();
+    public abstract void Restore();
+    public abstract void BeginInvoke(Action action);
+    public abstract Task<T> BeginInvoke<T>(Func<T> func);
+    public abstract void SetFocus();
+    
 
 #if Windows    
-    public WebView OnFormCreating(Action<Form> onformCreate)
-        => this.SideEffect(w => w.onformCreate = onformCreate);
+    public WebView OnCreating(Action<Form, WebView2> onCreate)
+        => this.SideEffect(w => w.onCreate = onCreate);
 
     /// <summary>
     /// Hides the Windows Titlebar
@@ -192,11 +202,12 @@ public abstract class WebView
     internal bool defaultContextMenuDisabled;
     internal bool fromResource;
     internal string? queryString;
+    internal Action<string>? onAlert;
     internal Func<bool>? canClose;
 #if Windows
     internal bool withoutNativeTitlebar;
     internal string? resourceIcon;
-    internal Action<Form>? onformCreate;
+    internal Action<Form, WebView2>? onCreate;
 #endif
 #if Linux
     protected string? resourceTemplate;

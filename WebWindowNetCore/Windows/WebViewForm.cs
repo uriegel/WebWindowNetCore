@@ -8,7 +8,6 @@ using CsTools;
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
-using System.Text.Json;
 
 namespace WebWindowNetCore.Windows;
 
@@ -33,7 +32,7 @@ public class WebViewForm : Form
         WebView.Dock = DockStyle.Fill;
         WebView.TabIndex = 0;
         WebView.ZoomFactor = 1;
-        settings.onformCreate?.Invoke(this);
+        settings.onCreate?.Invoke(this, WebView);
 
         if (settings.resourceIcon != null)
             Icon = new Icon(Resources.Get(settings.resourceIcon)!);
@@ -82,8 +81,14 @@ public class WebViewForm : Form
             WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = settings.defaultContextMenuDisabled == false;
             WebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            if (settings.onAlert != null)
+            {
+                WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
+                WebView.CoreWebView2.ScriptDialogOpening += (_, e) => settings.onAlert(e.Message);
+            }
             WebView.CoreWebView2.AddHostObjectToScript("Callback", new Callback(this));
             WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+            
             WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
             WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
 

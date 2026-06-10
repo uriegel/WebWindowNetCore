@@ -3,8 +3,9 @@
 using CsTools.Extensions;
 #endif
 
-WebView
-    .Create()
+var webView = WebView
+    .Create();
+webView
     .AppId("de.uriegel.test")
     .WithDiagnostics()
 #if Linux    
@@ -16,11 +17,28 @@ WebView
     .QueryString("?platform=windows")
 #endif        
     .Title("Web Window with native extensions👍")
+    .ScriptDialog(OnMessage)
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-    //.DefaultContextMenuDisabled()
+    .DefaultContextMenuDisabled()
     .FromResource()
-    .CanClose(() => true)
-    .Run();
+    .CanClose(() => true);
 
+webView.Run();
+
+void OnMessage(string msg)
+{
+    switch(msg)
+    {
+        case "maximize":
+            webView.Maximize();
+            break;
+        case "minimize":
+            webView.Minimize();
+            break;
+        case "restore":
+            webView.Restore();
+            break;
+    }
+}

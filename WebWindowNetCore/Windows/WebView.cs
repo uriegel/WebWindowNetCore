@@ -45,16 +45,29 @@ public class WebView : WebWindowNetCore.WebView
         Run();
         async void Run()
         {
-            try 
+            try
             {
                 await (webViewForm?.WebView.ExecuteScriptAsync(script) ?? "".ToAsync());
             }
-            catch (Exception ex)    
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-        }        
+        }
     }
+
+    public override void Close() => webViewForm?.Close();
+    public override void Minimize() => webViewForm?.WindowState = FormWindowState.Minimized;
+    public override void Maximize() => webViewForm?.WindowState = FormWindowState.Maximized;
+    public override void Restore() => webViewForm?.WindowState = FormWindowState.Normal;
+    public override void BeginInvoke(Action action) => webViewForm?.BeginInvoke(action);
+    public override Task<T> BeginInvoke<T>(Func<T> func) => webViewForm?.InvokeAsync(func) ?? Task.FromResult<T>(default!);
+    public override void SetFocus() => webViewForm?.BeginInvoke(async () => {
+        webViewForm?.Activate();
+        webViewForm?.BringToFront();
+        webViewForm?.WebView?.Focus();
+        webViewForm?.Focus();
+    });
 
     string GetWebViewLoader(string appId)
     {
