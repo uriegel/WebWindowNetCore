@@ -15,32 +15,17 @@ public abstract class WebView
     public static WebView Create() => new Linux.WebView();
 
     /// <summary>
-    /// Creates a window from a template.ui in .Net resource. The custom window type name has to be "CustomWindow".
-    /// The template has to contain a webkit webView with the Id "webview".
-    /// Registering of the custom window class should be done in the callback "onActivate"
+    /// Creates a window from a GtkBuilder template which is contained in .Net resource.
+    /// The ApplicationWindow in the template has to have the id "window". The template has to contain a webkit webView with the id "webview". 
     /// </summary>
     /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
-    /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the class registering should be done. Parameters: GtkApplication, WebView and resourceTemplate</param>
+    /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the builder ui .</param>
+    /// <param name="useAdwaita">If true, an Adwaita Application is created instead of a GtkApplication</param>
     /// <returns></returns>
-    public WebView FromResourceTemplate(string template, Action<Application, WebView, string> onActivate)
+    public WebView FromResourceTemplate(string template, Func<Application, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
     {
         resourceTemplate = template;
-        this.onActivate = onActivate;
-        return this;
-    }
-
-    /// <summary>
-    /// Creates an Adwaita window from a template.ui in .Net resource. The custom window type name has to be "CustomWindow".
-    /// The template has to contain a webkit webView with the Id "webview".
-    /// Registering of the custom window class should be done in the callback "onActivate"
-    /// </summary>
-    /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
-    /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the class registering should be done. Parameters: GtkApplication, WebView and resourceTemplate</param>
-    /// <returns></returns>
-    public WebView FromAdwResourceTemplate(string template, Action<Application, WebView, string> onActivate)
-    {
-        adwResource = true;
-        resourceTemplate = template;
+        this.useAdwaita = useAdwaita;
         this.onActivate = onActivate;
         return this;
     }
@@ -215,8 +200,8 @@ public abstract class WebView
 #endif
 #if Linux
     protected string? resourceTemplate;
-    protected bool adwResource;
-    protected Action<Application, WebView, string>? onActivate;
+    protected bool useAdwaita;
+    protected Func<Application, WindowBuilder, ApplicationWindow>? onActivate;
 #endif
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }

@@ -10,10 +10,9 @@ Tests/HelloWebView/bin
 Tests/HelloWebView/obj
 Tests/WebViewFromResource/bin
 Tests/WebViewFromResource/obj
+Tests/WebViewNative/bin
+Tests/WebViewNative/obj
 
-Tests/TestAppNative/bin
-Tests/TestAppNative/obj
-Tests/TestAppNativeAdw/bin
-Tests/TestAppNativeAdw/obj
 Tests/TestAppWebServer/bin
 Tests/TestAppWebServer/obj
+

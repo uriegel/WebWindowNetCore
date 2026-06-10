@@ -24,6 +24,16 @@
             "stopAtEntry": false,
             "console": "internalConsole"
         }, {
+            "name": "WebView with native extensions (Linux)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Tests/WebViewNative/bin/Debug/net10.0/linux-x64/WebViewNative.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
             "name": "Hello WebView (Windows)",
             "type": "coreclr",
             "request": "launch",
@@ -39,6 +49,16 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/Tests/WebViewFromResource/bin/Debug/net10.0-windows/win-x64/WebViewFromResource.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }, {
+            "name": "WebView with native extensions (Windows)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Tests/WebViewNative/bin/Debug/net10.0-windows/win-x64/WebViewNative.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

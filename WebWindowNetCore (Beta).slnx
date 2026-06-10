@@ -2,6 +2,7 @@
   <Folder Name="/Tests/">
     <Project Path="Tests/HelloWebView/HelloWebView.csproj" />
     <Project Path="Tests/WebViewFromResource/WebViewFromResource.csproj" />
+    <Project Path="Tests/WebViewNative/WebViewNative.csproj" />
   </Folder>
   <Project Path="WebWindowNetCore/WebWindowNetCore.csproj" />
 </Solution>

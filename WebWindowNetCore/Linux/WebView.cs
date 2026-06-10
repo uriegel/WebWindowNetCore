@@ -7,11 +7,14 @@ namespace WebWindowNetCore.Linux;
 
 public class WebView() : WebWindowNetCore.WebView
 {
-    public override int Run() =>
-        Application.New(appId)
-            .SideEffectIf(withDiagnostics, app => app.WithDiagnostics())
-            .OnActivate(OnActivate)
-            .Run(0, 0);
+    public override int Run()
+    {
+        var app = useAdwaita ? Application.NewAdwaita(appId) : Application.New(appId);
+        if (withDiagnostics)
+            app.WithDiagnostics();
+        return app.OnActivate(OnActivate)
+           .Run(0, 0);
+    }
 
     public override async void ShowDevTools()
     {
@@ -43,37 +46,40 @@ public class WebView() : WebWindowNetCore.WebView
 
     void OnActivate(Application app)
     {
-        onActivate?.Invoke(app, this, resourceTemplate!);
-        var window = app.CreateWindow(adwResource, resourceTemplate);
+        var window = resourceTemplate != null && onActivate != null
+            ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
+            {
+                var window = onActivate(app, builder);
+                webView = builder.Builder.GetWidget<Gtk4DotNet.WebView>("webview");
+                return window;
+            })
+            : app.NewWindow();
+        
         window.Title = title;
         if (saveBounds)
             WithSaveBounds(window);
         else
             window.DefaultSize(width, height);
-        webView = GetWebKit(window);
+        webView ??= Gtk4DotNet.WebView.New();
         window.Child(webView);
         if (canClose != null)
             window.OnClose(_ => canClose() == false);
+
+        webView.Visible = false;
+        if (devTools)
+            webView.GetSettings().EnableDeveloperExtras = true;
+        if (defaultContextMenuDisabled)
+            webView.DisableContextMenu();
+        if (backgroundColor.HasValue)
+            webView.BackgroundColor(backgroundColor.Value);
+        if (fromResource)
+            WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
+        webView.OnLoadChanged(OnLoad);
+        webView.LoadUri(GetUrl());
+
         window.Show();
         webView.GrabFocus();
     }
-
-    Gtk4DotNet.WebView GetWebKit(ApplicationWindow window)
-        => CreateWebKit(window)
-            .SideEffect(w => w.Visible(false))
-            .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
-            .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
-            .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-            .SideEffectIf(fromResource, EnableResourceScheme)
-            .SideEffect(w => w.OnLoadChanged(OnLoad))
-            .LoadUri(GetUrl());
-
-    Gtk4DotNet.WebView CreateWebKit(ApplicationWindow window)
-        // => webView = resourceTemplate == null
-        //     ? Gtk4DotNet.WebView.New()
-        //     : window.GetTemplateChild<WebView, ApplicationWindow>("webview") ?? Gtk4DotNet.WebView.New();
-
-        => Gtk4DotNet.WebView.New();
 
     void WithSaveBounds(Window window)
         => Bounds
@@ -91,9 +97,6 @@ public class WebView() : WebWindowNetCore.WebView
                         Height = window.Height,
                         IsMaximized = window.IsMaximized
                     }));
-
-    void EnableResourceScheme(Gtk4DotNet.WebView _)
-        => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
 
     void OnLoad(Gtk4DotNet.WebView webView, WebViewLoad load)
     {
@@ -151,21 +154,12 @@ public class WebView() : WebWindowNetCore.WebView
     Gtk4DotNet.WebView? webView;
 }
 
-static class WebViewExtensions
-{
-    public static ApplicationWindow CreateWindow(this Application app, bool adw, string? resourceTemplate)
-        => app.NewWindow();
-        // => resourceTemplate == null
-        //     ? app.NewWindow()
-        //     : adw
-        //     ? app.CreateWindow()
-        //     : app.CustomWindow("CustomWindow");
-}
-
 #endif
 
 
 // TODO CheckDiagnostics: FromResource 1 delegate remaining
 // TODO UnregisterUriScheme
-// TODO Native chrome
+// TODO Windows native version
+// TODO Checkk Commander
+// TODO First beta
 // TODO with WebServerLight
