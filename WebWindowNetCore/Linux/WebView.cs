@@ -20,7 +20,7 @@ public class WebView() : WebWindowNetCore.WebView
     {
         try
         {
-            await Gtk.Dispatch(() =>
+            await Gtk.InvokeAsync(() =>
             {
                 var inspector = webView!.GetInspector();
                 inspector.Show();
@@ -49,8 +49,8 @@ public class WebView() : WebWindowNetCore.WebView
     public override void Minimize() { }
     public override void Maximize() => window?.IsMaximized = true;
     public override void Restore() => window?.IsMaximized = false;
-    public override void BeginInvoke(Action action) => Gtk.BeginInvoke(200, action);
-    //public override Task<T> BeginInvoke<T>(Func<T> func) => Gtk.Inv
+    public override void BeginInvoke(Action action) => Gtk.InvokeAsync(action);
+    public override Task<T> BeginInvoke<T>(Func<T> func) => Gtk.InvokeAsync(func);
     public override void SetFocus() => webView?.GrabFocus();
 
     void OnActivate(Application app)
@@ -125,8 +125,8 @@ public class WebView() : WebWindowNetCore.WebView
     {
         try
         {
-            var uri = "/" + request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
-            uri = uri != "/" ? uri : "/index.html";
+            var uri = request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
+            uri = uri.Length > 0 ? uri : "index.html";
             var res = Resources.Get(uri);
             if (res != null)
             {
@@ -166,9 +166,8 @@ public class WebView() : WebWindowNetCore.WebView
 
 #endif
 
-// TODO BeginInvoke(Action) for Linux and Windows
-// TODO Close
-// TODO InvokeOnMainThread probably InvokeAsync
+// TODO Alert in Linux
+// TODO State changed in Linux
 // TODO Focus(): Windows SetFocus function from Commander
 // TODO Titlebar: Linux: buttons in content for controlling
 
