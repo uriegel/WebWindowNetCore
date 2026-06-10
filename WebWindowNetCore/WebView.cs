@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using CsTools.Extensions;
+using Gtk4DotNet;
+
 #if Linux
-using GtkDotNet.SafeHandles;
-#endif  
-
 namespace WebWindowNetCore;
-
+#endif
 public abstract class WebView
 {
 #if Windows
@@ -22,7 +21,7 @@ public abstract class WebView
     /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
     /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the class registering should be done. Parameters: GtkApplication, WebView and resourceTemplate</param>
     /// <returns></returns>
-    public WebView FromResourceTemplate(string template, Action<ApplicationHandle, WebView, string> onActivate)
+    public WebView FromResourceTemplate(string template, Action<Application, WebView, string> onActivate)
     {
         resourceTemplate = template;
         this.onActivate = onActivate;
@@ -37,7 +36,7 @@ public abstract class WebView
     /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
     /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the class registering should be done. Parameters: GtkApplication, WebView and resourceTemplate</param>
     /// <returns></returns>
-    public WebView FromAdwResourceTemplate(string template, Action<ApplicationHandle, WebView, string> onActivate)
+    public WebView FromAdwResourceTemplate(string template, Action<Application, WebView, string> onActivate)
     {
         adwResource = true;
         resourceTemplate = template;
@@ -156,7 +155,7 @@ public abstract class WebView
     public abstract void ShowDevTools();
 
     public abstract Task StartDragFiles(string[] dragFiles);
-    
+
     public abstract void RunJavascript(string script);
 
 #if Windows    
@@ -208,7 +207,7 @@ public abstract class WebView
 #if Linux
     protected string? resourceTemplate;
     protected bool adwResource;
-    protected Action<ApplicationHandle, WebView, string>? onActivate;
+    protected Action<Application, WebView, string>? onActivate;
 #endif
     string? GetUrlOrResUrl() => fromResource ? "res://webwindownetcore" : url;
 }

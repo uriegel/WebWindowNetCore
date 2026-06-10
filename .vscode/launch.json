@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestApp/bin/Debug/net10.0-windows/win-x64/TestApp.exe",
+            "program": "${workspaceFolder}/Tests/TestApp/bin/Debug/net10.0-windows/win-x64/TestApp.exe",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
@@ -19,81 +19,11 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestApp/bin/Debug/net10.0/linux-x64/TestApp.dll",
+            "program": "${workspaceFolder}/Tests/TestApp/bin/Debug/net10.0/linux-x64/TestApp.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
-        },         {
-            "name": ".NET Core Resource (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppRes/bin/Debug/net10.0-windows/win-x64/TestAppRes.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core Resource (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppRes/bin/Debug/net10.0/linux-x64/TestAppRes.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core Native (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppNative/bin/Debug/net10.0-windows/win-x64/TestAppNative.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core Native (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppNative/bin/Debug/net10.0/linux-x64/TestAppNative.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Adwaita (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppNativeAdw/bin/Debug/net10.0/linux-x64/TestAppNativeAdw.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core Web Server (Windows)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppWebServer/bin/Debug/net10.0-windows/win-x64/TestAppWebServer.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }, {
-            "name": ".NET Core Web Server (Linux)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/TestAppWebServer/bin/Debug/net10.0/linux-x64/TestAppWebServer.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "internalConsole"
-        }
+        },
     ]
 }

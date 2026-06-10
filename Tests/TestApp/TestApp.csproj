@@ -29,7 +29,7 @@
   </PropertyGroup> 
 
   <ItemGroup>
-    <ProjectReference Include="..\WebWindowNetCore\WebWindowNetCore.csproj" />
+    <ProjectReference Include="..\..\WebWindowNetCore\WebWindowNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,9 +1,6 @@
 #if Linux
-using System.Text;
-using CsTools;
 using CsTools.Extensions;
-using GtkDotNet;
-using GtkDotNet.SafeHandles;
+using Gtk4DotNet;
 
 namespace WebWindowNetCore.Linux;
 
@@ -38,83 +35,61 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-    public override async Task StartDragFiles(string[] dragFiles)
-    {
-        try
-        {
-            await Gtk.Dispatch(() =>
-            {
-                var device = webView!.GetDisplay().GetDefaultSeat().GetDevice();
-                using var provider = ContentProvider.NewFileUris(dragFiles);
-                var surface = webView!.GetNative().GetSurface();
-                var drag = surface.DragBegin(device, provider, DragAction.Copy | DragAction.Move, 0.0, 0.0);
-                drag.DragAndDropFinished(OnFinished);
-                drag.DragAndDropCancelled(_ => OnFinished(false));
+    public override async Task StartDragFiles(string[] dragFiles) { }
 
-                void OnFinished(bool success)
-                {
-                    // TODO TaskCompletionSource: return StartDragFiles
-                    webView!.RunJavascript($"WebView.startDragFilesBack({(success ? "true" : "false")})");
-                    drag.Dispose();
-                }
-            });
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Could not show devtools: {e}");
-        }
+    public override void RunJavascript(string script) => webView?.RunJavascript(script);
+
+    void OnActivate(Application app)
+    {
+        onActivate?.Invoke(app, this, resourceTemplate!);
+        var window = app.CreateWindow(adwResource, resourceTemplate);
+        window.Title = title;
+        if (saveBounds)
+            WithSaveBounds(window);
+        else
+            window.DefaultSize(width, height);
+        webView = GetWebKit(window);
+        window.Child(webView);
+        if (canClose != null)
+            window.OnClose(_ => canClose() == false);
+        window.Show();
+        webView.GrabFocus();
     }
 
-    public override void RunJavascript(string script)
-        => webView!.RunJavascript(script);
-
-    void OnActivate(ApplicationHandle app)
-        => app
-            .SideEffect(app => onActivate?.Invoke(app, this, resourceTemplate!))
-            .CreateWindow(adwResource, resourceTemplate)
-            .Title(title)
-            .SideEffectChoose(saveBounds, WithSaveBounds, w => w.DefaultSize(width, height))
-            .Pipe(w => w.Child(GetWebKit(w)))
-            .SideEffectIf(canClose != null, w => w.OnClose(_ => canClose?.Invoke() == false))
-            .Show()
-            .GetChild<WidgetHandle>()
-            .GrabFocus();
-    WebViewHandle GetWebKit(ApplicationWindowHandle window)
+    Gtk4DotNet.WebView GetWebKit(ApplicationWindow window)
         => CreateWebKit(window)
             .SideEffect(w => w.Visible(false))
             .SideEffectIf(devTools, w => w.GetSettings().EnableDeveloperExtras = true)
             .SideEffectIf(defaultContextMenuDisabled, w => w.DisableContextMenu())
             .SideEffectIf(backgroundColor != null, w => w.BackgroundColor(backgroundColor!.Value))
-            .SideEffectIf(fromResource, EnableResourceScheme)
             .SideEffect(w => w.OnLoadChanged(OnLoad))
             .LoadUri(GetUrl());
 
-    WebViewHandle CreateWebKit(ApplicationWindowHandle window)
-        => webView = resourceTemplate == null
-            ? WebKit.New()
-            : window.GetTemplateChild<WebViewHandle, ApplicationWindowHandle>("webview") ?? WebKit.New();
+    Gtk4DotNet.WebView CreateWebKit(ApplicationWindow window)
+        // => webView = resourceTemplate == null
+        //     ? Gtk4DotNet.WebView.New()
+        //     : window.GetTemplateChild<WebView, ApplicationWindow>("webview") ?? Gtk4DotNet.WebView.New();
 
-    void WithSaveBounds(WindowHandle window)
+        => Gtk4DotNet.WebView.New();
+
+    void WithSaveBounds(Window window)
         => Bounds
             .Retrieve(appId)
             .SideEffect(b => window.DefaultSize(b.Width ?? width, b.Height ?? height))
-            .SideEffectIf(b => b.IsMaximized, _ => window.Maximize())
+            .SideEffectIf(b => b.IsMaximized, _ => window.IsMaximized = true)
             .SideEffect(_ => window.OnClose(SaveBounds));
 
-    bool SaveBounds(WindowHandle window)
+    bool SaveBounds(Window window)
         => false.SideEffect(_ =>
                 Bounds
                     .Save(appId, Bounds.Retrieve(appId) with
                     {
-                        Width = window.GetWidth(),
-                        Height = window.GetHeight(),
-                        IsMaximized = window.IsMaximized()
+                        Width = window.Width,
+                        Height = window.Height,
+                        IsMaximized = window.IsMaximized
                     }));
 
-    void EnableResourceScheme(WebViewHandle webView)
-        => WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
-
-    void OnLoad(WebViewHandle webView, WebViewLoad load)
+    void OnLoad(Gtk4DotNet.WebView webView, WebViewLoad load)
     {
         if (load == WebViewLoad.Committed)
         {
@@ -128,61 +103,18 @@ public class WebView() : WebWindowNetCore.WebView
         }
     }
 
-    void OnResRequest(WebkitUriSchemeRequestHandle request)
-    {
-        try
-        {
-            var uri = "/" + request.GetUri()[6..].SubstringAfter('/').SubstringUntil('?');
-            uri = uri != "/" ? uri : "/index.html";
-            var res = Resources.Get(uri);
-            if (res != null)
-            {
-                var bytes = new byte[res.Length];
-                res.Read(bytes, 0, bytes.Length);
-                using var gbytes = GBytes.New(bytes);
-                using var gstream = MemoryInputStream.New(gbytes);
-                request.Finish(gstream, bytes.Length, uri?.GetFileExtension()?.ToMimeType() ?? "text/html");
-            }
-            else
-                SendNotFound(request);
-        }
-        catch
-        {
-            SendNotFound(request);
-        }
-    }
-
-    static Unit SendOk(WebkitUriSchemeRequestHandle request)
-        => SendResponse(request, 200, "OK", "OK");
-
-    static Unit SendNotFound(WebkitUriSchemeRequestHandle request)
-        => SendResponse(request, 404, "Not Found", "I can't find what you're looking for!");
-
-    static Unit SendResponse(WebkitUriSchemeRequestHandle request, int code, string status, string text)
-    {
-        using var bytes = GBytes.New(Encoding.UTF8.GetBytes(text));
-        using var stream = MemoryInputStream.New(bytes);
-        using var response = WebKitUriSchemeResponse.New(stream, text.Length);
-        using var respondHeaders = SoupMessageHeaders.New(SoupMessageHeaderType.Response);
-        respondHeaders.Set([new("Access-Control-Allow-Origin", "*")]);
-        response
-            .HttpHeaders(respondHeaders)
-            .Status(code, status);
-        request.Finish(response);
-        return Unit.Value;
-    }
-
-    WebViewHandle? webView;
+    Gtk4DotNet.WebView? webView;
 }
 
 static class WebViewExtensions
 {
-    public static ApplicationWindowHandle CreateWindow(this ApplicationHandle app, bool adw, string? resourceTemplate)
-        => resourceTemplate == null
-            ? app.NewWindow()
-            : adw
-            ? app.CustomAdwWindow("CustomWindow")
-            : app.CustomWindow("CustomWindow");
+    public static ApplicationWindow CreateWindow(this Application app, bool adw, string? resourceTemplate)
+        => app.NewWindow();
+        // => resourceTemplate == null
+        //     ? app.NewWindow()
+        //     : adw
+        //     ? app.CreateWindow()
+        //     : app.CustomWindow("CustomWindow");
 }
 
 #endif
