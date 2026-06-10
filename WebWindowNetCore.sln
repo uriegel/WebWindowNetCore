@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp.csproj", "{715594F9-DF40-40AC-8B55-22EE062EF700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "Tests\TestApp\TestApp.csproj", "{715594F9-DF40-40AC-8B55-22EE062EF700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNative", "TestAppNative\TestAppNative.csproj", "{17604F0A-89C2-4D45-9D38-6472F0277049}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNative", "Tests\TestAppNative\TestAppNative.csproj", "{17604F0A-89C2-4D45-9D38-6472F0277049}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebWindowNetCore", "WebWindowNetCore\WebWindowNetCore.csproj", "{6E706598-1415-411F-8B4D-DBE8E6312B53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppRes", "TestAppRes\TestAppRes.csproj", "{098EB568-94E0-44F0-BCC8-EF70105405CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppRes", "Tests\TestAppRes\TestAppRes.csproj", "{098EB568-94E0-44F0-BCC8-EF70105405CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppWebServer", "TestAppWebServer\TestAppWebServer.csproj", "{F6559AE5-7484-4295-AF6C-DEEAF7D4DE5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppWebServer", "Tests\TestAppWebServer\TestAppWebServer.csproj", "{F6559AE5-7484-4295-AF6C-DEEAF7D4DE5C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestAppNativeAdw", "TestAppNativeAdw", "{2D0D8DD2-EC42-D629-8F03-81D56AD629B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNativeAdw", "TestAppNativeAdw\TestAppNativeAdw.csproj", "{7991108C-C93D-46EC-9619-C339DBC73C39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppNativeAdw", "Tests\TestAppNativeAdw\TestAppNativeAdw.csproj", "{7991108C-C93D-46EC-9619-C339DBC73C39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
