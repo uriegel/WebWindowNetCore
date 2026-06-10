@@ -159,7 +159,6 @@ public class WebView() : WebWindowNetCore.WebView
 
 // TODO CheckDiagnostics: FromResource 1 delegate remaining
 // TODO UnregisterUriScheme
-// TODO Windows native version
-// TODO Checkk Commander
+// TODO Check Commander
 // TODO First beta
 // TODO with WebServerLight

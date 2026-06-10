@@ -177,8 +177,8 @@ public class WebViewForm : Form
     {
         try
         {
-            var uri = "/" + Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringAfter('/').SubstringUntil('?');
-            uri = uri != "/" ? uri : "/index.html";
+            var uri = Uri.UnescapeDataString(e.Request.Uri)[6..].SubstringAfter('/').SubstringUntil('?');
+            uri = uri.Length > 0 ? uri : "index.html";
             var stream = Resources.Get(uri);
 
             if (stream != null)

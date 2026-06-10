@@ -8,13 +8,24 @@
 </head>
 
 <body>
-    <h1>Test Web Page</h1>
+    <div class="titlebar">
+        <img alt="" src='icon.ico' />
+        <div class="titlebarGrip">
+            <span>Web Window with native extensions👍</span>
+        </div>        
+        <div id="close" class="control close">✕</div>
+    </div>
+    <div class="content">
+        <h1>Test Web Page</h1>
+        <p>This website is loaded from .NET resources</p>
+        <p>Native extensions are available</p>
+        <div id="text"></div>
+        <p>
+            <img src="images/image.jpg"/>
+        </p>
 
-    <p>This website is loaded from .NET resources</p>
-    <div id="text"></div>
-    <p>
-        <img src="images/image.jpg"/>
-    </p>
+        <script src="scripts/script.js"></script>
+    </div>
 
 </body>
 </html>

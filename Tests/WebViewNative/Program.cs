@@ -1,5 +1,7 @@
-﻿using CsTools.Extensions;
-using WebWindowNetCore;
+﻿using WebWindowNetCore;
+#if Linux
+using CsTools.Extensions;
+#endif
 
 WebView
     .Create()
@@ -8,17 +10,17 @@ WebView
 #if Linux    
     .FromResourceTemplate("template", LinuxWindow.OnActivation, true)
     .SideEffect(w => LinuxWindow.WebView = w)
-#endif    
+#elif Windows
+    .ResourceIcon("icon.ico")
+    .WithoutNativeTitlebar()
+    .QueryString("?platform=windows")
+#endif        
     .Title("Web Window with native extensions👍")
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-    .DefaultContextMenuDisabled()
-#if Windows
-    .ResourceIcon("icon")
-#endif
+   // .DefaultContextMenuDisabled()
     .FromResource()
-    .QueryString("?param1=123&param2=456")
     .CanClose(() => true)
     .Run();
 

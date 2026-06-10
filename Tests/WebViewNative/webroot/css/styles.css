@@ -1,3 +1,8 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
 h1 {
     color: darkblue;
 }
@@ -6,6 +11,39 @@ h1 {
     color: black;
     width: 200px;
     height: 100px;
+}
+
+.titlebar {
+    display: flex;
+    height: 32px;
+    background-color: var(--vtr-background-color);
+    color: var(--color);
+    border-top: 1px solid transparent;
+}
+
+.titlebar>img {
+    height: 32px;
+    width: 32px;
+}
+
+.titlebarGrip {
+    flex-grow: 1;
+    text-align: left;
+    vertical-align: middle;
+    margin-top: 3px;    
+    padding-left: 25px;
+    display: flex;
+    align-items: center;  
+    app-region: drag;
+}
+
+body:focus-within .titlebar {
+    border-top: 1px solid var(--vtr-background-color);
+}
+
+.titlebarGrip>span {
+    flex-grow: 1;   
+    margin-top: -3px; 
 }
 
 #dropzone {
@@ -20,9 +58,46 @@ body:focus-within h1 {
     background-color: chartreuse;
 }
 
+.control {
+    width: 45px;
+    text-align: center;
+    align-content: center;
+    user-select: none;
+}
+
+.control.invisible {
+    display: none;
+}
+
+.control.close {
+    font-size: medium;
+}
+
+.control:hover {
+    background-color: lightgray;
+}
+
+.control:hover {
+    background-color: lightgray;
+}
+
+.control.close:hover {
+    background-color: #C42B1C;
+    color: white;
+}
+
+.content {
+    padding: 15px;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         background-color: rgb(56, 56, 56);
         color: lightgray;
     }
+
+    .control:hover {
+        background-color: rgb(55, 55, 55);
+    }
 }
+
