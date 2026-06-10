@@ -1,9 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <!-- <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks> -->
+    <IsLinux>$([MSBuild]::IsOSPlatform('Linux'))</IsLinux>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsLinux)' == 'True' AND '$(Configuration)'=='Debug'">
     <TargetFrameworks>net10.0</TargetFrameworks>
-    <!-- <TargetFrameworks>net10.0-windows</TargetFrameworks> -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsLinux)' == 'False' AND '$(Configuration)'=='Debug'">
+    <TargetFrameworks>net10.0-windows</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
@@ -18,8 +28,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- <Version>12.0.0-beta</Version> -->
-    <Version>11.0.0</Version>
+    <Version>12.0.0-beta</Version>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
