@@ -1,5 +1,6 @@
 #if Linux
 
+using CsTools.Extensions;
 using Gtk4DotNet;
 
 namespace WebWindowNetCore.Linux;
@@ -30,10 +31,10 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         //     : app.NewWindow();
 
         webWindow.Window.Title = title;
-        // if (saveBounds)
-        //     WithSaveBounds(window);
-        //else
-        webWindow.Window.DefaultSize(width, height);
+        if (saveBounds)
+            WithSaveBounds(webWindow.Window);
+        else
+            webWindow.Window.DefaultSize(width, height);
         // if (onStateChanged != null)
         //     window.OnNotify("maximized", onStateChanged);
         webWindow.WebView = Gtk4DotNet.WebView.New();
@@ -46,12 +47,11 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         //     webView.GetSettings().EnableDeveloperExtras = true;
         if (defaultContextMenuDisabled)
             webWindow.WebView.DisableContextMenu();
-        // if (backgroundColor.HasValue)
-        //     webView.BackgroundColor(backgroundColor.Value);
+        webWindow.WebView.BackgroundColor(backgroundColor);
         // if (fromResource)
         //     WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
-        // if (onAlert != null)
-        //     webView.OnAlert((w, s) => onAlert(s ?? ""));
+        if (onAlert != null)
+            webWindow.WebView.OnAlert((w, s) => onAlert(s ?? ""));
 
         webWindow.WebView.OnLoadChanged(OnLoad);
         webWindow.WebView.LoadUri(GetUrl());
@@ -59,7 +59,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         webWindow.Window.Show();
         webWindow.WebView.GrabFocus();
     }
-    
+
     void OnLoad(Gtk4DotNet.WebView webView, WebViewLoad load)
     {
         if (load == WebViewLoad.Committed)
@@ -73,6 +73,23 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
             }
         }
     }
+    
+    void WithSaveBounds(Window window)
+        => Bounds
+            .Retrieve(appId)
+            .SideEffect(b => window.DefaultSize(b.Width ?? width, b.Height ?? height))
+            .SideEffectIf(b => b.IsMaximized, _ => window.IsMaximized = true)
+            .SideEffect(_ => window.OnClose(SaveBounds));
+
+    bool SaveBounds(Window window)
+        => false.SideEffect(_ =>
+                Bounds
+                    .Save(appId, Bounds.Retrieve(appId) with
+                    {
+                        Width = window.Width,
+                        Height = window.Height,
+                        IsMaximized = window.IsMaximized
+                    }));
 }
 
 #endif
