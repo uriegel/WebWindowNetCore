@@ -19,31 +19,30 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
 
     void OnActivate(Application app, WebWindow webWindow)
     {
-        webWindow.Window = app.NewWindow();
-        // window = resourceTemplate != null && onActivate != null
-        //     ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
-        //     {
-        //         var window = onActivate(app, builder);
-        //         webView = builder.Builder.GetWidget<Gtk4DotNet.WebView>("webview");
-        //         return window;
-        //     })
-        //     : app.NewWindow();
+        webWindow.Window = resourceTemplate != null && onActivate != null
+            ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
+            {
+                var window = onActivate(app, builder);
+                webWindow.WebView = builder.Builder.GetWidget<Gtk4DotNet.WebView>("webview");
+                return window;
+            })
+            : app.NewWindow();
 
         webWindow.Window.Title = title;
         if (saveBounds)
             WebWindow.WithSaveBounds(webWindow.Window, appId, width, height);
         else
             webWindow.Window.DefaultSize(width, height);
-        // if (onStateChanged != null)
-        //     window.OnNotify("maximized", onStateChanged);
-        webWindow.WebView = Gtk4DotNet.WebView.New();
+        if (onStateChanged != null)
+            webWindow.Window.OnNotify("maximized", onStateChanged);
+        webWindow.WebView ??= Gtk4DotNet.WebView.New();
         webWindow.Window.Child(webWindow.WebView);
         if (canClose != null)
             webWindow.Window.OnClose(_ => canClose() == false);
 
         webWindow.WebView.Visible = false;
-        // if (devTools)
-        //     webView.GetSettings().EnableDeveloperExtras = true;
+        if (devTools)
+            webWindow.WebView.GetSettings().EnableDeveloperExtras = true;
         if (defaultContextMenuDisabled)
             webWindow.WebView.DisableContextMenu();
         webWindow.WebView.BackgroundColor(backgroundColor);

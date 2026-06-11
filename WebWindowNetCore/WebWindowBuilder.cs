@@ -1,6 +1,9 @@
 using System.Diagnostics;
 using System.Drawing;
 using CsTools.Extensions;
+#if Linux
+using Gtk4DotNet;
+#endif
 
 namespace WebWindowNetCore;
 
@@ -58,6 +61,14 @@ public abstract class WebWindowBuilder
         => this.SideEffect(w => w.withDiagnostics = true);
 
     /// <summary>
+    /// Used to enable (not to show) the developer tools. If not called, it is not possible to open these tools.
+    /// The developer tools can be shown by default context menu or by calling the javascript method WebView.showDevtools()
+    /// </summary>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder DevTools()
+        => this.SideEffect(w => devTools = true);
+
+    /// <summary>
     /// When called the web view's default context menu is not being displayed when you right click the mouse.
     /// </summary>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
@@ -99,6 +110,24 @@ public abstract class WebWindowBuilder
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
     public WebWindowBuilder FromResource()
         => this.SideEffect(w => w.fromResource = true);
+
+#if Linux
+    /// <summary>
+    /// Creates a window from a GtkBuilder template which is contained in .Net resource.
+    /// The ApplicationWindow in the template has to have the id "window". The template has to contain a webkit webView with the id "webview". 
+    /// </summary>
+    /// <param name="template">Name of the .NET resource containing the Gtk4 template</param>
+    /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the builder ui .</param>
+    /// <param name="useAdwaita">If true, an Adwaita Application is created instead of a GtkApplication</param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder FromResourceTemplate(string template, Func<Application, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
+    {
+        resourceTemplate = template;
+        this.useAdwaita = useAdwaita;
+        this.onActivate = onActivate;
+        return this;
+    }
+#endif
 
     /// <summary>
     /// Setting the background color of the web view. Normally the html page has its own background color, 
@@ -180,10 +209,15 @@ public abstract class WebWindowBuilder
     internal string? url;
     internal string? queryString;
     internal Func<bool>? canClose;
-    internal bool useAdwaita;
     internal Color backgroundColor = Color.Transparent;
     internal Action? onStateChanged;
     internal Action<string>? onAlert;
+    internal bool devTools;
+#if Linux
+    internal string? resourceTemplate;
+    internal bool useAdwaita;
+    internal Func<Application, WindowBuilder, ApplicationWindow>? onActivate;
+#endif
 #if Windows
     internal Action<Windows.WebWindow>? onCreate;
     internal string? resourceIcon;

@@ -3,46 +3,44 @@
 using CsTools.Extensions;
 #endif
 
-var webView = WebView
-    .Create();
-webView
+var webWindow = WebView
+    .Builder()
     .AppId("de.uriegel.test")
-    .WithDiagnostics()
-#if Linux    
-    .FromResourceTemplate("template", LinuxWindow.OnActivation, true)
-    .SideEffect(w => LinuxWindow.WebView = w)
-#elif Windows
-    .ResourceIcon("icon.ico")
-    .WithoutNativeTitlebar()
-    .QueryString("?platform=windows")
-#endif        
     .Title("Web Window with native extensions👍")
-    .ScriptDialog(OnMessage)
+    .WithDiagnostics()
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
-    .DefaultContextMenuDisabled()
     .FromResource()
+    .DefaultContextMenuDisabled()
     .OnStateChange(OnStateChange)
-    .CanClose(() => true);
+    .ScriptDialog(OnMessage) 
+    .CanClose(() => true)
+#if Linux    
+    .FromResourceTemplate("template", LinuxWindow.OnActivation, true)
+#endif
+#if Windows
+    .ResourceIcon("icon")
+#endif
+    .Build();
 
-webView.Run();
+webWindow.Run();
 
 void OnMessage(string msg)
 {
     switch (msg)
     {
         case "maximize":
-            webView.Maximize();
+            //webWindow.Maximize();
             break;
         case "minimize":
-            webView.Minimize();
+            //webWindow.Minimize();
             break;
         case "restore":
-            webView.Restore();
+            //webWindow.Restore();
             break;
         case "devtools":
-            webView.ShowDevTools();
+            //webWindow.ShowDevTools();
             break;
         case "ready": 
             OnStateChange();
@@ -52,5 +50,5 @@ void OnMessage(string msg)
 
 void OnStateChange()
 {
-    webView.RunJavascript($"onMaximized({(webView.IsMaximized ? "true" : "false")})");
+    // TODO webView.RunJavascript($"onMaximized({(webView.IsMaximized ? "true" : "false")})");
 }
