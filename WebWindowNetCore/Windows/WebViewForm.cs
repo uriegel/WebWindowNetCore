@@ -15,6 +15,96 @@ public class WebViewForm : Form
 {
     public WebView2 WebView { get; } = new();
 
+    public WebViewForm(string appDataPath, WebWindowBuilder builder)
+    {
+        saveBounds = builder.saveBounds;
+        appId = builder.appId;
+        canClose = builder.canClose;
+        width = builder.width;
+        height = builder.height;
+        withoutNativeTitlebar = builder.withoutNativeTitlebar;
+        SuspendLayout();
+        WebView.AllowExternalDrop = true;
+        WebView.CreationProperties = null;
+        WebView.DefaultBackgroundColor = builder.backgroundColor;
+        WebView.Dock = DockStyle.Fill;
+        WebView.TabIndex = 0;
+        WebView.ZoomFactor = 1;
+
+        if (builder.resourceIcon != null)
+            Icon = new Icon(Resources.Get(builder.resourceIcon)!);
+        AutoScaleMode = AutoScaleMode.Font;
+
+        if (builder.saveBounds)
+        {
+            var bounds = builder.saveBounds
+                ? WebWindowNetCore.Bounds.Retrieve(builder.appId)
+                : null;
+            Size = new Size(bounds?.Width ?? builder.width, bounds?.Height ?? builder.height);
+            WindowState = bounds?.IsMaximized == true ? FormWindowState.Maximized : FormWindowState.Normal;
+        }
+
+        isMaximized = WindowState == FormWindowState.Maximized;
+
+        if (builder.saveBounds)
+            FormClosing += OnClose;
+        if (builder.canClose != null)
+            FormClosing += OnCanClose;
+        HandleCreated += OnHandle;
+        Load += OnLoad;
+        QueryContinueDrag += OnQueryContinueDrag;
+
+        if (builder.onStateChanged != null)
+            SizeChanged += (_, e) =>
+            {
+                if (isMaximized != (WindowState == FormWindowState.Maximized))
+                {
+                    builder.onStateChanged();
+                    isMaximized = WindowState == FormWindowState.Maximized;
+                }
+            };
+
+        Text = builder.title;
+
+        panel.Dock = DockStyle.Fill;
+        panel.Controls.Add(WebView);
+        Controls.Add(panel);
+
+        ResumeLayout(false);
+
+        Init();
+        async void Init()
+        {
+            var env = await CoreWebView2Environment.CreateAsync(null, appDataPath, new CoreWebView2EnvironmentOptions(
+                            customSchemeRegistrations: [
+                                new CoreWebView2CustomSchemeRegistration("res")
+                                {
+                                    //TreatAsSecure = true,
+                                    HasAuthorityComponent = true
+                                }
+                            ], additionalBrowserArguments: builder.withoutNativeTitlebar ? "--enable-features=msWebView2EnableDraggableRegions" : ""));
+            await WebView.EnsureCoreWebView2Async(env);
+            WebView.CoreWebView2.AddWebResourceRequestedFilter("res:*", CoreWebView2WebResourceContext.All);
+            WebView.CoreWebView2.WebResourceRequested += ServeRes;
+            WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+            WebView.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
+            WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = builder.defaultContextMenuDisabled == false;
+            WebView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+            if (builder.onAlert != null)
+            {
+                WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
+                WebView.CoreWebView2.ScriptDialogOpening += (_, e) => builder.onAlert(e.Message);
+            }
+            WebView.CoreWebView2.AddHostObjectToScript("Callback", new Callback(this));
+            WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
+            
+            WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
+            WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
+
+            WebView.Source = new Uri(builder.GetUrl());
+        }
+    }
+
     public WebViewForm(string appDataPath, WebView settings)
     {
         saveBounds = settings.saveBounds;
@@ -100,7 +190,7 @@ public class WebViewForm : Form
             }
             WebView.CoreWebView2.AddHostObjectToScript("Callback", new Callback(this));
             WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;
-            
+
             WebView.CoreWebView2.ContainsFullScreenElementChanged += OnFullscreen;
             WebView.CoreWebView2.WindowCloseRequested += (s, e) => Close();
 

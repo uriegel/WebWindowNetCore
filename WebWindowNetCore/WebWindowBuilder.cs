@@ -92,6 +92,16 @@ public abstract class WebWindowBuilder
         => this.SideEffect(w => w.queryString = queryString);
 
     /// <summary>
+    /// Setting the background color of the web view. Normally the html page has its own background color, 
+    /// but when starting and before the html page is loaded, this property is active and this color is shown. 
+    /// To prevent flickering when starting the app, adapt the BackgroundColor to the http page's value.
+    /// </summary>
+    /// <param name="color">Background color</param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder BackgroundColor(Color color)
+        => this.SideEffect(w => w.backgroundColor = color);
+
+    /// <summary>
     /// Here you can set a callback function which is called when the window is about to close. 
     /// In the callback you can prevent the close request by returning false.
     /// </summary>
@@ -99,6 +109,49 @@ public abstract class WebWindowBuilder
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
     public WebWindowBuilder CanClose(Func<bool> canClose)
         => this.SideEffect(w => w.canClose = canClose);
+
+    /// <summary>
+    /// If the Window State changed, if it is maximized or restored, this callback is to be called
+    /// </summary>
+    /// <param name="onStateChanged"></param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder OnStateChange(Action onStateChanged)
+        => this.SideEffect(w => w.onStateChanged = onStateChanged);
+
+    /// <summary>
+    /// If you want your own implementation of the alert messagebox, or if you want to communicate from javascript to the WebWindow
+    /// </summary>
+    /// <param name="onAlert"></param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder ScriptDialog(Action<string> onAlert)
+        => this.SideEffect(w => w.onAlert = onAlert);
+
+#if Windows
+
+    /// <summary>
+    /// When the WebWindow is being created, this callback will be invoked
+    /// </summary>
+    /// <param name="onCreate"></param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder OnCreating(Action<Windows.WebWindow> onCreate)
+        => this.SideEffect(w => w.onCreate = onCreate);
+
+    /// <summary>
+    /// Used to display a windows icon from C# resource. It is only working on Windows.
+    /// </summary>
+    /// <param name="iconName">Logical name of the resource icon</param>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder ResourceIcon(string icon)
+        => this.SideEffect(w => w.resourceIcon = icon);
+
+    /// <summary>
+    /// Hides the Windows Titlebar
+    /// </summary>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder WithoutNativeTitlebar()
+        => this.SideEffect(w => w.withoutNativeTitlebar = true);
+
+#endif
 
     public abstract WebWindow Build();
 
@@ -119,4 +172,12 @@ public abstract class WebWindowBuilder
     internal string? queryString;
     internal Func<bool>? canClose;
     internal bool useAdwaita;
+    internal Color backgroundColor = Color.Transparent;
+    internal Action? onStateChanged;
+    internal Action<string>? onAlert;
+#if Windows
+    internal Action<Windows.WebWindow>? onCreate;
+    internal string? resourceIcon;
+    internal bool withoutNativeTitlebar;
+#endif
 }
