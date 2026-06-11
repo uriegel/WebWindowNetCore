@@ -1,9 +1,6 @@
 ﻿using WebWindowNetCore;
-#if Linux
-using CsTools.Extensions;
-#endif
 
-var webWindow = WebView
+WebView
     .Builder()
     .AppId("de.uriegel.test")
     .Title("Web Window with native extensions👍")
@@ -18,37 +15,36 @@ var webWindow = WebView
     .CanClose(() => true)
 #if Linux    
     .FromResourceTemplate("template", LinuxWindow.OnActivation, true)
-#endif
-#if Windows
-    .ResourceIcon("icon")
-#endif
-    .Build();
+#elif Windows
+    .ResourceIcon("icon.ico")
+    .WithoutNativeTitlebar()
+    .QueryString("?platform=windows")
+#endif        
+    .Build()
+    .Run();
 
-webWindow.Run();
-
-void OnMessage(string msg)
+void OnMessage(WebWindow window, string msg)
 {
     switch (msg)
     {
         case "maximize":
-            //webWindow.Maximize();
+            window.Maximize();
             break;
         case "minimize":
-            //webWindow.Minimize();
+            window.Minimize();
             break;
         case "restore":
-            //webWindow.Restore();
+            window.Restore();
             break;
         case "devtools":
-            //webWindow.ShowDevTools();
+            window.ShowDevTools();
             break;
         case "ready": 
-            OnStateChange();
+            OnStateChange(window);
             break;
     }
 }
 
-void OnStateChange()
-{
-    // TODO webView.RunJavascript($"onMaximized({(webView.IsMaximized ? "true" : "false")})");
-}
+void OnStateChange(WebWindow window)
+    => window.RunJavascript($"onMaximized({(window.IsMaximized ? "true" : "false")})");
+

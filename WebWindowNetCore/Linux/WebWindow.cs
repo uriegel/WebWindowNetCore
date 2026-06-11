@@ -11,8 +11,43 @@ public class WebWindow : WebWindowNetCore.WebWindow
     public Application Application { get; }
     public ApplicationWindow Window { get; internal set; } = null!;
     public Gtk4DotNet.WebView WebView { get; internal set; } = null!;
+    public override bool IsMaximized { get => Window.IsMaximized == true; }
 
     public override int Run() => Application.Run(0, 0);
+
+    public override async void ShowDevTools()
+    {
+        try
+        {
+            await Gtk.InvokeAsync(() =>
+            {
+                var inspector = WebView.GetInspector();
+                inspector.Show();
+                WebView.GrabFocus();
+                DetachInspector();
+
+                async void DetachInspector()
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(600));
+                    inspector.Detach();
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Could not show devtools: {e}");
+        }
+    }
+    public override async Task StartDragFiles(string[] dragFiles) {}
+    public override void RunJavascript(string script) => WebView.RunJavascript(script);
+    public override void Close() => Window.CloseWindow();
+    public override void Minimize() { }
+    public override void Maximize() => Window.IsMaximized = true;
+    public override void Restore() => Window.IsMaximized = false;
+    public override void BeginInvoke(Action action) => Gtk.InvokeAsync(action);
+    public override Task<T> InvokeAsync<T>(Func<T> func) => Gtk.InvokeAsync(func);
+    public override void SetFocus() => WebView.GrabFocus();
+
 
     internal static void WithSaveBounds(Window window, string appId, int width, int height)
         => Bounds

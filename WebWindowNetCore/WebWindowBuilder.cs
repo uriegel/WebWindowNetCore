@@ -120,7 +120,7 @@ public abstract class WebWindowBuilder
     /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the builder ui .</param>
     /// <param name="useAdwaita">If true, an Adwaita Application is created instead of a GtkApplication</param>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder FromResourceTemplate(string template, Func<Application, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
+    public WebWindowBuilder FromResourceTemplate(string template, Func<Linux.WebWindow, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
     {
         resourceTemplate = template;
         this.useAdwaita = useAdwaita;
@@ -153,7 +153,7 @@ public abstract class WebWindowBuilder
     /// </summary>
     /// <param name="onStateChanged"></param>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder OnStateChange(Action onStateChanged)
+    public WebWindowBuilder OnStateChange(Action<WebWindow> onStateChanged)
         => this.SideEffect(w => w.onStateChanged = onStateChanged);
 
     /// <summary>
@@ -161,7 +161,7 @@ public abstract class WebWindowBuilder
     /// </summary>
     /// <param name="onAlert"></param>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder ScriptDialog(Action<string> onAlert)
+    public WebWindowBuilder ScriptDialog(Action<WebWindow, string> onAlert)
         => this.SideEffect(w => w.onAlert = onAlert);
 
 #if Windows
@@ -210,13 +210,13 @@ public abstract class WebWindowBuilder
     internal string? queryString;
     internal Func<bool>? canClose;
     internal Color backgroundColor = Color.Transparent;
-    internal Action? onStateChanged;
-    internal Action<string>? onAlert;
+    internal Action<WebWindow>? onStateChanged;
+    internal Action<WebWindow, string>? onAlert;
     internal bool devTools;
 #if Linux
     internal string? resourceTemplate;
     internal bool useAdwaita;
-    internal Func<Application, WindowBuilder, ApplicationWindow>? onActivate;
+    internal Func<Linux.WebWindow, WindowBuilder, ApplicationWindow>? onActivate;
 #endif
 #if Windows
     internal Action<Windows.WebWindow>? onCreate;

@@ -22,7 +22,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         webWindow.Window = resourceTemplate != null && onActivate != null
             ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
             {
-                var window = onActivate(app, builder);
+                var window = onActivate(webWindow, builder);
                 webWindow.WebView = builder.Builder.GetWidget<Gtk4DotNet.WebView>("webview");
                 return window;
             })
@@ -34,9 +34,12 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         else
             webWindow.Window.DefaultSize(width, height);
         if (onStateChanged != null)
-            webWindow.Window.OnNotify("maximized", onStateChanged);
-        webWindow.WebView ??= Gtk4DotNet.WebView.New();
-        webWindow.Window.Child(webWindow.WebView);
+            webWindow.Window.OnNotify("maximized", () => onStateChanged(webWindow));
+        if (webWindow.WebView == null)
+        {
+            webWindow.WebView = Gtk4DotNet.WebView.New();  
+            webWindow.Window.Child(webWindow.WebView);
+        } 
         if (canClose != null)
             webWindow.Window.OnClose(_ => canClose() == false);
 
@@ -49,7 +52,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         if (fromResource)
             WebKitWebContext.GetDefault().RegisterUriScheme("res", WebWindow.OnResRequest);
         if (onAlert != null)
-            webWindow.WebView.OnAlert((w, s) => onAlert(s ?? ""));
+            webWindow.WebView.OnAlert((w, s) => onAlert(webWindow, s ?? ""));
 
         webWindow.WebView.OnLoadChanged(OnLoad);
         webWindow.WebView.LoadUri(GetUrl());
