@@ -15,6 +15,8 @@ public class WebViewForm : Form
 {
     public WebView2 WebView { get; } = new();
 
+    internal WebWindow? WebWindow;
+
     public WebViewForm(string appDataPath, WebWindowBuilder builder)
     {
         saveBounds = builder.saveBounds;
@@ -59,7 +61,8 @@ public class WebViewForm : Form
             {
                 if (isMaximized != (WindowState == FormWindowState.Maximized))
                 {
-                    builder.onStateChanged();
+                    if (WebWindow != null)
+                    builder.onStateChanged(WebWindow);
                     isMaximized = WindowState == FormWindowState.Maximized;
                 }
             };
@@ -93,7 +96,11 @@ public class WebViewForm : Form
             if (builder.onAlert != null)
             {
                 WebView.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
-                WebView.CoreWebView2.ScriptDialogOpening += (_, e) => builder.onAlert(e.Message);
+                WebView.CoreWebView2.ScriptDialogOpening += (_, e) =>
+                {
+                    if (WebWindow != null)
+                        builder.onAlert(WebWindow, e.Message);
+                };
             }
             WebView.CoreWebView2.AddHostObjectToScript("Callback", new Callback(this));
             WebView.CoreWebView2.WebMessageReceived += WebMessageReceived;

@@ -24,10 +24,10 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         Api.LoadLibrary(loader);
 
         var webForm = new WebViewForm(appDataPath!, this);
-        var webWindow = new WebWindow(webForm, webForm.WebView);
-        onCreate?.Invoke(webWindow);
+        webForm.WebWindow = new WebWindow(webForm, webForm.WebView, this);
+        onCreate?.Invoke(webForm.WebWindow);
 
-        return webWindow;
+        return webForm.WebWindow;
     }
 
     string GetWebViewLoader(string appId)
