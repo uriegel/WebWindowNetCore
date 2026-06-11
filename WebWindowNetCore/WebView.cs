@@ -12,6 +12,12 @@ namespace WebWindowNetCore;
 public abstract class WebView
 {
 #if Windows
+    public static WebWindowBuilder Builder() => new Windows.WebWindowBuilder();
+#elif Linux
+    public static WebWindowBuilder Builder() => new Linux.WebWindowBuilder();
+#endif
+    
+#if Windows
     public static WebView Create() => new Windows.WebView();
 #elif Linux
     public static WebView Create() => new Linux.WebView();
@@ -111,7 +117,7 @@ public abstract class WebView
         => this.SideEffect(w => w.saveBounds = true);
 
     /// <summary>
-    ///Enumerable diagnostics logging in Console. Works only for Linux
+    ///Enable diagnostics logging in Console. Works only for Linux
     /// </summary>
     /// <returns>WebView for chaining (Fluent Builder Syntax)</returns>
     public WebView WithDiagnostics()
