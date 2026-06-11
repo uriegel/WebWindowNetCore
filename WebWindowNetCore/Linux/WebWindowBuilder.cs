@@ -4,6 +4,10 @@ using Gtk4DotNet;
 
 namespace WebWindowNetCore.Linux;
 
+// TODO Titlebar: Linux: buttons in content for controlling
+// TODO CheckDiagnostics: FromResource 1 delegate remaining
+// TODO UnregisterUriScheme
+
 public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
 {
     public override WebWindowNetCore.WebWindow Build()
@@ -37,9 +41,9 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
             webWindow.Window.OnNotify("maximized", () => onStateChanged(webWindow));
         if (webWindow.WebView == null)
         {
-            webWindow.WebView = Gtk4DotNet.WebView.New();  
+            webWindow.WebView = Gtk4DotNet.WebView.New();
             webWindow.Window.Child(webWindow.WebView);
-        } 
+        }
         if (canClose != null)
             webWindow.Window.OnClose(_ => canClose() == false);
 

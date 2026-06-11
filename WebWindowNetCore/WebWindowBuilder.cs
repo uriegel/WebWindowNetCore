@@ -7,6 +7,11 @@ using Gtk4DotNet;
 
 namespace WebWindowNetCore;
 
+// TODO WebView requests Linux
+// TODO startDragFiles await till dropped or finished
+// TODO dropFiles 
+// TODO Linux: Enable Resource Scheme (disposing error)
+
 public abstract class WebWindowBuilder
 {
     /// <summary>
@@ -188,6 +193,10 @@ public abstract class WebWindowBuilder
 
 #endif
 
+    /// <summary>
+    /// Builds a WebWindow with previously set properties
+    /// </summary>
+    /// <returns></returns>
     public abstract WebWindow Build();
 
     internal string GetUrl() => $"{(Debugger.IsAttached ? debugUrl ?? GetUrlOrResUrl() : GetUrlOrResUrl()) ?? "about:blank"}{queryString}";

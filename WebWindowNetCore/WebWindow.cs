@@ -2,6 +2,12 @@ namespace WebWindowNetCore;
 
 public abstract class WebWindow
 {
+#if Windows
+    public static WebWindowBuilder Builder() => new Windows.WebWindowBuilder();
+#elif Linux
+    public static WebWindowBuilder Builder() => new Linux.WebWindowBuilder();
+#endif
+
     public abstract bool IsMaximized { get; }
     public abstract int Run();
     public abstract void ShowDevTools();

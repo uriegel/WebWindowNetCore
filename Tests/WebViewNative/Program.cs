@@ -1,6 +1,6 @@
 ﻿using WebWindowNetCore;
 
-WebView
+WebWindow
     .Builder()
     .AppId("de.uriegel.test")
     .Title("Web Window with native extensions👍")

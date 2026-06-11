@@ -1,6 +1,6 @@
 ﻿using WebWindowNetCore;
 
-var webWindow = WebView
+var webWindow = WebWindow
     .Builder()
     .AppId("de.uriegel.test")
     .Title("Hello Web Window👍")
