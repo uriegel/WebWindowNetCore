@@ -7,9 +7,6 @@ using Gtk4DotNet;
 
 namespace WebWindowNetCore;
 
-// TODO rename WebView -> WebWindow
-// TODO Windows version Hello World
-
 public abstract class WebWindowBuilder
 {
     /// <summary>
