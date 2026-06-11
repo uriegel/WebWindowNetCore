@@ -1,6 +1,5 @@
 #if Linux
 
-using CsTools.Extensions;
 using Gtk4DotNet;
 
 namespace WebWindowNetCore.Linux;
@@ -32,7 +31,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
 
         webWindow.Window.Title = title;
         if (saveBounds)
-            WithSaveBounds(webWindow.Window);
+            WebWindow.WithSaveBounds(webWindow.Window, appId, width, height);
         else
             webWindow.Window.DefaultSize(width, height);
         // if (onStateChanged != null)
@@ -48,8 +47,8 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         if (defaultContextMenuDisabled)
             webWindow.WebView.DisableContextMenu();
         webWindow.WebView.BackgroundColor(backgroundColor);
-        // if (fromResource)
-        //     WebKitWebContext.GetDefault().RegisterUriScheme("res", OnResRequest);
+        if (fromResource)
+            WebKitWebContext.GetDefault().RegisterUriScheme("res", WebWindow.OnResRequest);
         if (onAlert != null)
             webWindow.WebView.OnAlert((w, s) => onAlert(s ?? ""));
 
@@ -73,23 +72,6 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
             }
         }
     }
-    
-    void WithSaveBounds(Window window)
-        => Bounds
-            .Retrieve(appId)
-            .SideEffect(b => window.DefaultSize(b.Width ?? width, b.Height ?? height))
-            .SideEffectIf(b => b.IsMaximized, _ => window.IsMaximized = true)
-            .SideEffect(_ => window.OnClose(SaveBounds));
-
-    bool SaveBounds(Window window)
-        => false.SideEffect(_ =>
-                Bounds
-                    .Save(appId, Bounds.Retrieve(appId) with
-                    {
-                        Width = window.Width,
-                        Height = window.Height,
-                        IsMaximized = window.IsMaximized
-                    }));
 }
 
 #endif

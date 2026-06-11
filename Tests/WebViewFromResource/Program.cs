@@ -1,10 +1,10 @@
 ﻿using WebWindowNetCore;
 
-WebView
-    .Create()
+var webWindow = WebView
+    .Builder()
     .AppId("de.uriegel.test")
+    .Title("Hello Web Window👍")
     .WithDiagnostics()
-    .Title("Web Window from Resource 👍")
     .InitialBounds(600, 800)
     .SaveBounds()
     .DefaultContextMenuDisabled()
@@ -12,7 +12,7 @@ WebView
     .ResourceIcon("icon")
 #endif
     .FromResource()
-    .QueryString("?param1=123&param2=456")
-    .CanClose(() => true)
-    .Run();
+    .Build();
+
+webWindow.Run();
 

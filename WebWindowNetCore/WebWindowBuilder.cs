@@ -92,6 +92,14 @@ public abstract class WebWindowBuilder
     public WebWindowBuilder QueryString(string queryString)
         => this.SideEffect(w => w.queryString = queryString);
 
+    // TODO Description
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
+    public WebWindowBuilder FromResource()
+        => this.SideEffect(w => w.fromResource = true);
+
     /// <summary>
     /// Setting the background color of the web view. Normally the html page has its own background color, 
     /// but when starting and before the html page is loaded, this property is active and this color is shown. 
