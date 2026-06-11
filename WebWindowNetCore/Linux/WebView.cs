@@ -172,13 +172,5 @@ public class WebView() : WebWindowNetCore.WebView
 #endif
 
 // TODO Titlebar: Linux: buttons in content for controlling
-
-// TODO Check Commander:
-
-// TODO var settings = Settings.New("org.gnome.desktop.interface");
-// TODO var theme = settings.GetString("gtk-theme");
-// TODO BannerHandle OnButtonClicked
-// TODO DropDownHandle GetSelected
-
 // TODO CheckDiagnostics: FromResource 1 delegate remaining
 // TODO UnregisterUriScheme
