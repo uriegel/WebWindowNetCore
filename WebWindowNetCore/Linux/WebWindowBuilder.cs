@@ -10,12 +10,12 @@ namespace WebWindowNetCore.Linux;
 
 public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
 {
-    public override WebWindowNetCore.WebWindow Build()
+    public override WebWindow Build()
     {
         var app = useAdwaita ? Application.NewAdwaita(appId) : Application.New(appId);
         if (withDiagnostics)
             app.WithDiagnostics();
-        var tcs = new TaskCompletionSource<WebWindowNetCore.WebWindow>();
+        var tcs = new TaskCompletionSource<WebWindow>();
         var webWindow = new WebWindow(app);
         app.OnActivate(app => OnActivate(app, webWindow));
         return webWindow;
@@ -27,7 +27,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
             ? app.WithWebKit().WindowFromBuilder(resourceTemplate, "window", builder =>
             {
                 var window = onActivate(webWindow, builder);
-                webWindow.WebView = builder.Builder.GetWidget<Gtk4DotNet.WebView>("webview");
+                webWindow.WebView = builder.Builder.GetWidget<WebView>("webview");
                 return window;
             })
             : app.NewWindow();

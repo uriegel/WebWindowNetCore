@@ -4,13 +4,25 @@ using System.Text;
 using CsTools.Extensions;
 using Gtk4DotNet;
 
-namespace WebWindowNetCore.Linux;
+namespace WebWindowNetCore;
 
-public class WebWindow : WebWindowNetCore.WebWindow
+public class WebWindow : WebWindowBase
 {
+    /// <summary>
+    /// The Gtk Application. Only available in Linux!
+    /// </summary>
     public Application Application { get; }
+
+    /// <summary>
+    /// The ApplicationWindow. Only available in Linux!
+    /// </summary>
     public ApplicationWindow Window { get; internal set; } = null!;
-    public Gtk4DotNet.WebView WebView { get; internal set; } = null!;
+
+    /// <summary>
+    /// The native WebKit WebView. Only available in Linux!
+    /// </summary>
+    public WebView WebView { get; internal set; } = null!;
+    
     public override bool IsMaximized { get => Window.IsMaximized == true; }
 
     public override int Run() => Application.Run(0, 0);

@@ -1,6 +1,6 @@
 namespace WebWindowNetCore;
 
-public abstract class WebWindow
+public abstract class WebWindowBase
 {
 #if Windows
     public static WebWindowBuilder Builder() => new Windows.WebWindowBuilder();

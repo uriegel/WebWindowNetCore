@@ -122,7 +122,7 @@ public abstract class WebWindowBuilder
     /// <param name="onActivate">Is called on activation of the Gtk4 app. In this callback the builder ui .</param>
     /// <param name="useAdwaita">If true, an Adwaita Application is created instead of a GtkApplication</param>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder FromResourceTemplate(string template, Func<Linux.WebWindow, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
+    public WebWindowBuilder FromResourceTemplate(string template, Func<WebWindow, WindowBuilder, ApplicationWindow> onActivate, bool useAdwaita = false)
     {
         resourceTemplate = template;
         this.useAdwaita = useAdwaita;
@@ -222,7 +222,7 @@ public abstract class WebWindowBuilder
 #if Linux
     internal string? resourceTemplate;
     internal bool useAdwaita;
-    internal Func<Linux.WebWindow, WindowBuilder, ApplicationWindow>? onActivate;
+    internal Func<WebWindow, WindowBuilder, ApplicationWindow>? onActivate;
 #endif
 #if Windows
     internal Action<Windows.WebWindow>? onCreate;
