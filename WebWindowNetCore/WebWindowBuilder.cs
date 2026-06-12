@@ -173,7 +173,7 @@ public abstract class WebWindowBuilder
     /// </summary>
     /// <param name="onCreate"></param>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder OnCreating(Action<Windows.WebWindow> onCreate)
+    public WebWindowBuilder OnCreating(Action<WebWindow> onCreate)
         => this.SideEffect(w => w.onCreate = onCreate);
 
     /// <summary>
@@ -225,7 +225,7 @@ public abstract class WebWindowBuilder
     internal Func<WebWindow, WindowBuilder, ApplicationWindow>? onActivate;
 #endif
 #if Windows
-    internal Action<Windows.WebWindow>? onCreate;
+    internal Action<WebWindow>? onCreate;
     internal string? resourceIcon;
     internal bool withoutNativeTitlebar;
 #endif

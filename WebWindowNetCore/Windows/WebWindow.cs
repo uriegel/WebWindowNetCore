@@ -3,9 +3,9 @@
 using CsTools.Extensions;
 using Microsoft.Web.WebView2.WinForms;
 
-namespace WebWindowNetCore.Windows;
+namespace WebWindowNetCore;
 
-public class WebWindow : WebWindowNetCore.WebWindow
+public class WebWindow : WebWindowBase
 {
     public override bool IsMaximized { get => Window.WindowState == FormWindowState.Maximized; }
     
@@ -54,7 +54,14 @@ public class WebWindow : WebWindowNetCore.WebWindow
         }
     }
     
+    /// <summary>
+    /// The Windows Form object that contains the WebView. Only available in Windows!
+    /// </summary>
     public WebViewForm Window { get; }
+    
+    /// <summary>
+    /// The Microsoft WebView2 Control that displays the web content. Only available in Windows!
+    /// </summary>
     public WebView2 WebView { get; }
 
     internal WebWindow(WebViewForm window, WebView2 webView, WebWindowBuilder builder)

@@ -9,7 +9,7 @@ using CsTools.Extensions;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
 
-namespace WebWindowNetCore.Windows;
+namespace WebWindowNetCore;
 
 public class WebViewForm : Form
 {
