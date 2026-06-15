@@ -40,8 +40,7 @@ public class WebWindow : WebWindowBase
 
     public override void RunJavascript(string script)
     {
-        Run();
-        async void Run()
+        BeginInvoke(async () =>
         {
             try
             {
@@ -51,7 +50,7 @@ public class WebWindow : WebWindowBase
             {
                 Console.WriteLine(ex.Message);
             }
-        }
+        });
     }
     
     /// <summary>
