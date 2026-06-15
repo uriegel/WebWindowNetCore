@@ -10,10 +10,10 @@ class LinuxWindow : AdwApplicationWindow
 
     public LinuxWindow(WebWindow webWindow, WindowBuilder builder) : base(builder)
     {
-        this.AddActions([
-            new("quit", CloseWindow, "<Ctrl>Q"),
-            new("devtools", webWindow.ShowDevTools, "F12")
-        ]);
+        AddActions(
+            new SimpleAction("quit", CloseWindow, "<Ctrl>Q"),
+            new SimpleAction("devtools", webWindow.ShowDevTools, "F12")
+        );
     }
 }
 
