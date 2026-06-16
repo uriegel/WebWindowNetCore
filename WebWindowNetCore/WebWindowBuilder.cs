@@ -59,9 +59,13 @@ public abstract class WebWindowBuilder
     ///Enable diagnostics logging in Console. Works only for Linux
     /// </summary>
     /// <returns>WebWindowBuilder for chaining (Fluent Builder Syntax)</returns>
-    public WebWindowBuilder WithDiagnostics()
-        => this.SideEffect(w => w.withDiagnostics = true);
-
+    public WebWindowBuilder WithDiagnostics(bool logging = false)
+    {
+        withDiagnostics = true;
+        withDiagnosticsLogging = logging;
+        return this;
+    }
+        
     /// <summary>
     /// Used to enable (not to show) the developer tools. If not called, it is not possible to open these tools.
     /// The developer tools can be shown by default context menu or by calling the javascript method WebView.showDevtools()
@@ -206,6 +210,7 @@ public abstract class WebWindowBuilder
     internal string appId = "de.uriegel.webwindownetcore";
     internal string title = "";
     internal bool withDiagnostics;
+    internal bool withDiagnosticsLogging;
     internal int width;
     internal int height;
     internal bool saveBounds;

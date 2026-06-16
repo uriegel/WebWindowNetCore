@@ -14,7 +14,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
     {
         var app = useAdwaita ? Application.NewAdwaita(appId) : Application.New(appId);
         if (withDiagnostics)
-            app.WithDiagnostics();
+            app.WithDiagnostics(withDiagnosticsLogging);
         var tcs = new TaskCompletionSource<WebWindow>();
         var webWindow = new WebWindow(app);
         app.OnActivate(app => OnActivate(app, webWindow));

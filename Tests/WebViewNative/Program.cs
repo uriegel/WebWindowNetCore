@@ -4,7 +4,7 @@ WebWindow
     .Builder()
     .AppId("de.uriegel.test")
     .Title("Web Window with native extensions👍")
-    .WithDiagnostics()
+    .WithDiagnostics(true)
     .InitialBounds(600, 800)
     .SaveBounds()
     .DevTools()
