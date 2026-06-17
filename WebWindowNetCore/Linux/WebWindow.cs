@@ -27,29 +27,7 @@ public class WebWindow : WebWindowBase
 
     public override int Run() => Application.Run(0, 0);
 
-    public override async void ShowDevTools()
-    {
-        try
-        {
-            await Gtk.InvokeAsync(() =>
-            {
-                var inspector = WebView.GetInspector();
-                inspector.Show();
-                WebView.GrabFocus();
-                DetachInspector();
-
-                async void DetachInspector()
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(600));
-                    inspector.Detach();
-                }
-            });
-        }
-        catch (Exception e)
-        {
-            Console.Error.WriteLine($"Could not show devtools: {e}");
-        }
-    }
+    public override void ShowDevTools() => WebView.ShowInspector();
     public override async Task StartDragFiles(string[] dragFiles) {}
     public override void RunJavascript(string script) => WebView.RunJavascript(script);
     public override void Close() => Window.CloseWindow();
