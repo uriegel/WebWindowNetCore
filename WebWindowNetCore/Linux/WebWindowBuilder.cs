@@ -5,8 +5,6 @@ using Gtk4DotNet;
 namespace WebWindowNetCore.Linux;
 
 // TODO Titlebar: Linux: buttons in content for controlling
-// TODO CheckDiagnostics: FromResource 1 delegate remaining
-// TODO UnregisterUriScheme
 
 public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
 {
@@ -47,6 +45,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         if (canClose != null)
             webWindow.Window.OnClose(_ => canClose() == false);
 
+        webWindow.WebView.AddWeakRef(() => WebKitWebContext.DisposeUriSchemes());
         webWindow.WebView.Visible = false;
         if (devTools)
             webWindow.WebView.GetSettings().EnableDeveloperExtras = true;

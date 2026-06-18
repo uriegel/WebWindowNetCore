@@ -4,7 +4,7 @@ var webWindow = WebWindow
     .Builder()
     .AppId("de.uriegel.test")
     .Title("Hello Web Window👍")
-    .WithDiagnostics()
+    .WithDiagnostics(true)
     .InitialBounds(600, 800)
     .SaveBounds()
     .DefaultContextMenuDisabled()
