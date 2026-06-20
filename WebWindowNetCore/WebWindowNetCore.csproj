@@ -28,7 +28,7 @@
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>12.0.5-beta</Version>
+    <Version>12.0.6-beta</Version>
     <Authors>Uwe Riegel</Authors>
     <Company>Uwe Riegel</Company>
     <Description>A C# Webview Application for Windows and Linux similar to Electron based on WebView2 (Windows) and GTK WebKit (Linux)</Description>
@@ -60,7 +60,7 @@
     </None>
   </ItemGroup>	      
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Gtk4DotNet" Version="9.0.14-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.20-beta" />
   </ItemGroup>
 
 </Project>

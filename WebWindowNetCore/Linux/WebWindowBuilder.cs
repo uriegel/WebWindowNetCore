@@ -45,7 +45,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         if (canClose != null)
             webWindow.Window.OnClose(_ => canClose() == false);
 
-        webWindow.WebView.AddWeakRef(() => WebKitWebContext.DisposeUriSchemes());
+        webWindow.WebView.OnFinalize(WebKitWebContext.DisposeUriSchemes);
         webWindow.WebView.Visible = false;
         if (devTools)
             webWindow.WebView.GetSettings().EnableDeveloperExtras = true;
