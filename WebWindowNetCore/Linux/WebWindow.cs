@@ -25,7 +25,7 @@ public class WebWindow : WebWindowBase
     
     public override bool IsMaximized { get => Window.IsMaximized == true; }
 
-    public override int Run() => Application.Run(0, 0);
+    public override int Run() => Application.Run();
 
     public override void ShowDevTools() => WebView.ShowInspector();
     public override async Task StartDragFiles(string[] dragFiles) {}
