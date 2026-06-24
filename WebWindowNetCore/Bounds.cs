@@ -8,7 +8,6 @@ record Bounds(int? X, int? Y, int? Width, int? Height, bool IsMaximized)
     public static Bounds Retrieve(string id)
         => GetPath(id)
             .ReadAllTextFromFilePath()
-            .SideEffect(Console.WriteLine)
             ?.Deserialize<Bounds>(Json.Defaults) 
             ?? new(null, null, null, null, false);
 
