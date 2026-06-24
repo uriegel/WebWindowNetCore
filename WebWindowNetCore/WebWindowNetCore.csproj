@@ -60,7 +60,7 @@
     </None>
   </ItemGroup>	      
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Gtk4DotNet" Version="9.0.21-beta" />
+    <PackageReference Include="Gtk4DotNet" Version="9.0.22-beta" />
   </ItemGroup>
 
 </Project>

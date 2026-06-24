@@ -3,6 +3,7 @@ using WebWindowNetCore;
 
 var webView = WebView
     .Create()
+    .WithDiagnostics(true)
     .AppId("de.uriegel.test")
     .Title("Web Window Net Core from Web Server 👍")
     .InitialBounds(600, 800)

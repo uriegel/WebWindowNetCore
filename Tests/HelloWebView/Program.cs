@@ -2,6 +2,7 @@
 
 var webWindow = WebWindow
     .Builder()
+    .WithDiagnostics(true)
     .AppId("de.uriegel.test")
     .Title("Hello Web Window👍")
     .WithDiagnostics()
