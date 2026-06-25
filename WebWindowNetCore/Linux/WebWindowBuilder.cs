@@ -36,7 +36,7 @@ public class WebWindowBuilder : WebWindowNetCore.WebWindowBuilder
         else
             webWindow.Window.DefaultSize(width, height);
         if (onStateChanged != null)
-            webWindow.Window.OnNotify("maximized", () => onStateChanged(webWindow));
+            webWindow.Window["maximized"].OnNotify += () => onStateChanged(webWindow);
         if (webWindow.WebView == null)
         {
             webWindow.WebView = Gtk4DotNet.WebView.New();
